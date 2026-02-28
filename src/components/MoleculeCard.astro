@@ -1,0 +1,48 @@
+---
+interface Props {
+    name: string;
+    smiles: string;
+    showPlaygroundLink?: boolean;
+    showDownload?: boolean;
+    clickable?: boolean;
+}
+
+const {name, smiles, showPlaygroundLink = false, showDownload = false, clickable = false} = Astro.props;
+const cardId = `mol-${name.replace(/\s+/g, '-').toLowerCase()}`;
+---
+<div
+    class:list={[
+        'card p-4 flex flex-col items-center gap-3',
+        clickable && 'cursor-pointer hover:border-accent/50'
+    ]}
+    data-smiles={smiles}
+    data-molecule-card={clickable ? 'true' : undefined}
+>
+    <div class="w-full aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-800/50 rounded-lg overflow-hidden">
+        <svg id={cardId} data-smiles={smiles} class="molecule-svg w-full h-full"></svg>
+    </div>
+    <div class="text-center w-full">
+        <div class="font-medium text-sm text-gray-900 dark:text-white">{name}</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400 font-mono truncate max-w-full" title={smiles}>{smiles}</div>
+    </div>
+    {(showPlaygroundLink || showDownload) && (
+        <div class="flex items-center gap-2 w-full">
+            {showPlaygroundLink && (
+                <a
+                    href={`/playground?smiles=${encodeURIComponent(smiles)}`}
+                    class="flex-1 text-center text-xs px-2 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-accent hover:border-accent/50 transition-colors"
+                >
+                    Open in Playground
+                </a>
+            )}
+            {showDownload && (
+                <button
+                    class="download-svg-btn text-xs px-2 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-accent hover:border-accent/50 transition-colors"
+                    data-target={cardId}
+                >
+                    SVG
+                </button>
+            )}
+        </div>
+    )}
+</div>

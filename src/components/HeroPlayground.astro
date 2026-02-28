@@ -1,0 +1,111 @@
+---
+---
+<div class="w-full max-w-2xl mx-auto">
+    <div class="relative">
+        <input
+            id="hero-smiles-input"
+            type="text"
+            value="c1ccccc1"
+            placeholder="Enter a SMILES string..."
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-lg font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
+            spellcheck="false"
+            autocomplete="off"
+        />
+        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500 hidden sm:block">
+            Press Enter or just type
+        </div>
+    </div>
+    <div class="mt-6 flex justify-center">
+        <div class="card p-6 w-full max-w-md aspect-square flex items-center justify-center bg-white dark:bg-gray-900">
+            <svg id="hero-molecule-svg" class="w-full h-full"></svg>
+        </div>
+    </div>
+    <div id="hero-error" class="mt-3 text-center text-sm text-red-500 dark:text-red-400 hidden"></div>
+    <div class="mt-4 flex justify-center gap-3">
+        <button id="hero-download-svg" class="btn-secondary text-sm">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download SVG
+        </button>
+        <button id="hero-copy-smiles" class="btn-secondary text-sm">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            Copy SMILES
+        </button>
+    </div>
+</div>
+
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('hero-smiles-input');
+    var svg = document.getElementById('hero-molecule-svg');
+    var errorEl = document.getElementById('hero-error');
+    var downloadBtn = document.getElementById('hero-download-svg');
+    var copyBtn = document.getElementById('hero-copy-smiles');
+
+    function getDrawTheme() {
+        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    }
+
+    function drawHero() {
+        var smiles = input.value.trim();
+        if (!smiles) {
+            svg.innerHTML = '';
+            errorEl.classList.add('hidden');
+            return;
+        }
+        try {
+            var drawer = new SmilesDrawer.SvgDrawer({width: 400, height: 400, compactDrawing: false});
+            SmilesDrawer.parse(smiles, function(tree) {
+                svg.innerHTML = '';
+                drawer.draw(tree, svg, getDrawTheme());
+                errorEl.classList.add('hidden');
+            }, function(err) {
+                errorEl.textContent = 'Invalid SMILES: ' + err;
+                errorEl.classList.remove('hidden');
+            });
+        }
+        catch (e) {
+            errorEl.textContent = 'Error: ' + e.message;
+            errorEl.classList.remove('hidden');
+        }
+    }
+
+    var debounceTimer;
+    input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(drawHero, 200);
+    });
+
+    // Re-render when dark mode toggles
+    new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            if (m.attributeName === 'class') drawHero();
+        });
+    }).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
+
+    drawHero();
+
+    downloadBtn.addEventListener('click', function() {
+        var svgData = new XMLSerializer().serializeToString(svg);
+        var blob = new Blob([svgData], {type: 'image/svg+xml'});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'molecule.svg';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    copyBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(input.value).then(function() {
+            copyBtn.querySelector('svg').nextElementSibling || (function() {});
+            var origText = copyBtn.innerHTML;
+            copyBtn.innerHTML = copyBtn.innerHTML.replace('Copy SMILES', 'Copied!');
+            setTimeout(function() { copyBtn.innerHTML = origText; }, 2000);
+        });
+    });
+});
+</script>
