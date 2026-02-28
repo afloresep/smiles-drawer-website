@@ -1,0 +1,285 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HeroPlayground from '../components/HeroPlayground.astro';
+import MoleculeCard from '../components/MoleculeCard.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import {showcaseMolecules} from '../data/molecules.js';
+---
+<Layout title="Home">
+    <!-- Hero Section -->
+    <section class="py-16 sm:py-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    Draw molecules from
+                    <span class="text-accent">SMILES</span>
+                </h1>
+                <p class="mt-4 text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                    No server, no WASM, no setup.
+                </p>
+                <div class="mt-6 flex flex-wrap justify-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        ~200 KB
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        Pure JavaScript
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        15K+ weekly downloads
+                    </span>
+                </div>
+            </div>
+            <HeroPlayground />
+        </div>
+    </section>
+
+    <!-- 3-line pitch -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-900/50">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl sm:text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
+                Three lines. That's it.
+            </h2>
+            <p class="text-center text-gray-600 dark:text-gray-400 mb-8">
+                Works everywhere. No build step required.
+            </p>
+            <CodeBlock
+                lang="html"
+                code={`&lt;script src="https://unpkg.com/smiles-drawer/dist/smiles-drawer.min.js"&gt;&lt;/script&gt;\n&lt;svg data-smiles="c1ccccc1"&gt;&lt;/svg&gt;\n&lt;script&gt;SmiDrawer.apply();&lt;/script&gt;`}
+                filename="index.html"
+            />
+            <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/getting-started" class="btn-primary justify-center">
+                    Get started
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                </a>
+                <a href="/playground" class="btn-secondary justify-center">
+                    Try the playground
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison table -->
+    <section class="py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl sm:text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
+                How it compares
+            </h2>
+            <p class="text-center text-gray-600 dark:text-gray-400 mb-8">
+                The only plug-and-play chemistry renderer for the web.
+            </p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200 dark:border-gray-700">
+                            <th class="text-left py-3 pr-4 font-medium text-gray-900 dark:text-white"></th>
+                            <th class="text-center py-3 px-4 font-semibold text-accent">SmilesDrawer</th>
+                            <th class="text-center py-3 px-4 font-medium text-gray-500 dark:text-gray-400">RDKit.js</th>
+                            <th class="text-center py-3 px-4 font-medium text-gray-500 dark:text-gray-400">OpenChemLib</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-600 dark:text-gray-400">
+                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                            <td class="py-3 pr-4 font-medium text-gray-900 dark:text-white">Bundle size</td>
+                            <td class="py-3 px-4 text-center font-semibold text-accent">~200 KB</td>
+                            <td class="py-3 px-4 text-center">~11 MB</td>
+                            <td class="py-3 px-4 text-center">~2 MB</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                            <td class="py-3 pr-4 font-medium text-gray-900 dark:text-white">Technology</td>
+                            <td class="py-3 px-4 text-center">Pure JS</td>
+                            <td class="py-3 px-4 text-center">C++ / WASM</td>
+                            <td class="py-3 px-4 text-center">Java / GWT</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                            <td class="py-3 pr-4 font-medium text-gray-900 dark:text-white">Setup</td>
+                            <td class="py-3 px-4 text-center font-semibold text-accent">3 lines</td>
+                            <td class="py-3 px-4 text-center">Async WASM init</td>
+                            <td class="py-3 px-4 text-center">Moderate</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                            <td class="py-3 pr-4 font-medium text-gray-900 dark:text-white">NPM weekly downloads</td>
+                            <td class="py-3 px-4 text-center">~15K</td>
+                            <td class="py-3 px-4 text-center">~17K</td>
+                            <td class="py-3 px-4 text-center">~11K</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                            <td class="py-3 pr-4 font-medium text-gray-900 dark:text-white">SVG output</td>
+                            <td class="py-3 px-4 text-center text-accent">&#10003;</td>
+                            <td class="py-3 px-4 text-center text-accent">&#10003;</td>
+                            <td class="py-3 px-4 text-center text-accent">&#10003;</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 dark:border-gray-800">
+                            <td class="py-3 pr-4 font-medium text-gray-900 dark:text-white">Canvas output</td>
+                            <td class="py-3 px-4 text-center text-accent">&#10003;</td>
+                            <td class="py-3 px-4 text-center text-gray-400">&mdash;</td>
+                            <td class="py-3 px-4 text-center text-accent">&#10003;</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 pr-4 font-medium text-gray-900 dark:text-white">Dark/light themes</td>
+                            <td class="py-3 px-4 text-center text-accent">&#10003;</td>
+                            <td class="py-3 px-4 text-center text-gray-400">&mdash;</td>
+                            <td class="py-3 px-4 text-center text-gray-400">&mdash;</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-4 text-xs text-center text-gray-400 dark:text-gray-500">
+                No binary loading, no async init, instant rendering.
+            </p>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-900/50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl sm:text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
+                Built for the web
+            </h2>
+            <p class="text-center text-gray-600 dark:text-gray-400 mb-10">
+                Everything you need to render molecules in the browser.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="card p-5">
+                    <div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                        <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">SVG & Canvas output</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Render to SVG for crisp vectors or Canvas for raster output. Both work with the same API.</p>
+                </div>
+                <div class="card p-5">
+                    <div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                        <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Dark & light themes</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Built-in theme support with fully customizable atom and bond colors for both modes.</p>
+                </div>
+                <div class="card p-5">
+                    <div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                        <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Reaction SMILES</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Render chemical reactions from reaction SMILES notation with reactants, reagents, and products.</p>
+                </div>
+                <div class="card p-5">
+                    <div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                        <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Gaussian / heatmap mode</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Overlay property heatmaps on molecular structures — unique to SmilesDrawer.</p>
+                </div>
+                <div class="card p-5">
+                    <div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                        <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Molecular properties</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Extract molecular formula, ring count, and other computed properties from parsed structures.</p>
+                </div>
+                <div class="card p-5">
+                    <div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center mb-3">
+                        <svg class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Fully customizable</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Control bond length, thickness, spacing, fonts, padding, stereochemistry display, and more.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Molecule Showcase -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-2xl sm:text-3xl font-bold text-center text-gray-900 dark:text-white mb-2">
+                Molecule Showcase
+            </h2>
+            <p class="text-center text-gray-600 dark:text-gray-400 mb-10">
+                Click any molecule to try it in the editor above.
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {showcaseMolecules.map(mol => (
+                    <MoleculeCard name={mol.name} smiles={mol.smiles} clickable={true} />
+                ))}
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16 bg-gray-50 dark:bg-gray-900/50">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Ready to draw molecules?
+            </h2>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="/getting-started" class="btn-primary justify-center">
+                    Read the docs
+                </a>
+                <a href="https://github.com/reymond-group/smilesDrawer" target="_blank" rel="noopener noreferrer" class="btn-secondary justify-center">
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+</Layout>
+
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function() {
+    function getDrawTheme() {
+        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    }
+
+    function renderCards() {
+        var theme = getDrawTheme();
+        document.querySelectorAll('.molecule-svg').forEach(function(svg) {
+            var smiles = svg.getAttribute('data-smiles');
+            if (!smiles) return;
+            try {
+                var drawer = new SmilesDrawer.SvgDrawer({width: 200, height: 200, compactDrawing: false});
+                SmilesDrawer.parse(smiles, function(tree) {
+                    svg.innerHTML = '';
+                    drawer.draw(tree, svg, theme);
+                }, function() {});
+            }
+            catch (e) {}
+        });
+    }
+
+    renderCards();
+
+    // Re-render cards when dark mode toggles
+    new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            if (m.attributeName === 'class') renderCards();
+        });
+    }).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
+
+    // Click molecule card to load into hero input
+    document.querySelectorAll('[data-molecule-card]').forEach(function(card) {
+        card.addEventListener('click', function() {
+            var smiles = this.getAttribute('data-smiles');
+            var input = document.getElementById('hero-smiles-input');
+            if (input && smiles) {
+                input.value = smiles;
+                input.dispatchEvent(new Event('input'));
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }
+        });
+    });
+});
+</script>

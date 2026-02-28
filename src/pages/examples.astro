@@ -1,0 +1,133 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MoleculeCard from '../components/MoleculeCard.astro';
+import {molecules} from '../data/molecules.js';
+
+const categories = [
+    {key: 'simple', title: 'Simple Molecules', description: 'Basic organic molecules'},
+    {key: 'aromatic', title: 'Aromatic Rings', description: 'Benzene derivatives and polycyclic aromatics'},
+    {key: 'heterocycles', title: 'Heterocycles', description: 'Rings containing nitrogen, oxygen, or sulfur'},
+    {key: 'drugs', title: 'Drugs & Pharmaceuticals', description: 'Common drug molecules'},
+    {key: 'complex', title: 'Complex Molecules', description: 'Steroids, sugars, and macromolecules'},
+    {key: 'stereo', title: 'Stereochemistry', description: 'Molecules with chiral centers'},
+];
+---
+<Layout title="Examples" description="Gallery of molecules rendered with SmilesDrawer. Browse simple molecules, aromatics, drugs, and complex structures.">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">Examples</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-400">
+                A gallery of molecules rendered with SmilesDrawer. Click "Open in Playground" to customize any molecule.
+            </p>
+        </div>
+
+        <!-- Quick nav -->
+        <div class="flex flex-wrap gap-2 mb-10">
+            {categories.map(cat => (
+                <a
+                    href={`#${cat.key}`}
+                    class="text-sm px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors"
+                >
+                    {cat.title}
+                </a>
+            ))}
+        </div>
+
+        <!-- Theme selector for gallery -->
+        <div class="flex items-center gap-3 mb-8">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Render theme:</span>
+            <select id="gallery-theme" class="text-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+        </div>
+
+        {categories.map(cat => (
+            <section id={cat.key} class="mb-16 scroll-mt-20">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{cat.title}</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">{cat.description}</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                    {molecules[cat.key].map(mol => (
+                        <MoleculeCard
+                            name={mol.name}
+                            smiles={mol.smiles}
+                            showPlaygroundLink={true}
+                            showDownload={true}
+                        />
+                    ))}
+                </div>
+            </section>
+        ))}
+    </div>
+</Layout>
+
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function() {
+    function getDrawTheme() {
+        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    }
+
+    // Gallery uses page dark mode by default, but the selector can override
+    var manualTheme = null;
+
+    function renderAll() {
+        var theme = manualTheme || getDrawTheme();
+        document.querySelectorAll('.molecule-svg').forEach(function(svg) {
+            var smiles = svg.getAttribute('data-smiles');
+            if (!smiles) return;
+            try {
+                var drawer = new SmilesDrawer.SvgDrawer({width: 200, height: 200, compactDrawing: false});
+                SmilesDrawer.parse(smiles, function(tree) {
+                    svg.innerHTML = '';
+                    drawer.draw(tree, svg, theme);
+                }, function() {});
+            }
+            catch (e) {}
+        });
+    }
+
+    renderAll();
+
+    // Re-render when dark mode toggles
+    new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            if (m.attributeName === 'class') {
+                // Sync selector to match page theme when no manual override
+                var themeSelect = document.getElementById('gallery-theme');
+                if (themeSelect && !manualTheme) {
+                    themeSelect.value = getDrawTheme();
+                }
+                renderAll();
+            }
+        });
+    }).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
+
+    // Theme selector
+    var themeSelect = document.getElementById('gallery-theme');
+    if (themeSelect) {
+        themeSelect.value = getDrawTheme();
+        themeSelect.addEventListener('change', function() {
+            manualTheme = this.value;
+            renderAll();
+        });
+    }
+
+    // Download SVG buttons
+    document.querySelectorAll('.download-svg-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var targetId = this.getAttribute('data-target');
+            var svg = document.getElementById(targetId);
+            if (!svg) return;
+            var svgData = new XMLSerializer().serializeToString(svg);
+            var blob = new Blob([svgData], {type: 'image/svg+xml'});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = targetId + '.svg';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    });
+});
+</script>

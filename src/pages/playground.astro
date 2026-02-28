@@ -1,0 +1,386 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {playgroundPresets} from '../data/molecules.js';
+---
+<Layout title="Playground" description="Interactive SMILES molecule drawing playground. Paste a SMILES string and get an instant molecular structure depiction.">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Playground</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter a SMILES string to render a molecule instantly.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+            <!-- Main area -->
+            <div class="space-y-4">
+                <!-- SMILES input -->
+                <div class="flex gap-3">
+                    <input
+                        id="pg-input"
+                        type="text"
+                        value="c1ccccc1"
+                        placeholder="Enter a SMILES string..."
+                        class="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-lg font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
+                        spellcheck="false"
+                        autocomplete="off"
+                    />
+                    <button id="pg-draw-btn" class="btn-primary">Draw</button>
+                </div>
+
+                <!-- Error display -->
+                <div id="pg-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div>
+
+                <!-- Molecule rendering area -->
+                <div class="card p-4 sm:p-8">
+                    <div class="flex items-center justify-center" style="min-height: 400px;">
+                        <svg id="pg-svg" class="w-full" style="max-width: 500px; max-height: 500px;"></svg>
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="flex flex-wrap gap-3">
+                    <button id="pg-download-svg" class="btn-secondary">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download SVG
+                    </button>
+                    <button id="pg-download-png" class="btn-secondary">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Download PNG
+                    </button>
+                    <button id="pg-copy-svg" class="btn-secondary">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy SVG
+                    </button>
+                    <button id="pg-copy-smiles" class="btn-secondary">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy SMILES
+                    </button>
+                    <button id="pg-share" class="btn-secondary">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        Share Link
+                    </button>
+                </div>
+
+                <!-- Molecular formula (if computed) -->
+                <div id="pg-formula" class="text-sm text-gray-500 dark:text-gray-400 hidden">
+                    Formula: <span id="pg-formula-text" class="font-mono"></span>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-4">
+                <!-- Options Panel -->
+                <details class="card" open>
+                    <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+                        Options
+                    </summary>
+                    <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
+                        <div>
+                            <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                <span>Bond length</span>
+                                <span id="opt-bondLength-val" class="font-mono">15</span>
+                            </label>
+                            <input id="opt-bondLength" type="range" min="5" max="30" value="15" step="1" class="w-full accent-accent">
+                        </div>
+                        <div>
+                            <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                <span>Bond thickness</span>
+                                <span id="opt-bondThickness-val" class="font-mono">1</span>
+                            </label>
+                            <input id="opt-bondThickness" type="range" min="0.5" max="5" value="1" step="0.5" class="w-full accent-accent">
+                        </div>
+                        <div>
+                            <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                <span>Bond spacing</span>
+                                <span id="opt-bondSpacing-val" class="font-mono">0.18</span>
+                            </label>
+                            <input id="opt-bondSpacing" type="range" min="0.05" max="0.5" value="0.18" step="0.01" class="w-full accent-accent">
+                        </div>
+                        <div>
+                            <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                <span>Font size</span>
+                                <span id="opt-fontSizeLarge-val" class="font-mono">6</span>
+                            </label>
+                            <input id="opt-fontSizeLarge" type="range" min="2" max="16" value="6" step="1" class="w-full accent-accent">
+                        </div>
+                        <div>
+                            <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                <span>Canvas width</span>
+                                <span id="opt-width-val" class="font-mono">500</span>
+                            </label>
+                            <input id="opt-width" type="range" min="200" max="1000" value="500" step="50" class="w-full accent-accent">
+                        </div>
+                        <div>
+                            <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                <span>Canvas height</span>
+                                <span id="opt-height-val" class="font-mono">500</span>
+                            </label>
+                            <input id="opt-height" type="range" min="200" max="1000" value="500" step="50" class="w-full accent-accent">
+                        </div>
+                        <hr class="border-gray-100 dark:border-gray-800" />
+                        <label class="flex items-center justify-between text-xs">
+                            <span class="text-gray-600 dark:text-gray-400">Terminal carbons</span>
+                            <input id="opt-terminalCarbons" type="checkbox" class="accent-accent w-4 h-4">
+                        </label>
+                        <label class="flex items-center justify-between text-xs">
+                            <span class="text-gray-600 dark:text-gray-400">Explicit hydrogens</span>
+                            <input id="opt-explicitHydrogens" type="checkbox" class="accent-accent w-4 h-4">
+                        </label>
+                        <label class="flex items-center justify-between text-xs">
+                            <span class="text-gray-600 dark:text-gray-400">Compact drawing</span>
+                            <input id="opt-compactDrawing" type="checkbox" class="accent-accent w-4 h-4">
+                        </label>
+                        <label class="flex items-center justify-between text-xs">
+                            <span class="text-gray-600 dark:text-gray-400">Debug mode</span>
+                            <input id="opt-debug" type="checkbox" class="accent-accent w-4 h-4">
+                        </label>
+                        <hr class="border-gray-100 dark:border-gray-800" />
+                        <label class="flex items-center justify-between text-xs">
+                            <span class="text-gray-600 dark:text-gray-400">Theme</span>
+                            <select id="opt-theme" class="text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1">
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </label>
+                    </div>
+                </details>
+
+                <!-- Presets Panel -->
+                <details class="card" open>
+                    <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+                        Preset Molecules
+                    </summary>
+                    <div class="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4">
+                        {Object.entries(playgroundPresets).map(([category, mols]) => (
+                            <div>
+                                <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">{category}</div>
+                                <div class="flex flex-wrap gap-1.5">
+                                    {mols.map(mol => (
+                                        <button
+                                            class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors"
+                                            data-smiles={mol.smiles}
+                                        >
+                                            {mol.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<script is:inline>
+(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        var input = document.getElementById('pg-input');
+        var svg = document.getElementById('pg-svg');
+        var errorEl = document.getElementById('pg-error');
+        var drawBtn = document.getElementById('pg-draw-btn');
+
+        // Option elements
+        var sliders = ['bondLength', 'bondThickness', 'bondSpacing', 'fontSizeLarge', 'width', 'height'];
+        var checkboxes = ['terminalCarbons', 'explicitHydrogens', 'compactDrawing', 'debug'];
+
+        function getOptions() {
+            var opts = {};
+            sliders.forEach(function(name) {
+                var el = document.getElementById('opt-' + name);
+                if (el) opts[name] = parseFloat(el.value);
+            });
+            checkboxes.forEach(function(name) {
+                var el = document.getElementById('opt-' + name);
+                if (el) opts[name] = el.checked;
+            });
+            return opts;
+        }
+
+        function getTheme() {
+            var el = document.getElementById('opt-theme');
+            return el ? el.value : 'light';
+        }
+
+        function draw() {
+            var smiles = input.value.trim();
+            if (!smiles) {
+                svg.innerHTML = '';
+                errorEl.classList.add('hidden');
+                return;
+            }
+
+            var opts = getOptions();
+            try {
+                var drawer = new SmilesDrawer.SvgDrawer(opts);
+                SmilesDrawer.parse(smiles, function(tree) {
+                    svg.innerHTML = '';
+                    drawer.draw(tree, svg, getTheme());
+                    errorEl.classList.add('hidden');
+                }, function(err) {
+                    errorEl.textContent = 'Invalid SMILES: ' + err;
+                    errorEl.classList.remove('hidden');
+                });
+            }
+            catch (e) {
+                errorEl.textContent = 'Error: ' + e.message;
+                errorEl.classList.remove('hidden');
+            }
+
+            // Update URL
+            var url = new URL(window.location);
+            url.searchParams.set('smiles', smiles);
+            window.history.replaceState({}, '', url);
+        }
+
+        // Debounced draw on input
+        var debounceTimer;
+        input.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(draw, 200);
+        });
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') draw();
+        });
+
+        drawBtn.addEventListener('click', draw);
+
+        // Update slider value displays and redraw on change
+        sliders.forEach(function(name) {
+            var el = document.getElementById('opt-' + name);
+            var valEl = document.getElementById('opt-' + name + '-val');
+            if (el && valEl) {
+                el.addEventListener('input', function() {
+                    valEl.textContent = el.value;
+                    draw();
+                });
+            }
+        });
+
+        checkboxes.forEach(function(name) {
+            var el = document.getElementById('opt-' + name);
+            if (el) el.addEventListener('change', draw);
+        });
+
+        var themeSelect = document.getElementById('opt-theme');
+        if (themeSelect) {
+            // Sync drawing theme selector to page dark mode
+            themeSelect.value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            themeSelect.addEventListener('change', draw);
+        }
+
+        // Re-render when page dark mode toggles
+        new MutationObserver(function(mutations) {
+            mutations.forEach(function(m) {
+                if (m.attributeName === 'class') {
+                    var ts = document.getElementById('opt-theme');
+                    if (ts) ts.value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                    draw();
+                }
+            });
+        }).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
+
+        // Preset buttons
+        document.querySelectorAll('.preset-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                input.value = this.getAttribute('data-smiles');
+                draw();
+            });
+        });
+
+        // Download SVG
+        document.getElementById('pg-download-svg').addEventListener('click', function() {
+            var svgData = new XMLSerializer().serializeToString(svg);
+            var blob = new Blob([svgData], {type: 'image/svg+xml'});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'molecule.svg';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Download PNG
+        document.getElementById('pg-download-png').addEventListener('click', function() {
+            var svgData = new XMLSerializer().serializeToString(svg);
+            var img = new Image();
+            img.onload = function() {
+                var canvas = document.createElement('canvas');
+                var scale = 2;
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+                var ctx = canvas.getContext('2d');
+                ctx.scale(scale, scale);
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob(function(blob) {
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'molecule.png';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+            };
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        });
+
+        // Copy SVG
+        document.getElementById('pg-copy-svg').addEventListener('click', function() {
+            var svgData = new XMLSerializer().serializeToString(svg);
+            navigator.clipboard.writeText(svgData).then(function() {
+                showToast('SVG copied to clipboard');
+            });
+        });
+
+        // Copy SMILES
+        document.getElementById('pg-copy-smiles').addEventListener('click', function() {
+            navigator.clipboard.writeText(input.value).then(function() {
+                showToast('SMILES copied to clipboard');
+            });
+        });
+
+        // Share link
+        document.getElementById('pg-share').addEventListener('click', function() {
+            var url = new URL(window.location);
+            url.searchParams.set('smiles', input.value);
+            navigator.clipboard.writeText(url.toString()).then(function() {
+                showToast('Link copied to clipboard');
+            });
+        });
+
+        // Toast notification
+        function showToast(message) {
+            var existing = document.getElementById('toast');
+            if (existing) existing.remove();
+            var toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'fixed bottom-4 right-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm px-4 py-2 rounded-lg shadow-lg z-50 transition-opacity duration-300';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(function() {
+                toast.style.opacity = '0';
+                setTimeout(function() { toast.remove(); }, 300);
+            }, 2000);
+        }
+
+        // Read SMILES from URL on load
+        var params = new URLSearchParams(window.location.search);
+        if (params.has('smiles')) {
+            input.value = params.get('smiles');
+        }
+
+        draw();
+    });
+})();
+</script>
