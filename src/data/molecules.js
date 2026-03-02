@@ -38,7 +38,6 @@ export const molecules = {
         {name: 'Glucose', smiles: 'OC[C@H]1OC(O)[C@H](O)[C@@H](O)[C@@H]1O'},
         {name: 'Testosterone', smiles: 'C[C@]12CC[C@H]3[C@@H](CCC4=CC(=O)CC[C@@]34C)[C@@H]1CC[C@@H]2O'},
         {name: 'ATP', smiles: 'c1nc(c2c(n1)n(cn2)[C@@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O)O)N'},
-        {name: 'Vancomycin aglycone', smiles: 'C[C@H]1[C@H](O)CC2=CC(=C(C(=C2)O)Oc2cc3cc(c2Cl)Oc2ccc(cc2Cl)[C@@H](O)[C@H](NC(=O)[C@@H](CC(=O)N)NC1=O)C(=O)N[C@H]1[C@H](O)c2ccc(c(c2)O[C@@H]2OC=3C(O)=CC=4CC(=C(O)C=4C=3[C@@H]2O)O)Oc1cc1ccc(O)c(c1)C(=O)O)O'},
     ],
     stereo: [
         {name: 'L-Alanine', smiles: 'N[C@@H](C)C(=O)O'},

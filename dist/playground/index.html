@@ -4,7 +4,7 @@
             if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             if (theme === 'dark') document.documentElement.classList.add('dark');
         })();
-    </script><!-- SmilesDrawer from CDN --><script src="https://unpkg.com/smiles-drawer@2.2.0/dist/smiles-drawer.min.js"></script><link rel="stylesheet" href="/_astro/examples.CoDQyVE4.css"></head> <body class="min-h-screen flex flex-col font-sans antialiased"> <header class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> <div class="flex items-center justify-between h-16"> <div class="flex items-center gap-8"> <a href="/" class="flex items-center gap-2 font-semibold text-lg text-gray-900 dark:text-white"> <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none"> <circle cx="16" cy="16" r="14" stroke="#50C5A9" stroke-width="2.5"></circle> <circle cx="10" cy="12" r="2.5" fill="#50C5A9"></circle> <circle cx="22" cy="12" r="2.5" fill="#50C5A9"></circle> <circle cx="16" cy="22" r="2.5" fill="#50C5A9"></circle> <line x1="10" y1="12" x2="22" y2="12" stroke="#50C5A9" stroke-width="1.5"></line> <line x1="22" y1="12" x2="16" y2="22" stroke="#50C5A9" stroke-width="1.5"></line> <line x1="16" y1="22" x2="10" y2="12" stroke="#50C5A9" stroke-width="1.5"></line> </svg>
+    </script><!-- SmilesDrawer from CDN --><script src="https://unpkg.com/smiles-drawer@2.1.7/dist/smiles-drawer.min.js"></script><link rel="stylesheet" href="/_astro/examples.BDTEScMP.css"></head> <body class="min-h-screen flex flex-col font-sans antialiased"> <header class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> <div class="flex items-center justify-between h-16"> <div class="flex items-center gap-8"> <a href="/" class="flex items-center gap-2 font-semibold text-lg text-gray-900 dark:text-white"> <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none"> <circle cx="16" cy="16" r="14" stroke="#50C5A9" stroke-width="2.5"></circle> <circle cx="10" cy="12" r="2.5" fill="#50C5A9"></circle> <circle cx="22" cy="12" r="2.5" fill="#50C5A9"></circle> <circle cx="16" cy="22" r="2.5" fill="#50C5A9"></circle> <line x1="10" y1="12" x2="22" y2="12" stroke="#50C5A9" stroke-width="1.5"></line> <line x1="22" y1="12" x2="16" y2="22" stroke="#50C5A9" stroke-width="1.5"></line> <line x1="16" y1="22" x2="10" y2="12" stroke="#50C5A9" stroke-width="1.5"></line> </svg>
 SmilesDrawer
 </a> <nav class="hidden md:flex items-center gap-1"> <a href="/" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"> Home </a><a href="/playground" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"> Playground </a><a href="/getting-started" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"> Getting Started </a><a href="/examples" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"> Examples </a> </nav> </div> <div class="flex items-center gap-2"> <button id="theme-toggle" class="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle dark mode"> <svg id="theme-icon-sun" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path> </svg> <svg id="theme-icon-moon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path> </svg> </button> <script>
 (function() {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-</script> <main class="flex-1">  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> <div class="mb-6"> <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Playground</h1> <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter a SMILES string to render a molecule instantly.</p> </div> <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6"> <!-- Main area --> <div class="space-y-4"> <!-- SMILES input --> <div class="flex gap-3"> <input id="pg-input" type="text" value="c1ccccc1" placeholder="Enter a SMILES string..." class="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-lg font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" spellcheck="false" autocomplete="off"> <button id="pg-draw-btn" class="btn-primary">Draw</button> </div> <!-- Error display --> <div id="pg-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div> <!-- Molecule rendering area --> <div class="card p-4 sm:p-8"> <div class="flex items-center justify-center" style="min-height: 400px;"> <svg id="pg-svg" class="w-full" style="max-width: 500px; max-height: 500px;"></svg> </div> </div> <!-- Action buttons --> <div class="flex flex-wrap gap-3"> <button id="pg-download-svg" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg>
+</script> <main class="flex-1">  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> <div class="mb-6"> <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Playground</h1> <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Enter a SMILES string to render a molecule instantly.</p> </div> <!-- Tab bar --> <div class="flex gap-1 mb-6 border-b border-gray-200 dark:border-gray-700"> <button id="tab-single" class="px-4 py-2 text-sm font-medium border-b-2 border-accent text-accent transition-colors">Single</button> <button id="tab-batch" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Batch Export</button> </div> <!-- Single mode panel --> <div id="panel-single"> <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6"> <!-- Main area --> <div class="space-y-4"> <!-- SMILES input --> <div class="flex gap-3"> <input id="pg-input" type="text" value="c1ccccc1" placeholder="Enter a SMILES string..." class="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-lg font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" spellcheck="false" autocomplete="off"> <button id="pg-draw-btn" class="btn-primary">Draw</button> </div> <!-- Error display --> <div id="pg-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div> <!-- Molecule rendering area --> <div class="card p-4 sm:p-8"> <div class="flex items-center justify-center" style="min-height: 400px;"> <svg id="pg-svg" class="w-full" style="max-width: 500px; max-height: 500px;"></svg> </div> </div> <!-- Action buttons --> <div class="flex flex-wrap gap-3"> <button id="pg-download-svg" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg>
 Download SVG
 </button> <button id="pg-download-png" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg>
 Download PNG
@@ -65,7 +65,21 @@ Formula: <span id="pg-formula-text" class="font-mono"></span> </div> </div> <!--
 Options
 </summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond length</span> <span id="opt-bondLength-val" class="font-mono">15</span> </label> <input id="opt-bondLength" type="range" min="5" max="30" value="15" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond thickness</span> <span id="opt-bondThickness-val" class="font-mono">1</span> </label> <input id="opt-bondThickness" type="range" min="0.5" max="5" value="1" step="0.5" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond spacing</span> <span id="opt-bondSpacing-val" class="font-mono">0.18</span> </label> <input id="opt-bondSpacing" type="range" min="0.05" max="0.5" value="0.18" step="0.01" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Font size</span> <span id="opt-fontSizeLarge-val" class="font-mono">6</span> </label> <input id="opt-fontSizeLarge" type="range" min="2" max="16" value="6" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Canvas width</span> <span id="opt-width-val" class="font-mono">500</span> </label> <input id="opt-width" type="range" min="200" max="1000" value="500" step="50" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Canvas height</span> <span id="opt-height-val" class="font-mono">500</span> </label> <input id="opt-height" type="range" min="200" max="1000" value="500" step="50" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Terminal carbons</span> <input id="opt-terminalCarbons" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Explicit hydrogens</span> <input id="opt-explicitHydrogens" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Compact drawing</span> <input id="opt-compactDrawing" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Debug mode</span> <input id="opt-debug" type="checkbox" class="accent-accent w-4 h-4"> </label> <hr class="border-gray-100 dark:border-gray-800"> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Theme</span> <select id="opt-theme" class="text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1"> <option value="light">Light</option> <option value="dark">Dark</option> </select> </label> </div> </details> <!-- Presets Panel --> <details class="card" open> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
 Preset Molecules
-</summary> <div class="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4"> <div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Simple</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CO"> Methanol </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC"> Ethane </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(=O)O"> Acetic acid </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="O"> Water </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Rings</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="c1ccccc1"> Benzene </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="c1ccc2ccccc2c1"> Naphthalene </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C1CCCCC1"> Cyclohexane </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C1CC1"> Cyclopropane </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Drugs</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(=O)Oc1ccccc1C(=O)O"> Aspirin </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="Cn1c(=O)c2c(ncn2C)n(c1=O)C"> Caffeine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(C)Cc1ccc(cc1)C(C)C(=O)O"> Ibuprofen </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC1([C@@H](N2[C@H](S1)[C@@H](C2=O)NC(=O)Cc3ccccc3)C(=O)O)C"> Penicillin G </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Complex</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C[C@H](CCCC(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O)C)C"> Cholesterol </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="OC[C@H]1OC(O)[C@H](O)[C@@H](O)[C@@H]1O"> Glucose </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="c1nc(c2c(n1)n(cn2)[C@@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O)O)N"> ATP </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Stereo</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="N[C@@H](C)C(=O)O"> L-Alanine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CN1CCC[C@H]1c2cccnc2"> Nicotine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="O=C1CCC(N2C(=O)c3ccccc3C2=O)C(=O)N1"> Thalidomide </button> </div> </div> </div> </details> </div> </div> </div>  </main> <footer class="border-t border-gray-200 dark:border-gray-800 mt-auto"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400"> <div class="flex items-center gap-4"> <span>MIT License</span> <span class="hidden sm:inline">&middot;</span> <a href="https://doi.org/10.1021/acs.jcim.7b00425" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">
+</summary> <div class="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4"> <div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Simple</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CO"> Methanol </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC"> Ethane </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(=O)O"> Acetic acid </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="O"> Water </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Rings</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="c1ccccc1"> Benzene </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="c1ccc2ccccc2c1"> Naphthalene </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C1CCCCC1"> Cyclohexane </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C1CC1"> Cyclopropane </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Drugs</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(=O)Oc1ccccc1C(=O)O"> Aspirin </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="Cn1c(=O)c2c(ncn2C)n(c1=O)C"> Caffeine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(C)Cc1ccc(cc1)C(C)C(=O)O"> Ibuprofen </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC1([C@@H](N2[C@H](S1)[C@@H](C2=O)NC(=O)Cc3ccccc3)C(=O)O)C"> Penicillin G </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Complex</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C[C@H](CCCC(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O)C)C"> Cholesterol </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="OC[C@H]1OC(O)[C@H](O)[C@@H](O)[C@@H]1O"> Glucose </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="c1nc(c2c(n1)n(cn2)[C@@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O)O)N"> ATP </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Stereo</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="N[C@@H](C)C(=O)O"> L-Alanine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CN1CCC[C@H]1c2cccnc2"> Nicotine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="O=C1CCC(N2C(=O)c3ccccc3C2=O)C(=O)N1"> Thalidomide </button> </div> </div> </div> </details> </div> </div> </div> <!-- Batch export panel --> <div id="panel-batch" class="hidden"> <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6"> <!-- Main area --> <div class="space-y-4"> <!-- SMILES textarea input --> <div> <div class="flex items-center justify-between mb-2"> <label for="batch-input" class="text-sm font-medium text-gray-700 dark:text-gray-300">SMILES (one per line)</label> <div class="flex items-center gap-2"> <span id="batch-count" class="text-xs text-gray-500 dark:text-gray-400">0 molecules</span> <input type="file" id="batch-file-input" accept=".csv,.smi,.txt,.tsv" class="hidden"> <button id="batch-import-btn" class="text-xs px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Import File</button> </div> </div> <textarea id="batch-input" rows="6" placeholder="c1ccccc1
+CC(=O)Oc1ccccc1C(=O)O
+Cn1c(=O)c2c(ncn2C)n(c1=O)C" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all resize-y" spellcheck="false"></textarea> </div> <!-- Batch error display --> <div id="batch-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div> <!-- Action buttons --> <div class="flex flex-wrap gap-3"> <button id="batch-render-btn" class="btn-primary">Render All</button> <button id="batch-export-png" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg>
+Export PNG
+</button> <button id="batch-export-svg" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg>
+Export SVG
+</button> </div> <!-- Pagination bar --> <div id="batch-pagination" class="flex items-center justify-center gap-3 hidden"> <button id="batch-page-prev" class="btn-secondary text-xs px-3 py-1" disabled>&laquo; Prev</button> <span id="batch-page-info" class="text-sm text-gray-600 dark:text-gray-400">Page 1 of 1</span> <button id="batch-page-next" class="btn-secondary text-xs px-3 py-1" disabled>Next &raquo;</button> </div> <!-- Selection action bar --> <div id="batch-selection-bar" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 hidden"> <span id="batch-selection-count" class="text-sm font-medium text-accent">0 selected</span> <button id="batch-select-all" class="text-xs px-2 py-0.5 rounded border border-accent/30 text-accent hover:bg-accent/10 transition-colors">Select All</button> <button id="batch-deselect-all" class="text-xs px-2 py-0.5 rounded border border-accent/30 text-accent hover:bg-accent/10 transition-colors">Deselect All</button> <button id="batch-delete-selected" class="text-xs px-2 py-0.5 rounded border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Delete Selected</button> </div> <!-- Grid preview area --> <div class="card p-4 sm:p-6"> <div id="batch-grid" class="grid gap-2" style="grid-template-columns: repeat(3, 1fr);"> <div class="flex items-center justify-center text-sm text-gray-400 dark:text-gray-500 col-span-full py-16">
+Enter SMILES above and click "Render All"
+</div> </div> </div> </div> <!-- Sidebar --> <div class="space-y-4"> <!-- Grid Layout Panel --> <details class="card" open> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Grid Layout
+</summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <!-- Grid presets --> <div> <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Presets</div> <div class="flex flex-wrap gap-1.5"> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="2" data-rows="2">2x2</button> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="3" data-rows="3">3x3</button> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="3" data-rows="4">3x4</button> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="4" data-rows="4">4x4</button> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="5" data-rows="5">5x5</button> </div> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Columns</span> <span id="batch-opt-cols-val" class="font-mono">3</span> </label> <input id="batch-opt-cols" type="range" min="1" max="8" value="3" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Rows</span> <span id="batch-opt-rows-val" class="font-mono">3</span> </label> <input id="batch-opt-rows" type="range" min="1" max="10" value="3" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Cell size (px)</span> <span id="batch-opt-cellSize-val" class="font-mono">250</span> </label> <input id="batch-opt-cellSize" type="range" min="100" max="500" value="250" step="10" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Show labels</span> <input id="batch-opt-showLabels" type="checkbox" checked class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Show formula</span> <input id="batch-opt-showFormula" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Show mol. weight</span> <input id="batch-opt-showMW" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Theme</span> <select id="batch-opt-theme" class="text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1"> <option value="light">Light</option> <option value="dark">Dark</option> </select> </label> </div> </details> <!-- Publication Export Panel --> <details class="card"> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Publication Export
+</summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <div> <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Export scale</div> <div class="flex flex-wrap gap-1.5"> <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="1">1x (72 DPI)</button> <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-accent text-accent ring-2 ring-accent/30" data-scale="2">2x (144 DPI)</button> <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="3">3x (216 DPI)</button> <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="4">4x (288 DPI)</button> </div> </div> <hr class="border-gray-100 dark:border-gray-800"> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Transparent background</span> <input id="batch-opt-transparentBg" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Force white background</span> <input id="batch-opt-whiteBg" type="checkbox" class="accent-accent w-4 h-4"> </label> <hr class="border-gray-100 dark:border-gray-800"> <div> <label class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Grid title</label> <input id="batch-opt-title" type="text" placeholder="e.g. Figure 1 — Drug candidates" class="w-full text-xs px-2 py-1.5 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-accent/50"> </div> </div> </details> <!-- Drawing Options Panel --> <details class="card" open> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Drawing Options
+</summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond length</span> <span id="batch-opt-bondLength-val" class="font-mono">15</span> </label> <input id="batch-opt-bondLength" type="range" min="5" max="30" value="15" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond thickness</span> <span id="batch-opt-bondThickness-val" class="font-mono">1</span> </label> <input id="batch-opt-bondThickness" type="range" min="0.5" max="5" value="1" step="0.5" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Compact drawing</span> <input id="batch-opt-compactDrawing" type="checkbox" class="accent-accent w-4 h-4"> </label> </div> </details> </div> </div> </div> </div>  </main> <footer class="border-t border-gray-200 dark:border-gray-800 mt-auto"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400"> <div class="flex items-center gap-4"> <span>MIT License</span> <span class="hidden sm:inline">&middot;</span> <a href="https://doi.org/10.1021/acs.jcim.7b00425" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">
 Cite the paper
 </a> <span class="hidden sm:inline">&middot;</span> <a href="https://github.com/reymond-group/smilesDrawer" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">
 GitHub
@@ -268,6 +282,864 @@ GitHub
         }
 
         draw();
+    });
+})();
+</script> <script>
+(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        // ─── Tab switching ────────────────────────────────────────────
+        var tabSingle = document.getElementById('tab-single');
+        var tabBatch = document.getElementById('tab-batch');
+        var panelSingle = document.getElementById('panel-single');
+        var panelBatch = document.getElementById('panel-batch');
+
+        function switchTab(tab) {
+            if (tab === 'single') {
+                panelSingle.classList.remove('hidden');
+                panelBatch.classList.add('hidden');
+                tabSingle.classList.add('border-accent', 'text-accent');
+                tabSingle.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                tabBatch.classList.remove('border-accent', 'text-accent');
+                tabBatch.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+            } else {
+                panelSingle.classList.add('hidden');
+                panelBatch.classList.remove('hidden');
+                tabBatch.classList.add('border-accent', 'text-accent');
+                tabBatch.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                tabSingle.classList.remove('border-accent', 'text-accent');
+                tabSingle.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                var bt = document.getElementById('batch-opt-theme');
+                if (bt) bt.value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            }
+        }
+
+        tabSingle.addEventListener('click', function() { switchTab('single'); });
+        tabBatch.addEventListener('click', function() { switchTab('batch'); });
+
+        // ─── Batch DOM refs ───────────────────────────────────────────
+        var batchInput = document.getElementById('batch-input');
+        var batchCount = document.getElementById('batch-count');
+        var batchGrid = document.getElementById('batch-grid');
+        var batchError = document.getElementById('batch-error');
+        var renderBtn = document.getElementById('batch-render-btn');
+        var exportPngBtn = document.getElementById('batch-export-png');
+        var exportSvgBtn = document.getElementById('batch-export-svg');
+        var fileInput = document.getElementById('batch-file-input');
+        var importBtn = document.getElementById('batch-import-btn');
+
+        // Grid option elements
+        var colsSlider = document.getElementById('batch-opt-cols');
+        var colsVal = document.getElementById('batch-opt-cols-val');
+        var rowsSlider = document.getElementById('batch-opt-rows');
+        var rowsVal = document.getElementById('batch-opt-rows-val');
+        var cellSizeSlider = document.getElementById('batch-opt-cellSize');
+        var cellSizeVal = document.getElementById('batch-opt-cellSize-val');
+        var showLabelsCheck = document.getElementById('batch-opt-showLabels');
+        var showFormulaCheck = document.getElementById('batch-opt-showFormula');
+        var showMWCheck = document.getElementById('batch-opt-showMW');
+        var batchTheme = document.getElementById('batch-opt-theme');
+
+        // Publication export elements
+        var transparentBgCheck = document.getElementById('batch-opt-transparentBg');
+        var whiteBgCheck = document.getElementById('batch-opt-whiteBg');
+        var titleInput = document.getElementById('batch-opt-title');
+        var exportScale = 2;
+
+        // Selection bar elements
+        var selectionBar = document.getElementById('batch-selection-bar');
+        var selectionCount = document.getElementById('batch-selection-count');
+        var selectAllBtn = document.getElementById('batch-select-all');
+        var deselectAllBtn = document.getElementById('batch-deselect-all');
+        var deleteSelectedBtn = document.getElementById('batch-delete-selected');
+
+        // Pagination elements
+        var paginationBar = document.getElementById('batch-pagination');
+        var pageInfo = document.getElementById('batch-page-info');
+        var pagePrevBtn = document.getElementById('batch-page-prev');
+        var pageNextBtn = document.getElementById('batch-page-next');
+
+        // Drawing options
+        var batchSliders = ['bondLength', 'bondThickness'];
+        var batchCheckboxes = ['compactDrawing'];
+
+        // ─── Data model ───────────────────────────────────────────────
+        var batchData = [];
+        var batchCurrentPage = 0;
+        var BATCH_PAGE_SIZE = 16;
+        var dragSourceIdx = -1;
+
+        // ─── Atomic data ─────────────────────────────────────────────
+        var ATOMIC_WEIGHTS = {
+            H: 1.008, He: 4.003, Li: 6.941, Be: 9.012, B: 10.81, C: 12.011,
+            N: 14.007, O: 15.999, F: 18.998, Ne: 20.180, Na: 22.990, Mg: 24.305,
+            Al: 26.982, Si: 28.086, P: 30.974, S: 32.065, Cl: 35.453, Ar: 39.948,
+            K: 39.098, Ca: 40.078, Ti: 47.867, Cr: 51.996, Mn: 54.938,
+            Fe: 55.845, Co: 58.933, Ni: 58.693, Cu: 63.546, Zn: 65.380,
+            As: 74.922, Se: 78.960, Br: 79.904, Mo: 95.960, Pd: 106.42,
+            Ag: 107.87, Sn: 118.71, I: 126.90, Pt: 195.08, Au: 196.97
+        };
+        var NORMAL_VALENCE = { C: 4, N: 3, O: 2, S: 2, P: 3, B: 3, F: 1, Cl: 1, Br: 1, I: 1, Se: 2 };
+
+        // ─── SMILES atom parser ──────────────────────────────────────
+        function parseSmilesAtoms(smiles) {
+            var atomList = [];
+            var branchStack = [];
+            var prevAtomIdx = -1;
+            var nextBondOrder = 1;
+            var ringOpeners = {};
+            var i = 0;
+            var len = smiles.length;
+
+            function connectAtoms(idx1, idx2, order) {
+                if (atomList[idx1].aromatic && atomList[idx2].aromatic && order === 1) {
+                    order = 1.5;
+                }
+                atomList[idx1].degree += 1;
+                atomList[idx1].bondOrderSum += order;
+                atomList[idx2].degree += 1;
+                atomList[idx2].bondOrderSum += order;
+            }
+
+            function addAtom(element, explicitH, aromatic, hSpecified) {
+                var idx = atomList.length;
+                atomList.push({
+                    element: element, explicitH: explicitH, aromatic: aromatic,
+                    hSpecified: hSpecified, degree: 0, bondOrderSum: 0
+                });
+                if (prevAtomIdx >= 0) {
+                    connectAtoms(prevAtomIdx, idx, nextBondOrder);
+                    nextBondOrder = 1;
+                }
+                prevAtomIdx = idx;
+                return idx;
+            }
+
+            function handleRing(ringNum) {
+                if (ringOpeners[ringNum] !== undefined) {
+                    var openIdx = ringOpeners[ringNum];
+                    connectAtoms(openIdx, prevAtomIdx, nextBondOrder);
+                    delete ringOpeners[ringNum];
+                    nextBondOrder = 1;
+                } else {
+                    ringOpeners[ringNum] = prevAtomIdx;
+                }
+            }
+
+            while (i < len) {
+                var ch = smiles[i];
+                if (ch === '(') { branchStack.push(prevAtomIdx); i++; continue; }
+                if (ch === ')') { prevAtomIdx = branchStack.pop(); i++; continue; }
+                if (ch === '-') { nextBondOrder = 1; i++; continue; }
+                if (ch === '=') { nextBondOrder = 2; i++; continue; }
+                if (ch === '#') { nextBondOrder = 3; i++; continue; }
+                if (ch === ':') { nextBondOrder = 1.5; i++; continue; }
+                if (ch === '/' || ch === '\\') { i++; continue; }
+                if (ch === '.') { prevAtomIdx = -1; i++; continue; }
+                if (ch === '%') { handleRing(parseInt(smiles.substring(i + 1, i + 3))); i += 3; continue; }
+                if (ch >= '0' && ch <= '9') { handleRing(parseInt(ch)); i++; continue; }
+
+                // Bracket atom [...]
+                if (ch === '[') {
+                    i++;
+                    var aromatic = false;
+                    while (i < len && smiles[i] >= '0' && smiles[i] <= '9') i++;
+                    var elem = '';
+                    if (i < len && smiles[i] >= 'A' && smiles[i] <= 'Z') {
+                        elem = smiles[i]; i++;
+                        if (i < len && smiles[i] >= 'a' && smiles[i] <= 'z') { elem += smiles[i]; i++; }
+                    } else if (i < len && smiles[i] >= 'a' && smiles[i] <= 'z') {
+                        aromatic = true;
+                        elem = smiles[i].toUpperCase(); i++;
+                        if (i < len && smiles[i] >= 'a' && smiles[i] <= 'z') { elem += smiles[i]; i++; }
+                    }
+                    if (i < len && smiles[i] === '@') { i++; if (i < len && smiles[i] === '@') i++; }
+                    var hCount = 0;
+                    var hSpec = false;
+                    if (i < len && smiles[i] === 'H') {
+                        hSpec = true; i++; hCount = 1;
+                        if (i < len && smiles[i] >= '0' && smiles[i] <= '9') { hCount = parseInt(smiles[i]); i++; }
+                    }
+                    while (i < len && (smiles[i] === '+' || smiles[i] === '-' || (smiles[i] >= '0' && smiles[i] <= '9'))) i++;
+                    while (i < len && smiles[i] !== ']') i++;
+                    if (i < len) i++;
+                    addAtom(elem, hCount, aromatic, hSpec);
+                    continue;
+                }
+
+                // Aromatic organic subset
+                if (ch === 'c' || ch === 'n' || ch === 'o' || ch === 's' || ch === 'p' || ch === 'b') {
+                    if (ch === 's' && i + 1 < len && smiles[i + 1] === 'e') {
+                        addAtom('Se', 0, true, false); i += 2;
+                    } else {
+                        addAtom(ch.toUpperCase(), 0, true, false); i++;
+                    }
+                    continue;
+                }
+
+                // Aliphatic organic subset
+                if (ch >= 'A' && ch <= 'Z') {
+                    var el = ch;
+                    if (i + 1 < len) {
+                        var nx = smiles[i + 1];
+                        if ((ch === 'C' && nx === 'l') || (ch === 'B' && nx === 'r')) { el += nx; i++; }
+                    }
+                    addAtom(el, 0, false, false); i++;
+                    continue;
+                }
+                i++;
+            }
+
+            // Count atoms with implicit H
+            var result = {};
+            atomList.forEach(function(atom) {
+                if (!atom.element) return;
+                result[atom.element] = (result[atom.element] || 0) + 1;
+                var implicitH = 0;
+                if (atom.hSpecified) {
+                    implicitH = atom.explicitH;
+                } else {
+                    var targetVal = NORMAL_VALENCE[atom.element];
+                    if (targetVal !== undefined) {
+                        if (atom.aromatic) {
+                            implicitH = Math.max(0, targetVal - atom.degree - 1);
+                        } else {
+                            implicitH = Math.max(0, targetVal - Math.round(atom.bondOrderSum));
+                        }
+                    }
+                }
+                if (implicitH > 0) {
+                    result['H'] = (result['H'] || 0) + implicitH;
+                }
+            });
+            return result;
+        }
+
+        function formatMolecularFormula(atoms) {
+            var parts = [];
+            var keys = Object.keys(atoms);
+            if (atoms['C']) {
+                parts.push('C' + (atoms['C'] > 1 ? atoms['C'] : ''));
+                if (atoms['H']) parts.push('H' + (atoms['H'] > 1 ? atoms['H'] : ''));
+            }
+            keys.sort();
+            keys.forEach(function(k) {
+                if (k === 'C' || k === 'H') return;
+                parts.push(k + (atoms[k] > 1 ? atoms[k] : ''));
+            });
+            return parts.join('');
+        }
+
+        function computeMolecularWeight(atoms) {
+            var mw = 0;
+            Object.keys(atoms).forEach(function(el) {
+                var w = ATOMIC_WEIGHTS[el];
+                if (w) mw += w * atoms[el];
+            });
+            return Math.round(mw * 100) / 100;
+        }
+
+        // ─── Helpers ──────────────────────────────────────────────────
+        function getBatchDrawOptions() {
+            var opts = {};
+            batchSliders.forEach(function(name) {
+                var el = document.getElementById('batch-opt-' + name);
+                if (el) opts[name] = parseFloat(el.value);
+            });
+            batchCheckboxes.forEach(function(name) {
+                var el = document.getElementById('batch-opt-' + name);
+                if (el) opts[name] = el.checked;
+            });
+            return opts;
+        }
+
+        function getBatchTheme() {
+            return batchTheme ? batchTheme.value : 'light';
+        }
+
+        function getExportTheme() {
+            if (whiteBgCheck && whiteBgCheck.checked) return 'light';
+            return getBatchTheme();
+        }
+
+        // ─── Parse batch input ────────────────────────────────────────
+        function parseBatchInput() {
+            var text = batchInput.value;
+            var lines = text.split('\n').map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0; });
+            batchData = [];
+            lines.forEach(function(line) {
+                var name = '';
+                var smiles = line;
+                if (line.indexOf('\t') !== -1) {
+                    var parts = line.split('\t');
+                    if (parts.length >= 2) { name = parts[0].trim(); smiles = parts[1].trim(); }
+                } else if (line.indexOf(',') !== -1) {
+                    var idx = line.indexOf(',');
+                    var left = line.substring(0, idx).trim();
+                    var right = line.substring(idx + 1).trim();
+                    if (left && right && !/[=\[\]()#]/.test(left) && /[A-Za-z]/.test(right)) {
+                        name = left;
+                        smiles = right;
+                    }
+                }
+                batchData.push({ name: name, smiles: smiles, selected: false });
+            });
+            batchCurrentPage = 0;
+            updateBatchCount();
+        }
+
+        function syncTextareaFromData() {
+            var lines = batchData.map(function(item) {
+                if (item.name) return item.name + '\t' + item.smiles;
+                return item.smiles;
+            });
+            batchInput.value = lines.join('\n');
+            updateBatchCount();
+        }
+
+        function updateBatchCount() {
+            var count = batchData.length;
+            batchCount.textContent = count + ' molecule' + (count !== 1 ? 's' : '');
+        }
+
+        // ─── Pagination ──────────────────────────────────────────────
+        function getTotalPages() {
+            return Math.max(1, Math.ceil(batchData.length / BATCH_PAGE_SIZE));
+        }
+
+        function updatePagination() {
+            var totalPages = getTotalPages();
+            if (batchCurrentPage >= totalPages) batchCurrentPage = totalPages - 1;
+            if (batchCurrentPage < 0) batchCurrentPage = 0;
+            if (batchData.length <= BATCH_PAGE_SIZE) {
+                paginationBar.classList.add('hidden');
+                return;
+            }
+            paginationBar.classList.remove('hidden');
+            pageInfo.textContent = 'Page ' + (batchCurrentPage + 1) + ' of ' + totalPages;
+            pagePrevBtn.disabled = batchCurrentPage === 0;
+            pageNextBtn.disabled = batchCurrentPage >= totalPages - 1;
+        }
+
+        pagePrevBtn.addEventListener('click', function() {
+            if (batchCurrentPage > 0) { batchCurrentPage--; renderBatch(); }
+        });
+        pageNextBtn.addEventListener('click', function() {
+            if (batchCurrentPage < getTotalPages() - 1) { batchCurrentPage++; renderBatch(); }
+        });
+
+        // ─── Selection ───────────────────────────────────────────────
+        function updateSelectionBar() {
+            var count = 0;
+            batchData.forEach(function(item) { if (item.selected) count++; });
+            if (count > 0) {
+                selectionBar.classList.remove('hidden');
+                selectionCount.textContent = count + ' selected';
+            } else {
+                selectionBar.classList.add('hidden');
+            }
+        }
+
+        selectAllBtn.addEventListener('click', function() {
+            batchData.forEach(function(item) { item.selected = true; });
+            renderBatch();
+        });
+
+        deselectAllBtn.addEventListener('click', function() {
+            batchData.forEach(function(item) { item.selected = false; });
+            renderBatch();
+        });
+
+        deleteSelectedBtn.addEventListener('click', function() {
+            batchData = batchData.filter(function(item) { return !item.selected; });
+            syncTextareaFromData();
+            batchCurrentPage = 0;
+            renderBatch();
+        });
+
+        // ─── Render batch ────────────────────────────────────────────
+        function renderBatch() {
+            if (batchData.length === 0) {
+                batchError.classList.add('hidden');
+                batchGrid.innerHTML = '<div class="flex items-center justify-center text-sm text-gray-400 dark:text-gray-500 col-span-full py-16">Enter SMILES above and click "Render All"</div>';
+                paginationBar.classList.add('hidden');
+                updateSelectionBar();
+                return;
+            }
+
+            var cols = parseInt(colsSlider.value);
+            var cellSize = parseInt(cellSizeSlider.value);
+            var showLabels = showLabelsCheck.checked;
+            var showFormula = showFormulaCheck.checked;
+            var showMW = showMWCheck.checked;
+            var theme = getBatchTheme();
+            var drawOpts = getBatchDrawOptions();
+            drawOpts.width = cellSize;
+            drawOpts.height = cellSize;
+
+            batchGrid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+            batchGrid.innerHTML = '';
+            batchError.classList.add('hidden');
+
+            updatePagination();
+            updateSelectionBar();
+
+            var startIdx = batchCurrentPage * BATCH_PAGE_SIZE;
+            var endIdx = Math.min(startIdx + BATCH_PAGE_SIZE, batchData.length);
+            var pageItems = batchData.slice(startIdx, endIdx);
+            var errors = [];
+
+            pageItems.forEach(function(item, pageI) {
+                var globalIdx = startIdx + pageI;
+                var cell = document.createElement('div');
+                cell.className = 'flex flex-col items-center p-2 rounded-lg border-2 cursor-pointer transition-all';
+                if (item.selected) {
+                    cell.className += ' border-accent bg-accent/5 ring-2 ring-accent';
+                } else {
+                    cell.className += ' border-transparent hover:border-gray-200 dark:hover:border-gray-700';
+                }
+                cell.setAttribute('draggable', 'true');
+                cell.setAttribute('data-batch-idx', globalIdx);
+
+                var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svgEl.setAttribute('class', 'batch-cell-svg');
+                svgEl.style.width = cellSize + 'px';
+                svgEl.style.height = cellSize + 'px';
+                cell.appendChild(svgEl);
+
+                var labelText = item.name || item.smiles;
+                if (showLabels) {
+                    var label = document.createElement('div');
+                    label.className = 'text-xs text-gray-500 dark:text-gray-400 mt-1 truncate text-center font-mono';
+                    label.style.maxWidth = cellSize + 'px';
+                    label.textContent = labelText;
+                    cell.appendChild(label);
+                }
+
+                // Formula and MW
+                if (showFormula || showMW) {
+                    try {
+                        var atoms = parseSmilesAtoms(item.smiles);
+                        if (showFormula) {
+                            var formulaDiv = document.createElement('div');
+                            formulaDiv.className = 'text-xs text-gray-400 dark:text-gray-500 mt-0.5 text-center font-mono';
+                            formulaDiv.textContent = formatMolecularFormula(atoms);
+                            cell.appendChild(formulaDiv);
+                        }
+                        if (showMW) {
+                            var mwDiv = document.createElement('div');
+                            mwDiv.className = 'text-xs text-gray-400 dark:text-gray-500 mt-0.5 text-center';
+                            mwDiv.textContent = computeMolecularWeight(atoms) + ' g/mol';
+                            cell.appendChild(mwDiv);
+                        }
+                    } catch (e) { /* skip formula/mw on parse error */ }
+                }
+
+                batchGrid.appendChild(cell);
+
+                // Click to select
+                cell.addEventListener('click', function(e) {
+                    if (e.target.closest('svg')) return;
+                    item.selected = !item.selected;
+                    renderBatch();
+                });
+
+                // Drag and drop
+                cell.addEventListener('dragstart', function(e) {
+                    dragSourceIdx = globalIdx;
+                    e.dataTransfer.effectAllowed = 'move';
+                    cell.style.opacity = '0.5';
+                });
+                cell.addEventListener('dragend', function() { cell.style.opacity = '1'; });
+                cell.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    cell.classList.add('border-accent');
+                });
+                cell.addEventListener('dragleave', function() {
+                    if (!item.selected) cell.classList.remove('border-accent');
+                });
+                cell.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    if (!item.selected) cell.classList.remove('border-accent');
+                    var targetIdx = globalIdx;
+                    if (dragSourceIdx >= 0 && dragSourceIdx !== targetIdx) {
+                        var moved = batchData.splice(dragSourceIdx, 1)[0];
+                        batchData.splice(targetIdx > dragSourceIdx ? targetIdx - 1 : targetIdx, 0, moved);
+                        syncTextareaFromData();
+                        renderBatch();
+                    }
+                    dragSourceIdx = -1;
+                });
+
+                // Draw molecule
+                try {
+                    var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
+                    SmilesDrawer.parse(item.smiles, function(tree) {
+                        drawer.draw(tree, svgEl, theme);
+                    }, function(err) {
+                        errors.push('Line ' + (globalIdx + 1) + ': ' + err);
+                        svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
+                    });
+                } catch (e) {
+                    errors.push('Line ' + (globalIdx + 1) + ': ' + e.message);
+                    svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
+                }
+            });
+
+            if (errors.length > 0) {
+                batchError.textContent = errors.join('; ');
+                batchError.classList.remove('hidden');
+            }
+        }
+
+        // ─── Textarea input → parse + render ─────────────────────────
+        batchInput.addEventListener('input', function() {
+            parseBatchInput();
+        });
+
+        renderBtn.addEventListener('click', function() {
+            parseBatchInput();
+            renderBatch();
+        });
+
+        // ─── File import ─────────────────────────────────────────────
+        importBtn.addEventListener('click', function() { fileInput.click(); });
+        fileInput.addEventListener('change', function() {
+            var file = fileInput.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                batchInput.value = e.target.result;
+                parseBatchInput();
+                renderBatch();
+            };
+            reader.readAsText(file);
+            fileInput.value = '';
+        });
+
+        // ─── Wire up slider displays + auto-re-render ────────────────
+        var batchRenderDebounce;
+        function debouncedRender() {
+            clearTimeout(batchRenderDebounce);
+            batchRenderDebounce = setTimeout(function() {
+                if (batchData.length > 0) renderBatch();
+            }, 150);
+        }
+
+        colsSlider.addEventListener('input', function() { colsVal.textContent = colsSlider.value; debouncedRender(); });
+        rowsSlider.addEventListener('input', function() { rowsVal.textContent = rowsSlider.value; debouncedRender(); });
+        cellSizeSlider.addEventListener('input', function() { cellSizeVal.textContent = cellSizeSlider.value; debouncedRender(); });
+
+        batchSliders.forEach(function(name) {
+            var el = document.getElementById('batch-opt-' + name);
+            var valEl = document.getElementById('batch-opt-' + name + '-val');
+            if (el && valEl) {
+                el.addEventListener('input', function() { valEl.textContent = el.value; debouncedRender(); });
+            }
+        });
+
+        // Checkboxes trigger immediate re-render
+        [showLabelsCheck, showFormulaCheck, showMWCheck].forEach(function(el) {
+            if (el) el.addEventListener('change', function() { if (batchData.length > 0) renderBatch(); });
+        });
+        batchCheckboxes.forEach(function(name) {
+            var el = document.getElementById('batch-opt-' + name);
+            if (el) el.addEventListener('change', function() { if (batchData.length > 0) renderBatch(); });
+        });
+
+        // Grid presets
+        document.querySelectorAll('.batch-grid-preset').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var c = parseInt(this.getAttribute('data-cols'));
+                var r = parseInt(this.getAttribute('data-rows'));
+                colsSlider.value = c;
+                colsVal.textContent = c;
+                rowsSlider.value = r;
+                rowsVal.textContent = r;
+                if (batchData.length > 0) renderBatch();
+            });
+        });
+
+        // Publication export - scale presets
+        document.querySelectorAll('.batch-scale-preset').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                exportScale = parseInt(this.getAttribute('data-scale'));
+                document.querySelectorAll('.batch-scale-preset').forEach(function(b) {
+                    b.className = 'batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors';
+                });
+                this.className = 'batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-accent text-accent ring-2 ring-accent/30';
+            });
+        });
+
+        // Mutually exclusive bg checkboxes
+        if (transparentBgCheck && whiteBgCheck) {
+            transparentBgCheck.addEventListener('change', function() {
+                if (this.checked) whiteBgCheck.checked = false;
+            });
+            whiteBgCheck.addEventListener('change', function() {
+                if (this.checked) transparentBgCheck.checked = false;
+            });
+        }
+
+        // ─── Export helpers ───────────────────────────────────────────
+        function getExportLabelHeight() {
+            var h = 0;
+            if (showLabelsCheck.checked) h += 16;
+            if (showFormulaCheck.checked) h += 14;
+            if (showMWCheck.checked) h += 14;
+            return h;
+        }
+
+        function getExportTitleHeight() {
+            var t = titleInput ? titleInput.value.trim() : '';
+            return t ? 28 : 0;
+        }
+
+        function renderOffscreenSvg(smiles, drawOpts, theme, cellSize) {
+            var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svgEl.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            svgEl.style.width = cellSize + 'px';
+            svgEl.style.height = cellSize + 'px';
+            document.body.appendChild(svgEl);
+            try {
+                var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
+                SmilesDrawer.parse(smiles, function(tree) {
+                    drawer.draw(tree, svgEl, theme);
+                }, function() {});
+            } catch (e) { /* skip */ }
+            var data = new XMLSerializer().serializeToString(svgEl);
+            var viewBox = svgEl.getAttribute('viewBox') || '0 0 ' + cellSize + ' ' + cellSize;
+            var innerHTML = svgEl.innerHTML;
+            document.body.removeChild(svgEl);
+            return { data: data, viewBox: viewBox, innerHTML: innerHTML };
+        }
+
+        // ─── Export PNG ──────────────────────────────────────────────
+        exportPngBtn.addEventListener('click', function() {
+            if (batchData.length === 0) return;
+
+            var cols = parseInt(colsSlider.value);
+            var cellSize = parseInt(cellSizeSlider.value);
+            var showLabels = showLabelsCheck.checked;
+            var showFormula = showFormulaCheck.checked;
+            var showMW = showMWCheck.checked;
+            var labelHeight = getExportLabelHeight();
+            var titleHeight = getExportTitleHeight();
+            var cellTotal = cellSize + labelHeight;
+            var rows = Math.ceil(batchData.length / cols);
+            var scale = exportScale;
+            var transparentBg = transparentBgCheck && transparentBgCheck.checked;
+            var whiteBg = whiteBgCheck && whiteBgCheck.checked;
+            var theme = whiteBg ? 'light' : getBatchTheme();
+            var isDark = theme === 'dark';
+            var gridTitle = titleInput ? titleInput.value.trim() : '';
+
+            var drawOpts = getBatchDrawOptions();
+            drawOpts.width = cellSize;
+            drawOpts.height = cellSize;
+
+            var totalW = cols * cellSize;
+            var totalH = rows * cellTotal + titleHeight;
+
+            var canvas = document.createElement('canvas');
+            canvas.width = totalW * scale;
+            canvas.height = totalH * scale;
+            var ctx = canvas.getContext('2d');
+            ctx.scale(scale, scale);
+
+            if (!transparentBg) {
+                ctx.fillStyle = whiteBg ? '#ffffff' : (isDark ? '#1a1a2e' : '#ffffff');
+                ctx.fillRect(0, 0, totalW, totalH);
+            }
+
+            if (gridTitle) {
+                ctx.fillStyle = isDark && !whiteBg ? '#ffffff' : '#111827';
+                ctx.font = 'bold 16px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(gridTitle, totalW / 2, 20);
+            }
+
+            var loaded = 0;
+            var total = batchData.length;
+
+            batchData.forEach(function(item, i) {
+                var col = i % cols;
+                var row = Math.floor(i / cols);
+                var svgResult = renderOffscreenSvg(item.smiles, drawOpts, theme, cellSize);
+                var img = new Image();
+                img.onload = function() {
+                    var x = col * cellSize;
+                    var y = row * cellTotal + titleHeight;
+                    ctx.drawImage(img, x, y, cellSize, cellSize);
+
+                    var labelY = y + cellSize;
+                    ctx.textAlign = 'center';
+                    var labelX = x + cellSize / 2;
+
+                    if (showLabels) {
+                        ctx.fillStyle = isDark && !whiteBg ? '#9ca3af' : '#6b7280';
+                        ctx.font = '11px monospace';
+                        var lt = item.name || item.smiles;
+                        if (lt.length > 30) lt = lt.substring(0, 27) + '...';
+                        ctx.fillText(lt, labelX, labelY + 12);
+                        labelY += 16;
+                    }
+                    if (showFormula) {
+                        try {
+                            var atoms = parseSmilesAtoms(item.smiles);
+                            ctx.fillStyle = isDark && !whiteBg ? '#6b7280' : '#9ca3af';
+                            ctx.font = '10px monospace';
+                            ctx.fillText(formatMolecularFormula(atoms), labelX, labelY + 11);
+                            labelY += 14;
+                        } catch (e) { labelY += 14; }
+                    }
+                    if (showMW) {
+                        try {
+                            var atoms2 = parseSmilesAtoms(item.smiles);
+                            ctx.fillStyle = isDark && !whiteBg ? '#6b7280' : '#9ca3af';
+                            ctx.font = '10px sans-serif';
+                            ctx.fillText(computeMolecularWeight(atoms2) + ' g/mol', labelX, labelY + 11);
+                        } catch (e) { /* skip */ }
+                    }
+
+                    loaded++;
+                    if (loaded === total) {
+                        canvas.toBlob(function(blob) {
+                            var url = URL.createObjectURL(blob);
+                            var a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'molecules-grid.png';
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        });
+                    }
+                };
+                img.onerror = function() {
+                    loaded++;
+                    if (loaded === total) {
+                        canvas.toBlob(function(blob) {
+                            var url = URL.createObjectURL(blob);
+                            var a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'molecules-grid.png';
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        });
+                    }
+                };
+                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgResult.data)));
+            });
+        });
+
+        // ─── Export SVG ──────────────────────────────────────────────
+        exportSvgBtn.addEventListener('click', function() {
+            if (batchData.length === 0) return;
+
+            var cols = parseInt(colsSlider.value);
+            var cellSize = parseInt(cellSizeSlider.value);
+            var showLabels = showLabelsCheck.checked;
+            var showFormula = showFormulaCheck.checked;
+            var showMW = showMWCheck.checked;
+            var labelHeight = getExportLabelHeight();
+            var titleHeight = getExportTitleHeight();
+            var cellTotal = cellSize + labelHeight;
+            var rows = Math.ceil(batchData.length / cols);
+            var whiteBg = whiteBgCheck && whiteBgCheck.checked;
+            var transparentBg = transparentBgCheck && transparentBgCheck.checked;
+            var theme = whiteBg ? 'light' : getBatchTheme();
+            var isDark = theme === 'dark';
+            var gridTitle = titleInput ? titleInput.value.trim() : '';
+
+            var drawOpts = getBatchDrawOptions();
+            drawOpts.width = cellSize;
+            drawOpts.height = cellSize;
+
+            var totalWidth = cols * cellSize;
+            var totalHeight = rows * cellTotal + titleHeight;
+
+            var parts = [];
+            parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="' + totalWidth + '" height="' + totalHeight + '">');
+
+            if (!transparentBg) {
+                var bgColor = whiteBg ? '#ffffff' : (isDark ? '#1a1a2e' : '#ffffff');
+                parts.push('<rect width="' + totalWidth + '" height="' + totalHeight + '" fill="' + bgColor + '"/>');
+            }
+
+            if (gridTitle) {
+                var titleColor = isDark && !whiteBg ? '#ffffff' : '#111827';
+                parts.push('<text x="' + (totalWidth / 2) + '" y="20" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="' + titleColor + '">' + gridTitle.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</text>');
+            }
+
+            batchData.forEach(function(item, i) {
+                var col = i % cols;
+                var row = Math.floor(i / cols);
+                var x = col * cellSize;
+                var y = row * cellTotal + titleHeight;
+                var svgResult = renderOffscreenSvg(item.smiles, drawOpts, theme, cellSize);
+
+                parts.push('<g transform="translate(' + x + ',' + y + ')">');
+                parts.push('<svg width="' + cellSize + '" height="' + cellSize + '" viewBox="' + svgResult.viewBox + '">');
+                parts.push(svgResult.innerHTML);
+                parts.push('</svg>');
+
+                var labelY = cellSize;
+                var labelColor = isDark && !whiteBg ? '#9ca3af' : '#6b7280';
+                var subColor = isDark && !whiteBg ? '#6b7280' : '#9ca3af';
+                var esc = function(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+
+                if (showLabels) {
+                    var lt = item.name || item.smiles;
+                    if (lt.length > 30) lt = lt.substring(0, 27) + '...';
+                    parts.push('<text x="' + (cellSize / 2) + '" y="' + (labelY + 12) + '" text-anchor="middle" font-family="monospace" font-size="11" fill="' + labelColor + '">' + esc(lt) + '</text>');
+                    labelY += 16;
+                }
+                if (showFormula) {
+                    try {
+                        var atoms = parseSmilesAtoms(item.smiles);
+                        parts.push('<text x="' + (cellSize / 2) + '" y="' + (labelY + 11) + '" text-anchor="middle" font-family="monospace" font-size="10" fill="' + subColor + '">' + esc(formatMolecularFormula(atoms)) + '</text>');
+                    } catch (e) { /* skip */ }
+                    labelY += 14;
+                }
+                if (showMW) {
+                    try {
+                        var atoms2 = parseSmilesAtoms(item.smiles);
+                        parts.push('<text x="' + (cellSize / 2) + '" y="' + (labelY + 11) + '" text-anchor="middle" font-family="sans-serif" font-size="10" fill="' + subColor + '">' + computeMolecularWeight(atoms2) + ' g/mol</text>');
+                    } catch (e) { /* skip */ }
+                }
+
+                parts.push('</g>');
+            });
+
+            parts.push('</svg>');
+
+            var blob = new Blob([parts.join('')], { type: 'image/svg+xml' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'molecules-grid.svg';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // ─── Dark mode sync ──────────────────────────────────────────
+        new MutationObserver(function(mutations) {
+            mutations.forEach(function(m) {
+                if (m.attributeName === 'class') {
+                    var bt = document.getElementById('batch-opt-theme');
+                    if (bt) bt.value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                    if (!panelBatch.classList.contains('hidden') && batchData.length > 0) {
+                        renderBatch();
+                    }
+                }
+            });
+        }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+        if (batchTheme) {
+            batchTheme.value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            batchTheme.addEventListener('change', function() {
+                if (batchData.length > 0) renderBatch();
+            });
+        }
     });
 })();
 </script>
