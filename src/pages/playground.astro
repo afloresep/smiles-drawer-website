@@ -589,3 +589,409 @@ import {playgroundPresets} from '../data/molecules.js';
 })();
 </script>
 
+
+<script is:inline>
+(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        // ─── Tab switching ────────────────────────────────────────────
+        var tabSingle = document.getElementById('tab-single');
+        var tabBatch = document.getElementById('tab-batch');
+        var panelSingle = document.getElementById('panel-single');
+        var panelBatch = document.getElementById('panel-batch');
+
+        function switchTab(tab) {
+            if (tab === 'single') {
+                panelSingle.classList.remove('hidden');
+                panelBatch.classList.add('hidden');
+                tabSingle.classList.add('border-accent', 'text-accent');
+                tabSingle.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                tabBatch.classList.remove('border-accent', 'text-accent');
+                tabBatch.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+            } else {
+                panelSingle.classList.add('hidden');
+                panelBatch.classList.remove('hidden');
+                tabBatch.classList.add('border-accent', 'text-accent');
+                tabBatch.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                tabSingle.classList.remove('border-accent', 'text-accent');
+                tabSingle.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+                var bt = document.getElementById('batch-opt-theme');
+                if (bt) bt.value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            }
+        }
+
+        tabSingle.addEventListener('click', function() { switchTab('single'); });
+        tabBatch.addEventListener('click', function() { switchTab('batch'); });
+
+        // ─── Batch DOM refs ───────────────────────────────────────────
+        var batchInput = document.getElementById('batch-input');
+        var batchCount = document.getElementById('batch-count');
+        var batchGrid = document.getElementById('batch-grid');
+        var batchError = document.getElementById('batch-error');
+        var renderBtn = document.getElementById('batch-render-btn');
+        var exportPngBtn = document.getElementById('batch-export-png');
+        var exportSvgBtn = document.getElementById('batch-export-svg');
+        var fileInput = document.getElementById('batch-file-input');
+        var importBtn = document.getElementById('batch-import-btn');
+
+        // Grid option elements
+        var colsSlider = document.getElementById('batch-opt-cols');
+        var colsVal = document.getElementById('batch-opt-cols-val');
+        var rowsSlider = document.getElementById('batch-opt-rows');
+        var rowsVal = document.getElementById('batch-opt-rows-val');
+        var cellSizeSlider = document.getElementById('batch-opt-cellSize');
+        var cellSizeVal = document.getElementById('batch-opt-cellSize-val');
+        var showLabelsCheck = document.getElementById('batch-opt-showLabels');
+        var batchTheme = document.getElementById('batch-opt-theme');
+
+        // Drawing options
+        var batchSliders = ['bondLength', 'bondThickness'];
+        var batchCheckboxes = ['compactDrawing'];
+
+        // ─── Data model ───────────────────────────────────────────────
+        var batchData = [];
+
+        // ─── Helpers ──────────────────────────────────────────────────
+        function getBatchDrawOptions() {
+            var opts = {};
+            batchSliders.forEach(function(name) {
+                var el = document.getElementById('batch-opt-' + name);
+                if (el) opts[name] = parseFloat(el.value);
+            });
+            batchCheckboxes.forEach(function(name) {
+                var el = document.getElementById('batch-opt-' + name);
+                if (el) opts[name] = el.checked;
+            });
+            return opts;
+        }
+
+        function getBatchTheme() {
+            return batchTheme ? batchTheme.value : 'light';
+        }
+
+        // ─── Parse batch input ────────────────────────────────────────
+        function parseBatchInput() {
+            var text = batchInput.value;
+            var lines = text.split('\n').map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0; });
+            batchData = [];
+            lines.forEach(function(line) {
+                var name = '';
+                var smiles = line;
+                if (line.indexOf('\t') !== -1) {
+                    var parts = line.split('\t');
+                    if (parts.length >= 2) { name = parts[0].trim(); smiles = parts[1].trim(); }
+                } else if (line.indexOf(',') !== -1) {
+                    var idx = line.indexOf(',');
+                    var left = line.substring(0, idx).trim();
+                    var right = line.substring(idx + 1).trim();
+                    if (left && right && !/[=\[\]()#]/.test(left) && /[A-Za-z]/.test(right)) {
+                        name = left;
+                        smiles = right;
+                    }
+                }
+                batchData.push({ name: name, smiles: smiles, selected: false });
+            });
+            updateBatchCount();
+        }
+
+        function syncTextareaFromData() {
+            var lines = batchData.map(function(item) {
+                if (item.name) return item.name + '\t' + item.smiles;
+                return item.smiles;
+            });
+            batchInput.value = lines.join('\n');
+            updateBatchCount();
+        }
+
+        function updateBatchCount() {
+            var count = batchData.length;
+            batchCount.textContent = count + ' molecule' + (count !== 1 ? 's' : '');
+        }
+
+        // ─── Render batch ────────────────────────────────────────────
+        function renderBatch() {
+            if (batchData.length === 0) {
+                batchError.classList.add('hidden');
+                batchGrid.innerHTML = '<div class="flex items-center justify-center text-sm text-gray-400 dark:text-gray-500 col-span-full py-16">Enter SMILES above and click "Render All"</div>';
+                return;
+            }
+
+            var cols = parseInt(colsSlider.value);
+            var cellSize = parseInt(cellSizeSlider.value);
+            var showLabels = showLabelsCheck.checked;
+            var theme = getBatchTheme();
+            var drawOpts = getBatchDrawOptions();
+            drawOpts.width = cellSize;
+            drawOpts.height = cellSize;
+
+            batchGrid.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)';
+            batchGrid.innerHTML = '';
+            batchError.classList.add('hidden');
+
+            var errors = [];
+
+            batchData.forEach(function(item, i) {
+                var cell = document.createElement('div');
+                cell.className = 'flex flex-col items-center p-2 rounded-lg border-2 border-transparent';
+
+                var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svgEl.setAttribute('class', 'batch-cell-svg');
+                svgEl.style.width = cellSize + 'px';
+                svgEl.style.height = cellSize + 'px';
+                cell.appendChild(svgEl);
+
+                var labelText = item.name || item.smiles;
+                if (showLabels) {
+                    var label = document.createElement('div');
+                    label.className = 'text-xs text-gray-500 dark:text-gray-400 mt-1 truncate text-center font-mono';
+                    label.style.maxWidth = cellSize + 'px';
+                    label.textContent = labelText;
+                    cell.appendChild(label);
+                }
+
+                batchGrid.appendChild(cell);
+
+                try {
+                    var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
+                    SmilesDrawer.parse(item.smiles, function(tree) {
+                        drawer.draw(tree, svgEl, theme);
+                    }, function(err) {
+                        errors.push('Line ' + (i + 1) + ': ' + err);
+                        svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
+                    });
+                } catch (e) {
+                    errors.push('Line ' + (i + 1) + ': ' + e.message);
+                    svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
+                }
+            });
+
+            if (errors.length > 0) {
+                batchError.textContent = errors.join('; ');
+                batchError.classList.remove('hidden');
+            }
+        }
+
+        // ─── Textarea input → parse + render ─────────────────────────
+        batchInput.addEventListener('input', function() {
+            parseBatchInput();
+        });
+
+        renderBtn.addEventListener('click', function() {
+            parseBatchInput();
+            renderBatch();
+        });
+
+        // ─── File import ─────────────────────────────────────────────
+        importBtn.addEventListener('click', function() { fileInput.click(); });
+        fileInput.addEventListener('change', function() {
+            var file = fileInput.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                batchInput.value = e.target.result;
+                parseBatchInput();
+                renderBatch();
+            };
+            reader.readAsText(file);
+            fileInput.value = '';
+        });
+
+        // ─── Wire up slider displays + auto-re-render ────────────────
+        var batchRenderDebounce;
+        function debouncedRender() {
+            clearTimeout(batchRenderDebounce);
+            batchRenderDebounce = setTimeout(function() {
+                if (batchData.length > 0) renderBatch();
+            }, 150);
+        }
+
+        colsSlider.addEventListener('input', function() { colsVal.textContent = colsSlider.value; debouncedRender(); });
+        rowsSlider.addEventListener('input', function() { rowsVal.textContent = rowsSlider.value; debouncedRender(); });
+        cellSizeSlider.addEventListener('input', function() { cellSizeVal.textContent = cellSizeSlider.value; debouncedRender(); });
+
+        batchSliders.forEach(function(name) {
+            var el = document.getElementById('batch-opt-' + name);
+            var valEl = document.getElementById('batch-opt-' + name + '-val');
+            if (el && valEl) {
+                el.addEventListener('input', function() { valEl.textContent = el.value; debouncedRender(); });
+            }
+        });
+
+        [showLabelsCheck].forEach(function(el) {
+            if (el) el.addEventListener('change', function() { if (batchData.length > 0) renderBatch(); });
+        });
+        batchCheckboxes.forEach(function(name) {
+            var el = document.getElementById('batch-opt-' + name);
+            if (el) el.addEventListener('change', function() { if (batchData.length > 0) renderBatch(); });
+        });
+
+        // Grid presets
+        document.querySelectorAll('.batch-grid-preset').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var c = parseInt(this.getAttribute('data-cols'));
+                var r = parseInt(this.getAttribute('data-rows'));
+                colsSlider.value = c;
+                colsVal.textContent = c;
+                rowsSlider.value = r;
+                rowsVal.textContent = r;
+                if (batchData.length > 0) renderBatch();
+            });
+        });
+
+        // ─── Export PNG ──────────────────────────────────────────────
+        exportPngBtn.addEventListener('click', function() {
+            if (batchData.length === 0) return;
+
+            var cols = parseInt(colsSlider.value);
+            var cellSize = parseInt(cellSizeSlider.value);
+            var showLabels = showLabelsCheck.checked;
+            var labelHeight = showLabels ? 20 : 0;
+            var cellTotal = cellSize + labelHeight;
+            var rows = Math.ceil(batchData.length / cols);
+            var scale = 2;
+            var theme = getBatchTheme();
+            var isDark = theme === 'dark';
+
+            var drawOpts = getBatchDrawOptions();
+            drawOpts.width = cellSize;
+            drawOpts.height = cellSize;
+
+            var canvas = document.createElement('canvas');
+            canvas.width = cols * cellSize * scale;
+            canvas.height = rows * cellTotal * scale;
+            var ctx = canvas.getContext('2d');
+            ctx.scale(scale, scale);
+
+            ctx.fillStyle = isDark ? '#1a1a2e' : '#ffffff';
+            ctx.fillRect(0, 0, cols * cellSize, rows * cellTotal);
+
+            var loaded = 0;
+            var total = batchData.length;
+
+            batchData.forEach(function(item, i) {
+                var col = i % cols;
+                var row = Math.floor(i / cols);
+
+                var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svgEl.style.width = cellSize + 'px';
+                svgEl.style.height = cellSize + 'px';
+                document.body.appendChild(svgEl);
+                try {
+                    var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
+                    SmilesDrawer.parse(item.smiles, function(tree) { drawer.draw(tree, svgEl, theme); }, function() {});
+                } catch (e) { /* skip */ }
+                var svgData = new XMLSerializer().serializeToString(svgEl);
+                document.body.removeChild(svgEl);
+
+                var img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, col * cellSize, row * cellTotal, cellSize, cellSize);
+                    if (showLabels) {
+                        ctx.fillStyle = isDark ? '#9ca3af' : '#6b7280';
+                        ctx.font = '11px monospace';
+                        ctx.textAlign = 'center';
+                        var lt = item.name || item.smiles;
+                        if (lt.length > 30) lt = lt.substring(0, 27) + '...';
+                        ctx.fillText(lt, col * cellSize + cellSize / 2, row * cellTotal + cellSize + 14);
+                    }
+                    loaded++;
+                    if (loaded === total) {
+                        canvas.toBlob(function(blob) {
+                            var url = URL.createObjectURL(blob);
+                            var a = document.createElement('a');
+                            a.href = url; a.download = 'molecules-grid.png'; a.click();
+                            URL.revokeObjectURL(url);
+                        });
+                    }
+                };
+                img.onerror = function() { loaded++; if (loaded === total) { canvas.toBlob(function(blob) { var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = 'molecules-grid.png'; a.click(); URL.revokeObjectURL(url); }); } };
+                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+            });
+        });
+
+        // ─── Export SVG ──────────────────────────────────────────────
+        exportSvgBtn.addEventListener('click', function() {
+            if (batchData.length === 0) return;
+
+            var cols = parseInt(colsSlider.value);
+            var cellSize = parseInt(cellSizeSlider.value);
+            var showLabels = showLabelsCheck.checked;
+            var labelHeight = showLabels ? 20 : 0;
+            var cellTotal = cellSize + labelHeight;
+            var rows = Math.ceil(batchData.length / cols);
+            var totalWidth = cols * cellSize;
+            var totalHeight = rows * cellTotal;
+            var theme = getBatchTheme();
+            var isDark = theme === 'dark';
+
+            var drawOpts = getBatchDrawOptions();
+            drawOpts.width = cellSize;
+            drawOpts.height = cellSize;
+
+            var parts = [];
+            parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="' + totalWidth + '" height="' + totalHeight + '">');
+            parts.push('<rect width="' + totalWidth + '" height="' + totalHeight + '" fill="' + (isDark ? '#1a1a2e' : '#ffffff') + '"/>');
+
+            batchData.forEach(function(item, i) {
+                var col = i % cols;
+                var row = Math.floor(i / cols);
+                var x = col * cellSize;
+                var y = row * cellTotal;
+
+                var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svgEl.style.width = cellSize + 'px';
+                svgEl.style.height = cellSize + 'px';
+                document.body.appendChild(svgEl);
+                try {
+                    var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
+                    SmilesDrawer.parse(item.smiles, function(tree) { drawer.draw(tree, svgEl, theme); }, function() {});
+                } catch (e) { /* skip */ }
+                var viewBox = svgEl.getAttribute('viewBox') || '0 0 ' + cellSize + ' ' + cellSize;
+                var innerHTML = svgEl.innerHTML;
+                document.body.removeChild(svgEl);
+
+                parts.push('<g transform="translate(' + x + ',' + y + ')">');
+                parts.push('<svg width="' + cellSize + '" height="' + cellSize + '" viewBox="' + viewBox + '">');
+                parts.push(innerHTML);
+                parts.push('</svg>');
+
+                if (showLabels) {
+                    var lt = item.name || item.smiles;
+                    if (lt.length > 30) lt = lt.substring(0, 27) + '...';
+                    var esc = function(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+                    parts.push('<text x="' + (cellSize / 2) + '" y="' + (cellSize + 14) + '" text-anchor="middle" font-family="monospace" font-size="11" fill="' + (isDark ? '#9ca3af' : '#6b7280') + '">' + esc(lt) + '</text>');
+                }
+
+                parts.push('</g>');
+            });
+
+            parts.push('</svg>');
+
+            var blob = new Blob([parts.join('')], { type: 'image/svg+xml' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url; a.download = 'molecules-grid.svg'; a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // ─── Dark mode sync ──────────────────────────────────────────
+        new MutationObserver(function(mutations) {
+            mutations.forEach(function(m) {
+                if (m.attributeName === 'class') {
+                    var bt = document.getElementById('batch-opt-theme');
+                    if (bt) bt.value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                    if (!panelBatch.classList.contains('hidden') && batchData.length > 0) {
+                        renderBatch();
+                    }
+                }
+            });
+        }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+        if (batchTheme) {
+            batchTheme.value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            batchTheme.addEventListener('change', function() {
+                if (batchData.length > 0) renderBatch();
+            });
+        }
+    });
+})();
+</script>
