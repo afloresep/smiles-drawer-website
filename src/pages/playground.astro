@@ -589,7 +589,6 @@ import {playgroundPresets} from '../data/molecules.js';
 })();
 </script>
 
-
 <script is:inline>
 (function() {
     document.addEventListener('DOMContentLoaded', function() {
@@ -641,7 +640,28 @@ import {playgroundPresets} from '../data/molecules.js';
         var cellSizeSlider = document.getElementById('batch-opt-cellSize');
         var cellSizeVal = document.getElementById('batch-opt-cellSize-val');
         var showLabelsCheck = document.getElementById('batch-opt-showLabels');
+        var showFormulaCheck = document.getElementById('batch-opt-showFormula');
+        var showMWCheck = document.getElementById('batch-opt-showMW');
         var batchTheme = document.getElementById('batch-opt-theme');
+
+        // Publication export elements
+        var transparentBgCheck = document.getElementById('batch-opt-transparentBg');
+        var whiteBgCheck = document.getElementById('batch-opt-whiteBg');
+        var titleInput = document.getElementById('batch-opt-title');
+        var exportScale = 2;
+
+        // Selection bar elements
+        var selectionBar = document.getElementById('batch-selection-bar');
+        var selectionCount = document.getElementById('batch-selection-count');
+        var selectAllBtn = document.getElementById('batch-select-all');
+        var deselectAllBtn = document.getElementById('batch-deselect-all');
+        var deleteSelectedBtn = document.getElementById('batch-delete-selected');
+
+        // Pagination elements
+        var paginationBar = document.getElementById('batch-pagination');
+        var pageInfo = document.getElementById('batch-page-info');
+        var pagePrevBtn = document.getElementById('batch-page-prev');
+        var pageNextBtn = document.getElementById('batch-page-next');
 
         // Drawing options
         var batchSliders = ['bondLength', 'bondThickness'];
@@ -649,6 +669,179 @@ import {playgroundPresets} from '../data/molecules.js';
 
         // ─── Data model ───────────────────────────────────────────────
         var batchData = [];
+        var batchCurrentPage = 0;
+        var BATCH_PAGE_SIZE = 16;
+        var dragSourceIdx = -1;
+
+        // ─── Atomic data ─────────────────────────────────────────────
+        var ATOMIC_WEIGHTS = {
+            H: 1.008, He: 4.003, Li: 6.941, Be: 9.012, B: 10.81, C: 12.011,
+            N: 14.007, O: 15.999, F: 18.998, Ne: 20.180, Na: 22.990, Mg: 24.305,
+            Al: 26.982, Si: 28.086, P: 30.974, S: 32.065, Cl: 35.453, Ar: 39.948,
+            K: 39.098, Ca: 40.078, Ti: 47.867, Cr: 51.996, Mn: 54.938,
+            Fe: 55.845, Co: 58.933, Ni: 58.693, Cu: 63.546, Zn: 65.380,
+            As: 74.922, Se: 78.960, Br: 79.904, Mo: 95.960, Pd: 106.42,
+            Ag: 107.87, Sn: 118.71, I: 126.90, Pt: 195.08, Au: 196.97
+        };
+        var NORMAL_VALENCE = { C: 4, N: 3, O: 2, S: 2, P: 3, B: 3, F: 1, Cl: 1, Br: 1, I: 1, Se: 2 };
+
+        // ─── SMILES atom parser ──────────────────────────────────────
+        function parseSmilesAtoms(smiles) {
+            var atomList = [];
+            var branchStack = [];
+            var prevAtomIdx = -1;
+            var nextBondOrder = 1;
+            var ringOpeners = {};
+            var i = 0;
+            var len = smiles.length;
+
+            function connectAtoms(idx1, idx2, order) {
+                if (atomList[idx1].aromatic && atomList[idx2].aromatic && order === 1) {
+                    order = 1.5;
+                }
+                atomList[idx1].degree += 1;
+                atomList[idx1].bondOrderSum += order;
+                atomList[idx2].degree += 1;
+                atomList[idx2].bondOrderSum += order;
+            }
+
+            function addAtom(element, explicitH, aromatic, hSpecified) {
+                var idx = atomList.length;
+                atomList.push({
+                    element: element, explicitH: explicitH, aromatic: aromatic,
+                    hSpecified: hSpecified, degree: 0, bondOrderSum: 0
+                });
+                if (prevAtomIdx >= 0) {
+                    connectAtoms(prevAtomIdx, idx, nextBondOrder);
+                    nextBondOrder = 1;
+                }
+                prevAtomIdx = idx;
+                return idx;
+            }
+
+            function handleRing(ringNum) {
+                if (ringOpeners[ringNum] !== undefined) {
+                    var openIdx = ringOpeners[ringNum];
+                    connectAtoms(openIdx, prevAtomIdx, nextBondOrder);
+                    delete ringOpeners[ringNum];
+                    nextBondOrder = 1;
+                } else {
+                    ringOpeners[ringNum] = prevAtomIdx;
+                }
+            }
+
+            while (i < len) {
+                var ch = smiles[i];
+                if (ch === '(') { branchStack.push(prevAtomIdx); i++; continue; }
+                if (ch === ')') { prevAtomIdx = branchStack.pop(); i++; continue; }
+                if (ch === '-') { nextBondOrder = 1; i++; continue; }
+                if (ch === '=') { nextBondOrder = 2; i++; continue; }
+                if (ch === '#') { nextBondOrder = 3; i++; continue; }
+                if (ch === ':') { nextBondOrder = 1.5; i++; continue; }
+                if (ch === '/' || ch === '\\') { i++; continue; }
+                if (ch === '.') { prevAtomIdx = -1; i++; continue; }
+                if (ch === '%') { handleRing(parseInt(smiles.substring(i + 1, i + 3))); i += 3; continue; }
+                if (ch >= '0' && ch <= '9') { handleRing(parseInt(ch)); i++; continue; }
+
+                // Bracket atom [...]
+                if (ch === '[') {
+                    i++;
+                    var aromatic = false;
+                    while (i < len && smiles[i] >= '0' && smiles[i] <= '9') i++;
+                    var elem = '';
+                    if (i < len && smiles[i] >= 'A' && smiles[i] <= 'Z') {
+                        elem = smiles[i]; i++;
+                        if (i < len && smiles[i] >= 'a' && smiles[i] <= 'z') { elem += smiles[i]; i++; }
+                    } else if (i < len && smiles[i] >= 'a' && smiles[i] <= 'z') {
+                        aromatic = true;
+                        elem = smiles[i].toUpperCase(); i++;
+                        if (i < len && smiles[i] >= 'a' && smiles[i] <= 'z') { elem += smiles[i]; i++; }
+                    }
+                    if (i < len && smiles[i] === '@') { i++; if (i < len && smiles[i] === '@') i++; }
+                    var hCount = 0;
+                    var hSpec = false;
+                    if (i < len && smiles[i] === 'H') {
+                        hSpec = true; i++; hCount = 1;
+                        if (i < len && smiles[i] >= '0' && smiles[i] <= '9') { hCount = parseInt(smiles[i]); i++; }
+                    }
+                    while (i < len && (smiles[i] === '+' || smiles[i] === '-' || (smiles[i] >= '0' && smiles[i] <= '9'))) i++;
+                    while (i < len && smiles[i] !== ']') i++;
+                    if (i < len) i++;
+                    addAtom(elem, hCount, aromatic, hSpec);
+                    continue;
+                }
+
+                // Aromatic organic subset
+                if (ch === 'c' || ch === 'n' || ch === 'o' || ch === 's' || ch === 'p' || ch === 'b') {
+                    if (ch === 's' && i + 1 < len && smiles[i + 1] === 'e') {
+                        addAtom('Se', 0, true, false); i += 2;
+                    } else {
+                        addAtom(ch.toUpperCase(), 0, true, false); i++;
+                    }
+                    continue;
+                }
+
+                // Aliphatic organic subset
+                if (ch >= 'A' && ch <= 'Z') {
+                    var el = ch;
+                    if (i + 1 < len) {
+                        var nx = smiles[i + 1];
+                        if ((ch === 'C' && nx === 'l') || (ch === 'B' && nx === 'r')) { el += nx; i++; }
+                    }
+                    addAtom(el, 0, false, false); i++;
+                    continue;
+                }
+                i++;
+            }
+
+            // Count atoms with implicit H
+            var result = {};
+            atomList.forEach(function(atom) {
+                if (!atom.element) return;
+                result[atom.element] = (result[atom.element] || 0) + 1;
+                var implicitH = 0;
+                if (atom.hSpecified) {
+                    implicitH = atom.explicitH;
+                } else {
+                    var targetVal = NORMAL_VALENCE[atom.element];
+                    if (targetVal !== undefined) {
+                        if (atom.aromatic) {
+                            implicitH = Math.max(0, targetVal - atom.degree - 1);
+                        } else {
+                            implicitH = Math.max(0, targetVal - Math.round(atom.bondOrderSum));
+                        }
+                    }
+                }
+                if (implicitH > 0) {
+                    result['H'] = (result['H'] || 0) + implicitH;
+                }
+            });
+            return result;
+        }
+
+        function formatMolecularFormula(atoms) {
+            var parts = [];
+            var keys = Object.keys(atoms);
+            if (atoms['C']) {
+                parts.push('C' + (atoms['C'] > 1 ? atoms['C'] : ''));
+                if (atoms['H']) parts.push('H' + (atoms['H'] > 1 ? atoms['H'] : ''));
+            }
+            keys.sort();
+            keys.forEach(function(k) {
+                if (k === 'C' || k === 'H') return;
+                parts.push(k + (atoms[k] > 1 ? atoms[k] : ''));
+            });
+            return parts.join('');
+        }
+
+        function computeMolecularWeight(atoms) {
+            var mw = 0;
+            Object.keys(atoms).forEach(function(el) {
+                var w = ATOMIC_WEIGHTS[el];
+                if (w) mw += w * atoms[el];
+            });
+            return Math.round(mw * 100) / 100;
+        }
 
         // ─── Helpers ──────────────────────────────────────────────────
         function getBatchDrawOptions() {
@@ -666,6 +859,11 @@ import {playgroundPresets} from '../data/molecules.js';
 
         function getBatchTheme() {
             return batchTheme ? batchTheme.value : 'light';
+        }
+
+        function getExportTheme() {
+            if (whiteBgCheck && whiteBgCheck.checked) return 'light';
+            return getBatchTheme();
         }
 
         // ─── Parse batch input ────────────────────────────────────────
@@ -690,6 +888,7 @@ import {playgroundPresets} from '../data/molecules.js';
                 }
                 batchData.push({ name: name, smiles: smiles, selected: false });
             });
+            batchCurrentPage = 0;
             updateBatchCount();
         }
 
@@ -707,17 +906,76 @@ import {playgroundPresets} from '../data/molecules.js';
             batchCount.textContent = count + ' molecule' + (count !== 1 ? 's' : '');
         }
 
+        // ─── Pagination ──────────────────────────────────────────────
+        function getTotalPages() {
+            return Math.max(1, Math.ceil(batchData.length / BATCH_PAGE_SIZE));
+        }
+
+        function updatePagination() {
+            var totalPages = getTotalPages();
+            if (batchCurrentPage >= totalPages) batchCurrentPage = totalPages - 1;
+            if (batchCurrentPage < 0) batchCurrentPage = 0;
+            if (batchData.length <= BATCH_PAGE_SIZE) {
+                paginationBar.classList.add('hidden');
+                return;
+            }
+            paginationBar.classList.remove('hidden');
+            pageInfo.textContent = 'Page ' + (batchCurrentPage + 1) + ' of ' + totalPages;
+            pagePrevBtn.disabled = batchCurrentPage === 0;
+            pageNextBtn.disabled = batchCurrentPage >= totalPages - 1;
+        }
+
+        pagePrevBtn.addEventListener('click', function() {
+            if (batchCurrentPage > 0) { batchCurrentPage--; renderBatch(); }
+        });
+        pageNextBtn.addEventListener('click', function() {
+            if (batchCurrentPage < getTotalPages() - 1) { batchCurrentPage++; renderBatch(); }
+        });
+
+        // ─── Selection ───────────────────────────────────────────────
+        function updateSelectionBar() {
+            var count = 0;
+            batchData.forEach(function(item) { if (item.selected) count++; });
+            if (count > 0) {
+                selectionBar.classList.remove('hidden');
+                selectionCount.textContent = count + ' selected';
+            } else {
+                selectionBar.classList.add('hidden');
+            }
+        }
+
+        selectAllBtn.addEventListener('click', function() {
+            batchData.forEach(function(item) { item.selected = true; });
+            renderBatch();
+        });
+
+        deselectAllBtn.addEventListener('click', function() {
+            batchData.forEach(function(item) { item.selected = false; });
+            renderBatch();
+        });
+
+        deleteSelectedBtn.addEventListener('click', function() {
+            batchData = batchData.filter(function(item) { return !item.selected; });
+            syncTextareaFromData();
+            batchCurrentPage = 0;
+            renderBatch();
+        });
+
         // ─── Render batch ────────────────────────────────────────────
         function renderBatch() {
             if (batchData.length === 0) {
                 batchError.classList.add('hidden');
                 batchGrid.innerHTML = '<div class="flex items-center justify-center text-sm text-gray-400 dark:text-gray-500 col-span-full py-16">Enter SMILES above and click "Render All"</div>';
+                paginationBar.classList.add('hidden');
+                updateSelectionBar();
                 return;
             }
 
             var cols = parseInt(colsSlider.value);
             var cellSize = parseInt(cellSizeSlider.value);
             var showLabels = showLabelsCheck.checked;
+            var showFormula = showFormulaCheck.checked;
+            var showMW = showMWCheck.checked;
             var theme = getBatchTheme();
             var drawOpts = getBatchDrawOptions();
             drawOpts.width = cellSize;
@@ -727,11 +985,25 @@ import {playgroundPresets} from '../data/molecules.js';
             batchGrid.innerHTML = '';
             batchError.classList.add('hidden');
 
+            updatePagination();
+            updateSelectionBar();
+
+            var startIdx = batchCurrentPage * BATCH_PAGE_SIZE;
+            var endIdx = Math.min(startIdx + BATCH_PAGE_SIZE, batchData.length);
+            var pageItems = batchData.slice(startIdx, endIdx);
             var errors = [];
 
-            batchData.forEach(function(item, i) {
+            pageItems.forEach(function(item, pageI) {
+                var globalIdx = startIdx + pageI;
                 var cell = document.createElement('div');
-                cell.className = 'flex flex-col items-center p-2 rounded-lg border-2 border-transparent';
+                cell.className = 'flex flex-col items-center p-2 rounded-lg border-2 cursor-pointer transition-all';
+                if (item.selected) {
+                    cell.className += ' border-accent bg-accent/5 ring-2 ring-accent';
+                } else {
+                    cell.className += ' border-transparent hover:border-gray-200 dark:hover:border-gray-700';
+                }
+                cell.setAttribute('draggable', 'true');
+                cell.setAttribute('data-batch-idx', globalIdx);
 
                 var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                 svgEl.setAttribute('class', 'batch-cell-svg');
@@ -748,18 +1020,73 @@ import {playgroundPresets} from '../data/molecules.js';
                     cell.appendChild(label);
                 }
 
+                // Formula and MW
+                if (showFormula || showMW) {
+                    try {
+                        var atoms = parseSmilesAtoms(item.smiles);
+                        if (showFormula) {
+                            var formulaDiv = document.createElement('div');
+                            formulaDiv.className = 'text-xs text-gray-400 dark:text-gray-500 mt-0.5 text-center font-mono';
+                            formulaDiv.textContent = formatMolecularFormula(atoms);
+                            cell.appendChild(formulaDiv);
+                        }
+                        if (showMW) {
+                            var mwDiv = document.createElement('div');
+                            mwDiv.className = 'text-xs text-gray-400 dark:text-gray-500 mt-0.5 text-center';
+                            mwDiv.textContent = computeMolecularWeight(atoms) + ' g/mol';
+                            cell.appendChild(mwDiv);
+                        }
+                    } catch (e) { /* skip formula/mw on parse error */ }
+                }
+
                 batchGrid.appendChild(cell);
 
+                // Click to select
+                cell.addEventListener('click', function(e) {
+                    if (e.target.closest('svg')) return;
+                    item.selected = !item.selected;
+                    renderBatch();
+                });
+
+                // Drag and drop
+                cell.addEventListener('dragstart', function(e) {
+                    dragSourceIdx = globalIdx;
+                    e.dataTransfer.effectAllowed = 'move';
+                    cell.style.opacity = '0.5';
+                });
+                cell.addEventListener('dragend', function() { cell.style.opacity = '1'; });
+                cell.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    cell.classList.add('border-accent');
+                });
+                cell.addEventListener('dragleave', function() {
+                    if (!item.selected) cell.classList.remove('border-accent');
+                });
+                cell.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    if (!item.selected) cell.classList.remove('border-accent');
+                    var targetIdx = globalIdx;
+                    if (dragSourceIdx >= 0 && dragSourceIdx !== targetIdx) {
+                        var moved = batchData.splice(dragSourceIdx, 1)[0];
+                        batchData.splice(targetIdx > dragSourceIdx ? targetIdx - 1 : targetIdx, 0, moved);
+                        syncTextareaFromData();
+                        renderBatch();
+                    }
+                    dragSourceIdx = -1;
+                });
+
+                // Draw molecule
                 try {
                     var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
                     SmilesDrawer.parse(item.smiles, function(tree) {
                         drawer.draw(tree, svgEl, theme);
                     }, function(err) {
-                        errors.push('Line ' + (i + 1) + ': ' + err);
+                        errors.push('Line ' + (globalIdx + 1) + ': ' + err);
                         svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
                     });
                 } catch (e) {
-                    errors.push('Line ' + (i + 1) + ': ' + e.message);
+                    errors.push('Line ' + (globalIdx + 1) + ': ' + e.message);
                     svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
                 }
             });
@@ -816,7 +1143,8 @@ import {playgroundPresets} from '../data/molecules.js';
             }
         });
 
-        [showLabelsCheck].forEach(function(el) {
+        // Checkboxes trigger immediate re-render
+        [showLabelsCheck, showFormulaCheck, showMWCheck].forEach(function(el) {
             if (el) el.addEventListener('change', function() { if (batchData.length > 0) renderBatch(); });
         });
         batchCheckboxes.forEach(function(name) {
@@ -837,6 +1165,60 @@ import {playgroundPresets} from '../data/molecules.js';
             });
         });
 
+        // Publication export - scale presets
+        document.querySelectorAll('.batch-scale-preset').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                exportScale = parseInt(this.getAttribute('data-scale'));
+                document.querySelectorAll('.batch-scale-preset').forEach(function(b) {
+                    b.className = 'batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors';
+                });
+                this.className = 'batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-accent text-accent ring-2 ring-accent/30';
+            });
+        });
+
+        // Mutually exclusive bg checkboxes
+        if (transparentBgCheck && whiteBgCheck) {
+            transparentBgCheck.addEventListener('change', function() {
+                if (this.checked) whiteBgCheck.checked = false;
+            });
+            whiteBgCheck.addEventListener('change', function() {
+                if (this.checked) transparentBgCheck.checked = false;
+            });
+        }
+
+        // ─── Export helpers ───────────────────────────────────────────
+        function getExportLabelHeight() {
+            var h = 0;
+            if (showLabelsCheck.checked) h += 16;
+            if (showFormulaCheck.checked) h += 14;
+            if (showMWCheck.checked) h += 14;
+            return h;
+        }
+
+        function getExportTitleHeight() {
+            var t = titleInput ? titleInput.value.trim() : '';
+            return t ? 28 : 0;
+        }
+
+        function renderOffscreenSvg(smiles, drawOpts, theme, cellSize) {
+            var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svgEl.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            svgEl.style.width = cellSize + 'px';
+            svgEl.style.height = cellSize + 'px';
+            document.body.appendChild(svgEl);
+            try {
+                var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
+                SmilesDrawer.parse(smiles, function(tree) {
+                    drawer.draw(tree, svgEl, theme);
+                }, function() {});
+            } catch (e) { /* skip */ }
+            var data = new XMLSerializer().serializeToString(svgEl);
+            var viewBox = svgEl.getAttribute('viewBox') || '0 0 ' + cellSize + ' ' + cellSize;
+            var innerHTML = svgEl.innerHTML;
+            document.body.removeChild(svgEl);
+            return { data: data, viewBox: viewBox, innerHTML: innerHTML };
+        }
+
         // ─── Export PNG ──────────────────────────────────────────────
         exportPngBtn.addEventListener('click', function() {
             if (batchData.length === 0) return;
@@ -844,25 +1226,43 @@ import {playgroundPresets} from '../data/molecules.js';
             var cols = parseInt(colsSlider.value);
             var cellSize = parseInt(cellSizeSlider.value);
             var showLabels = showLabelsCheck.checked;
-            var labelHeight = showLabels ? 20 : 0;
+            var showFormula = showFormulaCheck.checked;
+            var showMW = showMWCheck.checked;
+            var labelHeight = getExportLabelHeight();
+            var titleHeight = getExportTitleHeight();
             var cellTotal = cellSize + labelHeight;
             var rows = Math.ceil(batchData.length / cols);
-            var scale = 2;
-            var theme = getBatchTheme();
+            var scale = exportScale;
+            var transparentBg = transparentBgCheck && transparentBgCheck.checked;
+            var whiteBg = whiteBgCheck && whiteBgCheck.checked;
+            var theme = whiteBg ? 'light' : getBatchTheme();
             var isDark = theme === 'dark';
+            var gridTitle = titleInput ? titleInput.value.trim() : '';
 
             var drawOpts = getBatchDrawOptions();
             drawOpts.width = cellSize;
             drawOpts.height = cellSize;
 
+            var totalW = cols * cellSize;
+            var totalH = rows * cellTotal + titleHeight;
+
             var canvas = document.createElement('canvas');
-            canvas.width = cols * cellSize * scale;
-            canvas.height = rows * cellTotal * scale;
+            canvas.width = totalW * scale;
+            canvas.height = totalH * scale;
             var ctx = canvas.getContext('2d');
             ctx.scale(scale, scale);
 
-            ctx.fillStyle = isDark ? '#1a1a2e' : '#ffffff';
-            ctx.fillRect(0, 0, cols * cellSize, rows * cellTotal);
+            if (!transparentBg) {
+                ctx.fillStyle = whiteBg ? '#ffffff' : (isDark ? '#1a1a2e' : '#ffffff');
+                ctx.fillRect(0, 0, totalW, totalH);
+            }
+
+            if (gridTitle) {
+                ctx.fillStyle = isDark && !whiteBg ? '#ffffff' : '#111827';
+                ctx.font = 'bold 16px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(gridTitle, totalW / 2, 20);
+            }
 
             var loaded = 0;
             var total = batchData.length;
@@ -870,41 +1270,69 @@ import {playgroundPresets} from '../data/molecules.js';
             batchData.forEach(function(item, i) {
                 var col = i % cols;
                 var row = Math.floor(i / cols);
-
-                var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svgEl.style.width = cellSize + 'px';
-                svgEl.style.height = cellSize + 'px';
-                document.body.appendChild(svgEl);
-                try {
-                    var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
-                    SmilesDrawer.parse(item.smiles, function(tree) { drawer.draw(tree, svgEl, theme); }, function() {});
-                } catch (e) { /* skip */ }
-                var svgData = new XMLSerializer().serializeToString(svgEl);
-                document.body.removeChild(svgEl);
-
+                var svgResult = renderOffscreenSvg(item.smiles, drawOpts, theme, cellSize);
                 var img = new Image();
                 img.onload = function() {
-                    ctx.drawImage(img, col * cellSize, row * cellTotal, cellSize, cellSize);
+                    var x = col * cellSize;
+                    var y = row * cellTotal + titleHeight;
+                    ctx.drawImage(img, x, y, cellSize, cellSize);
+
+                    var labelY = y + cellSize;
+                    ctx.textAlign = 'center';
+                    var labelX = x + cellSize / 2;
+
                     if (showLabels) {
-                        ctx.fillStyle = isDark ? '#9ca3af' : '#6b7280';
+                        ctx.fillStyle = isDark && !whiteBg ? '#9ca3af' : '#6b7280';
                         ctx.font = '11px monospace';
-                        ctx.textAlign = 'center';
                         var lt = item.name || item.smiles;
                         if (lt.length > 30) lt = lt.substring(0, 27) + '...';
-                        ctx.fillText(lt, col * cellSize + cellSize / 2, row * cellTotal + cellSize + 14);
+                        ctx.fillText(lt, labelX, labelY + 12);
+                        labelY += 16;
                     }
+                    if (showFormula) {
+                        try {
+                            var atoms = parseSmilesAtoms(item.smiles);
+                            ctx.fillStyle = isDark && !whiteBg ? '#6b7280' : '#9ca3af';
+                            ctx.font = '10px monospace';
+                            ctx.fillText(formatMolecularFormula(atoms), labelX, labelY + 11);
+                            labelY += 14;
+                        } catch (e) { labelY += 14; }
+                    }
+                    if (showMW) {
+                        try {
+                            var atoms2 = parseSmilesAtoms(item.smiles);
+                            ctx.fillStyle = isDark && !whiteBg ? '#6b7280' : '#9ca3af';
+                            ctx.font = '10px sans-serif';
+                            ctx.fillText(computeMolecularWeight(atoms2) + ' g/mol', labelX, labelY + 11);
+                        } catch (e) { /* skip */ }
+                    }
+
                     loaded++;
                     if (loaded === total) {
                         canvas.toBlob(function(blob) {
                             var url = URL.createObjectURL(blob);
                             var a = document.createElement('a');
-                            a.href = url; a.download = 'molecules-grid.png'; a.click();
+                            a.href = url;
+                            a.download = 'molecules-grid.png';
+                            a.click();
                             URL.revokeObjectURL(url);
                         });
                     }
                 };
-                img.onerror = function() { loaded++; if (loaded === total) { canvas.toBlob(function(blob) { var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = 'molecules-grid.png'; a.click(); URL.revokeObjectURL(url); }); } };
-                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                img.onerror = function() {
+                    loaded++;
+                    if (loaded === total) {
+                        canvas.toBlob(function(blob) {
+                            var url = URL.createObjectURL(blob);
+                            var a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'molecules-grid.png';
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        });
+                    }
+                };
+                img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgResult.data)));
             });
         });
 
@@ -915,50 +1343,73 @@ import {playgroundPresets} from '../data/molecules.js';
             var cols = parseInt(colsSlider.value);
             var cellSize = parseInt(cellSizeSlider.value);
             var showLabels = showLabelsCheck.checked;
-            var labelHeight = showLabels ? 20 : 0;
+            var showFormula = showFormulaCheck.checked;
+            var showMW = showMWCheck.checked;
+            var labelHeight = getExportLabelHeight();
+            var titleHeight = getExportTitleHeight();
             var cellTotal = cellSize + labelHeight;
             var rows = Math.ceil(batchData.length / cols);
-            var totalWidth = cols * cellSize;
-            var totalHeight = rows * cellTotal;
-            var theme = getBatchTheme();
+            var whiteBg = whiteBgCheck && whiteBgCheck.checked;
+            var transparentBg = transparentBgCheck && transparentBgCheck.checked;
+            var theme = whiteBg ? 'light' : getBatchTheme();
             var isDark = theme === 'dark';
+            var gridTitle = titleInput ? titleInput.value.trim() : '';
 
             var drawOpts = getBatchDrawOptions();
             drawOpts.width = cellSize;
             drawOpts.height = cellSize;
 
+            var totalWidth = cols * cellSize;
+            var totalHeight = rows * cellTotal + titleHeight;
+
             var parts = [];
             parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="' + totalWidth + '" height="' + totalHeight + '">');
-            parts.push('<rect width="' + totalWidth + '" height="' + totalHeight + '" fill="' + (isDark ? '#1a1a2e' : '#ffffff') + '"/>');
+
+            if (!transparentBg) {
+                var bgColor = whiteBg ? '#ffffff' : (isDark ? '#1a1a2e' : '#ffffff');
+                parts.push('<rect width="' + totalWidth + '" height="' + totalHeight + '" fill="' + bgColor + '"/>');
+            }
+
+            if (gridTitle) {
+                var titleColor = isDark && !whiteBg ? '#ffffff' : '#111827';
+                parts.push('<text x="' + (totalWidth / 2) + '" y="20" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="' + titleColor + '">' + gridTitle.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</text>');
+            }
 
             batchData.forEach(function(item, i) {
                 var col = i % cols;
                 var row = Math.floor(i / cols);
                 var x = col * cellSize;
-                var y = row * cellTotal;
-
-                var svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svgEl.style.width = cellSize + 'px';
-                svgEl.style.height = cellSize + 'px';
-                document.body.appendChild(svgEl);
-                try {
-                    var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
-                    SmilesDrawer.parse(item.smiles, function(tree) { drawer.draw(tree, svgEl, theme); }, function() {});
-                } catch (e) { /* skip */ }
-                var viewBox = svgEl.getAttribute('viewBox') || '0 0 ' + cellSize + ' ' + cellSize;
-                var innerHTML = svgEl.innerHTML;
-                document.body.removeChild(svgEl);
+                var y = row * cellTotal + titleHeight;
+                var svgResult = renderOffscreenSvg(item.smiles, drawOpts, theme, cellSize);
 
                 parts.push('<g transform="translate(' + x + ',' + y + ')">');
-                parts.push('<svg width="' + cellSize + '" height="' + cellSize + '" viewBox="' + viewBox + '">');
-                parts.push(innerHTML);
+                parts.push('<svg width="' + cellSize + '" height="' + cellSize + '" viewBox="' + svgResult.viewBox + '">');
+                parts.push(svgResult.innerHTML);
                 parts.push('</svg>');
+
+                var labelY = cellSize;
+                var labelColor = isDark && !whiteBg ? '#9ca3af' : '#6b7280';
+                var subColor = isDark && !whiteBg ? '#6b7280' : '#9ca3af';
+                var esc = function(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
 
                 if (showLabels) {
                     var lt = item.name || item.smiles;
                     if (lt.length > 30) lt = lt.substring(0, 27) + '...';
-                    var esc = function(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
-                    parts.push('<text x="' + (cellSize / 2) + '" y="' + (cellSize + 14) + '" text-anchor="middle" font-family="monospace" font-size="11" fill="' + (isDark ? '#9ca3af' : '#6b7280') + '">' + esc(lt) + '</text>');
+                    parts.push('<text x="' + (cellSize / 2) + '" y="' + (labelY + 12) + '" text-anchor="middle" font-family="monospace" font-size="11" fill="' + labelColor + '">' + esc(lt) + '</text>');
+                    labelY += 16;
+                }
+                if (showFormula) {
+                    try {
+                        var atoms = parseSmilesAtoms(item.smiles);
+                        parts.push('<text x="' + (cellSize / 2) + '" y="' + (labelY + 11) + '" text-anchor="middle" font-family="monospace" font-size="10" fill="' + subColor + '">' + esc(formatMolecularFormula(atoms)) + '</text>');
+                    } catch (e) { /* skip */ }
+                    labelY += 14;
+                }
+                if (showMW) {
+                    try {
+                        var atoms2 = parseSmilesAtoms(item.smiles);
+                        parts.push('<text x="' + (cellSize / 2) + '" y="' + (labelY + 11) + '" text-anchor="middle" font-family="sans-serif" font-size="10" fill="' + subColor + '">' + computeMolecularWeight(atoms2) + ' g/mol</text>');
+                    } catch (e) { /* skip */ }
                 }
 
                 parts.push('</g>');
@@ -969,7 +1420,9 @@ import {playgroundPresets} from '../data/molecules.js';
             var blob = new Blob([parts.join('')], { type: 'image/svg+xml' });
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
-            a.href = url; a.download = 'molecules-grid.svg'; a.click();
+            a.href = url;
+            a.download = 'molecules-grid.svg';
+            a.click();
             URL.revokeObjectURL(url);
         });
 
