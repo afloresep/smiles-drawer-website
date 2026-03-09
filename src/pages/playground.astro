@@ -34,12 +34,24 @@ import {playgroundPresets} from '../data/molecules.js';
                         <button id="pg-draw-btn" class="btn-primary">Draw</button>
                     </div>
 
+                    <!-- Weight input -->
+                    <div>
+                        <input
+                            id="pg-weights"
+                            type="text"
+                            placeholder="Atom weights (e.g. 1,-0.5,0,0.3,...) — optional heatmap overlay"
+                            class="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
+                            spellcheck="false"
+                            autocomplete="off"
+                        />
+                    </div>
+
                     <!-- Error display -->
                     <div id="pg-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div>
 
                     <!-- Molecule rendering area -->
                     <div class="card p-4 sm:p-8">
-                        <div class="flex items-center justify-center" style="min-height: 400px;">
+                        <div id="pg-svg-wrap" class="flex items-center justify-center" style="min-height: 400px;">
                             <svg id="pg-svg" class="w-full" style="max-width: 500px; max-height: 500px;"></svg>
                         </div>
                     </div>
@@ -123,16 +135,16 @@ import {playgroundPresets} from '../data/molecules.js';
                             <div>
                                 <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
                                     <span>Canvas width</span>
-                                    <span id="opt-width-val" class="font-mono">500</span>
+                                    <span id="opt-width-val" class="font-mono">400</span>
                                 </label>
-                                <input id="opt-width" type="range" min="200" max="1000" value="500" step="50" class="w-full accent-accent">
+                                <input id="opt-width" type="range" min="100" max="1000" value="400" step="50" class="w-full accent-accent">
                             </div>
                             <div>
                                 <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
                                     <span>Canvas height</span>
-                                    <span id="opt-height-val" class="font-mono">500</span>
+                                    <span id="opt-height-val" class="font-mono">400</span>
                                 </label>
-                                <input id="opt-height" type="range" min="200" max="1000" value="500" step="50" class="w-full accent-accent">
+                                <input id="opt-height" type="range" min="100" max="1000" value="400" step="50" class="w-full accent-accent">
                             </div>
                             <hr class="border-gray-100 dark:border-gray-800" />
                             <label class="flex items-center justify-between text-xs">
@@ -393,6 +405,18 @@ import {playgroundPresets} from '../data/molecules.js';
         var svg = document.getElementById('pg-svg');
         var errorEl = document.getElementById('pg-error');
         var drawBtn = document.getElementById('pg-draw-btn');
+        var weightsInput = document.getElementById('pg-weights');
+
+        // Check if a SMILES string is a reaction (contains > outside brackets)
+        function isReaction(smiles) {
+            var depth = 0;
+            for (var i = 0; i < smiles.length; i++) {
+                if (smiles[i] === '[') depth++;
+                else if (smiles[i] === ']') depth--;
+                else if (smiles[i] === '>' && depth === 0) return true;
+            }
+            return false;
+        }
 
         // Option elements
         var sliders = ['bondLength', 'bondThickness', 'bondSpacing', 'fontSizeLarge', 'width', 'height'];
@@ -408,6 +432,12 @@ import {playgroundPresets} from '../data/molecules.js';
                 var el = document.getElementById('opt-' + name);
                 if (el) opts[name] = el.checked;
             });
+            if (!opts.width) opts.width = 400;
+            if (!opts.height) opts.height = 400;
+            if (opts.bondSpacing !== undefined && opts.bondLength !== undefined) {
+                // UI exposes spacing as a bond-length fraction; SmilesDrawer expects absolute units.
+                opts.bondSpacing = opts.bondSpacing * opts.bondLength;
+            }
             return opts;
         }
 
@@ -416,25 +446,111 @@ import {playgroundPresets} from '../data/molecules.js';
             return el ? el.value : 'light';
         }
 
+        var svgWrap = document.getElementById('pg-svg-wrap');
+
+        function getPreviewWidth() {
+            if (!svgWrap) return 0;
+            return svgWrap.clientWidth || 0;
+        }
+
+        function applyPreviewSize(mode, opts) {
+            var width = opts && opts.width ? opts.width : 400;
+            var height = opts && opts.height ? opts.height : 400;
+            var previewWidth = getPreviewWidth();
+
+            svg.classList.add('w-full');
+            svg.style.width = '100%';
+            svg.style.height = 'auto';
+            svg.style.display = 'block';
+            svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+            if (mode === 'reaction') {
+                svg.style.maxWidth = '100%';
+                svg.style.maxHeight = Math.max(height, 400) + 'px';
+            } else {
+                if (previewWidth > 0) {
+                    svg.style.maxWidth = Math.min(width, previewWidth) + 'px';
+                } else {
+                    svg.style.maxWidth = width + 'px';
+                }
+                svg.style.maxHeight = height + 'px';
+            }
+        }
+
+        function getReactionOptions(opts) {
+            var rxnOpts = {};
+            var baseWidth = opts && opts.width ? opts.width : 400;
+            var baseHeight = opts && opts.height ? opts.height : 400;
+            var wrapWidth = getPreviewWidth();
+            var k;
+
+            for (k in opts) rxnOpts[k] = opts[k];
+
+            if (wrapWidth > 0) {
+                rxnOpts.width = Math.max(baseWidth, Math.floor(wrapWidth - 16));
+            } else {
+                rxnOpts.width = baseWidth;
+            }
+            rxnOpts.height = Math.max(baseHeight, 360);
+            rxnOpts.bondLength = Math.max((opts.bondLength || 15) * 2, 30);
+
+            return rxnOpts;
+        }
+
+        // Fully reset the SVG element so no stale attributes from SmiDrawer persist
+        function resetSvg() {
+            var fresh = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            fresh.id = 'pg-svg';
+            svgWrap.replaceChild(fresh, svg);
+            svg = fresh;
+        }
+
         function draw() {
             var smiles = input.value.trim();
             if (!smiles) {
-                svg.innerHTML = '';
+                resetSvg();
+                applyPreviewSize('molecule', {width: 400, height: 400});
                 errorEl.classList.add('hidden');
                 return;
             }
 
             var opts = getOptions();
+            var weights = weightsInput ? weightsInput.value.trim() : '';
+
             try {
-                var drawer = new SmilesDrawer.SvgDrawer(opts);
-                SmilesDrawer.parse(smiles, function(tree) {
-                    svg.innerHTML = '';
-                    drawer.draw(tree, svg, getTheme());
+                if (isReaction(smiles)) {
+                    // Replace SVG fresh so SmiDrawer doesn't inherit stale attrs
+                    resetSvg();
+                    var rxnOpts = getReactionOptions(opts);
+                    applyPreviewSize('reaction', rxnOpts);
+                    var sd = new SmiDrawer(rxnOpts, {});
+                    sd.draw(smiles, '#pg-svg', getTheme());
+                    applyPreviewSize('reaction', rxnOpts);
                     errorEl.classList.add('hidden');
-                }, function(err) {
-                    errorEl.textContent = 'Invalid SMILES: ' + err;
-                    errorEl.classList.remove('hidden');
-                });
+                } else if (weights) {
+                    // Replace SVG fresh
+                    resetSvg();
+                    applyPreviewSize('molecule', opts);
+                    svg.setAttribute('data-smiles', smiles);
+                    svg.setAttribute('data-smiles-weights', weights);
+                    svg.setAttribute('data-smiles-options', JSON.stringify({sigma: 40, opacity: 0.7}));
+                    SmiDrawer.apply({moleculeOptions: opts, theme: getTheme()});
+                    applyPreviewSize('molecule', opts);
+                    errorEl.classList.add('hidden');
+                } else {
+                    // Replace SVG fresh for molecule rendering
+                    resetSvg();
+                    applyPreviewSize('molecule', opts);
+                    var drawer = new SmilesDrawer.SvgDrawer(opts);
+                    SmilesDrawer.parse(smiles, function(tree) {
+                        drawer.draw(tree, svg, getTheme());
+                        applyPreviewSize('molecule', opts);
+                        errorEl.classList.add('hidden');
+                    }, function(err) {
+                        errorEl.textContent = 'Invalid SMILES: ' + err;
+                        errorEl.classList.remove('hidden');
+                    });
+                }
             }
             catch (e) {
                 errorEl.textContent = 'Error: ' + e.message;
@@ -459,6 +575,22 @@ import {playgroundPresets} from '../data/molecules.js';
         });
 
         drawBtn.addEventListener('click', draw);
+
+        var resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (input.value.trim()) draw();
+            }, 150);
+        });
+
+        // Weight input triggers redraw
+        if (weightsInput) {
+            weightsInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(draw, 200);
+            });
+        }
 
         // Update slider value displays and redraw on change
         sliders.forEach(function(name) {
@@ -672,6 +804,17 @@ import {playgroundPresets} from '../data/molecules.js';
         var batchCurrentPage = 0;
         var BATCH_PAGE_SIZE = 16;
         var dragSourceIdx = -1;
+
+        // Check if a SMILES string is a reaction (contains > outside brackets)
+        function isReaction(smiles) {
+            var depth = 0;
+            for (var i = 0; i < smiles.length; i++) {
+                if (smiles[i] === '[') depth++;
+                else if (smiles[i] === ']') depth--;
+                else if (smiles[i] === '>' && depth === 0) return true;
+            }
+            return false;
+        }
 
         // ─── Atomic data ─────────────────────────────────────────────
         var ATOMIC_WEIGHTS = {
@@ -1076,15 +1219,24 @@ import {playgroundPresets} from '../data/molecules.js';
                     dragSourceIdx = -1;
                 });
 
-                // Draw molecule
+                // Draw molecule (or reaction)
                 try {
-                    var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
-                    SmilesDrawer.parse(item.smiles, function(tree) {
-                        drawer.draw(tree, svgEl, theme);
-                    }, function(err) {
-                        errors.push('Line ' + (globalIdx + 1) + ': ' + err);
-                        svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
-                    });
+                    if (isReaction(item.smiles)) {
+                        svgEl.id = 'batch-svg-' + globalIdx;
+                        var rxnBatchOpts = {};
+                        for (var rk in drawOpts) rxnBatchOpts[rk] = drawOpts[rk];
+                        rxnBatchOpts.bondLength = Math.max((rxnBatchOpts.bondLength || 15) * 2, 30);
+                        var sd = new SmiDrawer(rxnBatchOpts, {});
+                        sd.draw(item.smiles, '#batch-svg-' + globalIdx, theme);
+                    } else {
+                        var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
+                        SmilesDrawer.parse(item.smiles, function(tree) {
+                            drawer.draw(tree, svgEl, theme);
+                        }, function(err) {
+                            errors.push('Line ' + (globalIdx + 1) + ': ' + err);
+                            svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
+                        });
+                    }
                 } catch (e) {
                     errors.push('Line ' + (globalIdx + 1) + ': ' + e.message);
                     svgEl.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="red" font-size="12">Error</text>';
@@ -1205,12 +1357,22 @@ import {playgroundPresets} from '../data/molecules.js';
             svgEl.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
             svgEl.style.width = cellSize + 'px';
             svgEl.style.height = cellSize + 'px';
+            var tempId = 'offscreen-svg-' + Math.random().toString(36).substring(2);
+            svgEl.id = tempId;
             document.body.appendChild(svgEl);
             try {
-                var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
-                SmilesDrawer.parse(smiles, function(tree) {
-                    drawer.draw(tree, svgEl, theme);
-                }, function() {});
+                if (isReaction(smiles)) {
+                    var rxnExpOpts = {};
+                    for (var re in drawOpts) rxnExpOpts[re] = drawOpts[re];
+                    rxnExpOpts.bondLength = Math.max((rxnExpOpts.bondLength || 15) * 2, 30);
+                    var sd = new SmiDrawer(rxnExpOpts, {});
+                    sd.draw(smiles, '#' + tempId, theme);
+                } else {
+                    var drawer = new SmilesDrawer.SvgDrawer(drawOpts);
+                    SmilesDrawer.parse(smiles, function(tree) {
+                        drawer.draw(tree, svgEl, theme);
+                    }, function() {});
+                }
             } catch (e) { /* skip */ }
             var data = new XMLSerializer().serializeToString(svgEl);
             var viewBox = svgEl.getAttribute('viewBox') || '0 0 ' + cellSize + ' ' + cellSize;
