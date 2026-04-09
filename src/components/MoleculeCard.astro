@@ -7,10 +7,11 @@ interface Props {
     clickable?: boolean;
     wide?: boolean;
     weights?: string;
+    highlights?: Array<[number, string]>;
     render?: Record<string, any>;
 }
 
-const {name, smiles, showPlaygroundLink = false, showDownload = false, clickable = false, wide = false, weights, render} = Astro.props;
+const {name, smiles, showPlaygroundLink = false, showDownload = false, clickable = false, wide = false, weights, highlights, render} = Astro.props;
 const cardId = `mol-${name.replace(/\s+/g, '-').toLowerCase()}`;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
@@ -33,6 +34,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
             class:list={['molecule-svg w-full h-full', weights && 'weight-svg']}
             data-smiles-weights={weights || undefined}
             data-smiles-options={weights ? '{"sigma":40,"opacity":0.7}' : undefined}
+            data-smiles-highlights={highlights ? JSON.stringify(highlights) : undefined}
             data-render-config={render ? JSON.stringify(render) : undefined}
         ></svg>
     </div>

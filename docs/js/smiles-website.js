@@ -416,6 +416,15 @@
                 ).draw(smiles, svg, themeName, null, null, config.weights);
 
                 done();
+            } else if (config && config.highlights && config.highlights.length) {
+                SmilesDrawer.parse(smiles, function(tree) {
+                    new SmilesDrawer.SvgDrawer(profile.options).draw(
+                        tree, svg, themeName, null, false, config.highlights
+                    );
+                    done({tree: tree});
+                }, function(error) {
+                    fail(error);
+                });
             } else {
                 SmilesDrawer.parse(smiles, function(tree) {
                     new SmilesDrawer.SvgDrawer(profile.options).draw(tree, svg, themeName);
