@@ -19,6 +19,7 @@ const base = import.meta.env.BASE_URL;
             <a href="#simple-drawing" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Basic Drawing</a>
             <a href="#reactions" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Reactions</a>
             <a href="#weights" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Weights</a>
+            <a href="#reaction-weights" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Reaction Weights</a>
             <a href="#atom-highlighting" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Atom Highlighting</a>
             <a href="#customization" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Customization</a>
             <a href="#frameworks" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Frameworks</a>
@@ -175,6 +176,46 @@ drawer.draw(
                         />
                     </div>
                     <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">For SVG output, weights generally look best when you keep the final surface on a light background.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="reaction-weights" class="scroll-mt-24 mb-14">
+            <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+                <div class="card p-5 sm:p-6">
+                    <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Reaction Weights</div>
+                    <h2 class="mt-2 text-2xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-white">Weight reactants and products separately in a single reaction.</h2>
+                    <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                        Instead of a flat array, reaction weights take an object keyed by <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">reactants</code>, <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">reagents</code>, and <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">products</code>. Each value is an array of arrays — one inner array per molecule in that category, with one weight per heavy atom.
+                    </p>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="javascript"
+                            filename="reaction-weights.js"
+                            code={`var weights = {
+    reactants: [[1, 0], [0, -1, 0]],
+    products:  [[1, -1, 0], [0, 0]]
+};
+
+var drawer = new SmilesDrawer.SmiDrawer({ width: 550, height: 450 });
+drawer.draw('CF.FC#N>>CC#N.FF', '#output', 'light', null, null, weights);`}
+                        />
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                        The <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">apply()</code> path uses the attributes <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles-reactant-weights</code> and <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles-product-weights</code>, separating per-molecule weight arrays with semicolons and per-atom values with commas. Reagents accept the same shape but aren't drawn as structures, so weights on them have no visible effect. Draw to SVG on a light background for the cleanest result.
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <MoleculeCard
+                        name="Reaction with Weights"
+                        smiles="CF.FC#N>>CC#N.FF"
+                        reactionWeights={{reactants: [[1, 0], [0, -1, 0]], products: [[1, -1, 0], [0, 0]]}}
+                        wide
+                    />
+                    <p class="text-xs text-gray-500 dark:text-gray-400 px-1">
+                        Reactants and products get independent weight arrays; red is negative, green is positive.
+                    </p>
                 </div>
             </div>
         </section>
@@ -418,6 +459,91 @@ export default function MoleculeFigure({ smiles, theme = 'light' }) {
                     </div>
                 </div>
             </div>
+
+            <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] mt-6">
+                <div class="card p-5 sm:p-6">
+                    <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Web Components</div>
+                    <h3 class="mt-2 text-lg font-semibold text-gray-900 dark:text-white">Custom elements come with a few gotchas.</h3>
+                    <ul class="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <li>— <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">attributeChangedCallback</code> fires on construction too, so guard drawing behind a <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">blockDrawing</code> flag and draw in <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">connectedCallback</code>.</li>
+                        <li>— SmilesDrawer sets the canvas `width`/`height` during draw, which would re-trigger the callback. Skipping draws when values are unchanged prevents the infinite loop.</li>
+                        <li>— Expose a <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">delayDrawing(fn)</code> helper so callers can batch attribute updates into one redraw.</li>
+                        <li>— Autonomous elements are `display: inline` by default and pick up a few stray pixels of height from line-height — set `display: inline-block` and `line-height: 0`.</li>
+                    </ul>
+                    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                        The customized built-in variant (<code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">extends: 'canvas'</code>) uses the same lifecycle but skips the shadow DOM, so you can write <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">{`<canvas is="smiles-drawer">`}</code>. Safari doesn't support it natively — polyfill if you need it.
+                    </p>
+                </div>
+
+                <div class="card p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Autonomous custom element</h3>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="javascript"
+                            filename="smiles-drawer-element.js"
+                            code={`class SmilesDrawerElement extends HTMLElement {
+    static get observedAttributes() {
+        return ['smiles', 'width', 'height', 'theme'];
+    }
+
+    constructor() {
+        super();
+        this.blockDrawing = true;
+        const shadow = this.attachShadow({ mode: 'open' });
+        shadow.appendChild(document.createElement('canvas'));
+    }
+
+    connectedCallback() {
+        if (this.blockDrawing) {
+            this.blockDrawing = false;
+            this.draw();
+        }
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue !== newValue) {
+            this.modified = true;
+            this.draw();
+        }
+    }
+
+    delayDrawing(callback) {
+        this.blockDrawing = true;
+        callback();
+        this.blockDrawing = false;
+        if (this.modified) this.draw();
+    }
+
+    draw() {
+        if (this.blockDrawing) return;
+        SmilesDrawer.parse(this.getAttribute('smiles'), (tree) => {
+            const canvas = this.shadowRoot.firstElementChild;
+            const drawer = new SmilesDrawer.Drawer({
+                width:  parseInt(this.getAttribute('width'))  || 500,
+                height: parseInt(this.getAttribute('height')) || 500
+            });
+            drawer.draw(tree, canvas, this.getAttribute('theme') || 'light');
+        });
+        this.modified = false;
+    }
+}
+
+customElements.define('smiles-drawer', SmilesDrawerElement);`}
+                        />
+                    </div>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="html"
+                            filename="page.html"
+                            code={`<style>
+    smiles-drawer { display: inline-block; line-height: 0; }
+<\/style>
+
+<smiles-drawer smiles="CCCC" width="300" height="200"></smiles-drawer>`}
+                        />
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section>
@@ -438,7 +564,7 @@ export default function MoleculeFigure({ smiles, theme = 'light' }) {
                 <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-sm">
                     <a href="#simple-drawing" class="rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-accent transition-colors">Basic Drawing</a>
                     <a href="#atom-highlighting" class="rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-accent transition-colors">Atom Highlighting</a>
-                    <a href="#reactions" class="rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-accent transition-colors">Drawing Reactions</a>
+                    <a href="#reaction-weights" class="rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-accent transition-colors">Reaction Weights</a>
                     <a href="#frameworks" class="rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-accent transition-colors">Framework Pattern</a>
                 </div>
                 <p class="mt-6 text-sm text-gray-500 dark:text-gray-400">
@@ -469,6 +595,15 @@ export default function MoleculeFigure({ smiles, theme = 'light' }) {
                 }
             }
 
+            function parseReactionWeights(value) {
+                if (!value) return null;
+                try {
+                    return JSON.parse(value);
+                } catch (e) {
+                    return null;
+                }
+            }
+
             function renderAll() {
                 var theme = site.getPageTheme();
 
@@ -479,6 +614,7 @@ export default function MoleculeFigure({ smiles, theme = 'light' }) {
                 document.querySelectorAll('.molecule-svg').forEach(function(svg) {
                     var smiles = svg.getAttribute('data-smiles');
                     var highlights = parseHighlights(svg.getAttribute('data-smiles-highlights'));
+                    var reactionWeights = parseReactionWeights(svg.getAttribute('data-smiles-reaction-weights'));
                     var surface = svg.closest('[data-theme-surface]');
                     var defaults = site.getDefaultRenderOptions();
 
@@ -508,7 +644,8 @@ export default function MoleculeFigure({ smiles, theme = 'light' }) {
                         smiles: smiles,
                         svg: svg,
                         themeName: theme,
-                        highlights: highlights
+                        highlights: highlights,
+                        reactionWeights: reactionWeights
                     });
                 });
             }

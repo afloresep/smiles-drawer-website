@@ -136,11 +136,16 @@ document.addEventListener('DOMContentLoaded', function() {
             var smiles = svg.getAttribute('data-smiles');
             var weightsAttr = svg.getAttribute('data-smiles-weights');
             var highlightsAttr = svg.getAttribute('data-smiles-highlights');
+            var reactionWeightsAttr = svg.getAttribute('data-smiles-reaction-weights');
             var surface = svg.closest('[data-theme-surface]');
             var weights = weightsAttr ? parseWeights(weightsAttr) : null;
             var highlights = null;
             if (highlightsAttr) {
                 try { highlights = JSON.parse(highlightsAttr); } catch (e) { highlights = null; }
+            }
+            var reactionWeights = null;
+            if (reactionWeightsAttr) {
+                try { reactionWeights = JSON.parse(reactionWeightsAttr); } catch (e) { reactionWeights = null; }
             }
             var defaults = site.getDefaultRenderOptions();
 
@@ -171,7 +176,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 svg: svg,
                 themeName: theme,
                 weights: weights && weights.length ? weights : null,
-                highlights: highlights && highlights.length ? highlights : null
+                highlights: highlights && highlights.length ? highlights : null,
+                reactionWeights: reactionWeights
             }).svg;
         });
     }

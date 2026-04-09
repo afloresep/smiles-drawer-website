@@ -396,13 +396,19 @@
         try {
             if (kind === 'reaction') {
                 new SmiDrawer(
-                    profile.options,
+                    mergeObjects({}, profile.options, config && config.reactionWeights ? {
+                        weights: mergeObjects({
+                            sigma: 40,
+                            opacity: 0.72,
+                            additionalPadding: 30
+                        }, config.weightOptions || {})
+                    } : {}),
                     mergeObjects({}, config && config.reactionOptions ? config.reactionOptions : {})
                 ).draw(smiles, svg, themeName, function() {
                     done();
                 }, function(error) {
                     fail(error);
-                });
+                }, config && config.reactionWeights ? config.reactionWeights : null);
             } else if (config && config.weights && config.weights.length) {
                 new SmiDrawer(
                     mergeObjects({}, profile.options, {
