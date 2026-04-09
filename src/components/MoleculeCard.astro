@@ -12,6 +12,7 @@ interface Props {
 
 const {name, smiles, showPlaygroundLink = false, showDownload = false, clickable = false, wide = false, weights, render} = Astro.props;
 const cardId = `mol-${name.replace(/\s+/g, '-').toLowerCase()}`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <div
     class:list={[
@@ -43,7 +44,7 @@ const cardId = `mol-${name.replace(/\s+/g, '-').toLowerCase()}`;
         <div class="flex items-center gap-2 w-full">
             {showPlaygroundLink && (
                 <a
-                    href={`/playground?smiles=${encodeURIComponent(smiles)}`}
+                    href={`${base}/playground?smiles=${encodeURIComponent(smiles)}`}
                     class="flex-1 text-center text-xs px-2.5 py-2 rounded-lg border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:text-accent hover:border-accent/50 transition-colors"
                 >
                     Open in Playground
