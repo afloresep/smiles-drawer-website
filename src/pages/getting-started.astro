@@ -182,8 +182,8 @@ drawer.draw(
         </section>
 
         <section id="reaction-weights" class="scroll-mt-24 mb-14">
-            <div class="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-                <div class="card p-5 sm:p-6">
+            <div class="card p-5 sm:p-6">
+                <div class="max-w-3xl">
                     <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Reaction Weights</div>
                     <h2 class="mt-2 text-2xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-white">Weight reactants and products separately in a single reaction.</h2>
                     <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
@@ -206,18 +206,18 @@ drawer.draw('CF.FC#N>>CC#N.FF', '#output', 'light', null, null, weights);`}
                         The <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">apply()</code> path uses the attributes <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles-reactant-weights</code> and <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles-product-weights</code>, separating per-molecule weight arrays with semicolons and per-atom values with commas. Reagents accept the same shape but aren't drawn as structures, so weights on them have no visible effect. Draw to SVG on a light background for the cleanest result.
                     </p>
                 </div>
+            </div>
 
-                <div class="flex flex-col gap-3">
-                    <MoleculeCard
-                        name="Reaction with Weights"
-                        smiles="CF.FC#N>>CC#N.FF"
-                        reactionWeights={{reactants: [[1, 0], [0, -1, 0]], products: [[1, -1, 0], [0, 0]]}}
-                        wide
-                    />
-                    <p class="text-xs text-gray-500 dark:text-gray-400 px-1">
-                        Reactants and products get independent weight arrays; red is negative, green is positive.
-                    </p>
-                </div>
+            <div class="mt-6 max-w-4xl mx-auto flex flex-col gap-3">
+                <MoleculeCard
+                    name="Reaction with Weights"
+                    smiles="CF.FC#N>>CC#N.FF"
+                    reactionWeights={{reactants: [[1, 0], [0, -1, 0]], products: [[1, -1, 0], [0, 0]]}}
+                    wide
+                />
+                <p class="text-xs text-gray-500 dark:text-gray-400 px-1 text-center">
+                    Reactants and products get independent weight arrays; red is negative, green is positive.
+                </p>
             </div>
         </section>
 
