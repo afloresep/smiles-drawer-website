@@ -1,610 +1,96 @@
----
-import Layout from '../layouts/Layout.astro';
-import {playgroundPresets, renderOverrides} from '../data/molecules.js';
-import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
----
-<Layout title="Playground" description="Interactive SMILES molecule drawing playground. Paste a SMILES string and get an instant molecular structure depiction.">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Playground</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Render molecules or reactions, switch theme presets, and tune the exported drawing settings directly.</p>
-        </div>
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="Interactive SMILES molecule drawing playground. Paste a SMILES string and get an instant molecular structure depiction."><link rel="icon" type="image/svg+xml" href="/smiles-drawer-website/favicon.svg"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><title>Playground | SmilesDrawer</title><!-- Apply dark mode before paint to avoid flash --><script>
+        (function() {
+            var theme = localStorage.getItem('theme');
+            if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            if (theme === 'dark') document.documentElement.classList.add('dark');
+        })();
+    </script><!-- SmilesDrawer (built from reymond-group/smilesDrawer master, v2.2.1) --><script src="/smiles-drawer-website/js/smiles-drawer.min.js"></script><script src="/smiles-drawer-website/js/smiles-website.js"></script><link rel="stylesheet" href="/smiles-drawer-website/_astro/examples.Cgv164Ru.css"></head> <body class="min-h-screen flex flex-col font-sans antialiased"> <header class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"> <div class="flex items-center justify-between h-16"> <div class="flex items-center gap-8"> <a href="/smiles-drawer-website/" class="flex items-center gap-2 font-semibold text-lg text-gray-900 dark:text-white"> <svg class="w-7 h-7" viewBox="0 0 32 32" fill="none"> <circle cx="16" cy="16" r="14" stroke="#50C5A9" stroke-width="2.5"></circle> <circle cx="10" cy="12" r="2.5" fill="#50C5A9"></circle> <circle cx="22" cy="12" r="2.5" fill="#50C5A9"></circle> <circle cx="16" cy="22" r="2.5" fill="#50C5A9"></circle> <line x1="10" y1="12" x2="22" y2="12" stroke="#50C5A9" stroke-width="1.5"></line> <line x1="22" y1="12" x2="16" y2="22" stroke="#50C5A9" stroke-width="1.5"></line> <line x1="16" y1="22" x2="10" y2="12" stroke="#50C5A9" stroke-width="1.5"></line> </svg>
+SmilesDrawer
+</a> <nav class="hidden md:flex items-center gap-1"> <a href="/smiles-drawer-website/" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"> Home </a><a href="/smiles-drawer-website/playground" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"> Playground </a><a href="/smiles-drawer-website/getting-started" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"> Getting Started </a><a href="/smiles-drawer-website/examples" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"> Examples </a> </nav> </div> <div class="flex items-center gap-2"> <button id="theme-toggle" class="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle dark mode"> <svg id="theme-icon-sun" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path> </svg> <svg id="theme-icon-moon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path> </svg> </button> <script>
+(function() {
+    function getTheme() {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+            return localStorage.getItem('theme');
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
 
-        <!-- Tab bar -->
-        <div class="flex gap-1 mb-6 border-b border-gray-200 dark:border-gray-700">
-            <button id="tab-single" class="px-4 py-2 text-sm font-medium border-b-2 border-accent text-accent transition-colors">Single</button>
-            <button id="tab-batch" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Batch Export</button>
-        </div>
+    function applyTheme(theme) {
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        var sun = document.getElementById('theme-icon-sun');
+        var moon = document.getElementById('theme-icon-moon');
+        if (sun && moon) {
+            sun.classList.toggle('hidden', theme !== 'dark');
+            moon.classList.toggle('hidden', theme === 'dark');
+        }
+    }
 
-        <!-- Single mode panel -->
-        <div id="panel-single">
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-                <!-- Main area -->
-                <div class="space-y-4">
-                    <!-- SMILES input -->
-                    <div class="flex gap-3">
-                        <input
-                            id="pg-input"
-                            type="text"
-                            value="CC1C(=O)NCCN1C(=O)C1(CNC(=O)[C@@H]2[C@H]3CCOC[C@H]32)CC=CC1"
-                            placeholder="Enter a SMILES string..."
-                            class="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-lg font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
-                            spellcheck="false"
-                            autocomplete="off"
-                        />
-                        <button id="pg-draw-btn" class="btn-primary">Draw</button>
-                    </div>
+    applyTheme(getTheme());
 
-                    <!-- Weight input -->
-                    <div>
-                        <input
-                            id="pg-weights"
-                            type="text"
-                            placeholder="Atom weights (e.g. 1,-0.5,0,0.3,...) — optional heatmap overlay"
-                            class="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
-                            spellcheck="false"
-                            autocomplete="off"
-                        />
-                    </div>
+    document.addEventListener('DOMContentLoaded', function() {
+        applyTheme(getTheme());
+        var btn = document.getElementById('theme-toggle');
+        if (btn) {
+            btn.addEventListener('click', function() {
+                var current = getTheme();
+                var next = current === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', next);
+                applyTheme(next);
+            });
+        }
+    });
+})();
+</script> <a href="https://github.com/reymond-group/smilesDrawer" target="_blank" rel="noopener noreferrer" class="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="GitHub"> <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"> <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path> </svg> </a> <!-- Mobile menu button --> <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Menu"> <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path> </svg> </button> </div> </div> </div> <!-- Mobile menu --> <nav id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 px-4 py-2"> <a href="/smiles-drawer-website/" class="block px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"> Home </a><a href="/smiles-drawer-website/playground" class="block px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"> Playground </a><a href="/smiles-drawer-website/getting-started" class="block px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"> Getting Started </a><a href="/smiles-drawer-website/examples" class="block px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"> Examples </a> </nav> </header> <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('mobile-menu-btn');
+    var menu = document.getElementById('mobile-menu');
+    if (btn && menu) {
+        btn.addEventListener('click', function() {
+            menu.classList.toggle('hidden');
+        });
+    }
+});
+</script> <main class="flex-1">  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> <div class="mb-6"> <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Playground</h1> <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Render molecules or reactions, switch theme presets, and tune the exported drawing settings directly.</p> </div> <!-- Tab bar --> <div class="flex gap-1 mb-6 border-b border-gray-200 dark:border-gray-700"> <button id="tab-single" class="px-4 py-2 text-sm font-medium border-b-2 border-accent text-accent transition-colors">Single</button> <button id="tab-batch" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Batch Export</button> </div> <!-- Single mode panel --> <div id="panel-single"> <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6"> <!-- Main area --> <div class="space-y-4"> <!-- SMILES input --> <div class="flex gap-3"> <input id="pg-input" type="text" value="CC1C(=O)NCCN1C(=O)C1(CNC(=O)[C@@H]2[C@H]3CCOC[C@H]32)CC=CC1" placeholder="Enter a SMILES string..." class="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-lg font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" spellcheck="false" autocomplete="off"> <button id="pg-draw-btn" class="btn-primary">Draw</button> </div> <!-- Weight input --> <div> <input id="pg-weights" type="text" placeholder="Atom weights (e.g. 1,-0.5,0,0.3,...) — optional heatmap overlay" class="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all" spellcheck="false" autocomplete="off"> </div> <!-- Error display --> <div id="pg-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div> <!-- Molecule rendering area --> <div id="pg-preview-surface" class="card p-4 sm:p-8"> <div id="pg-svg-wrap" class="flex items-center justify-center" style="min-height: 400px;"> <svg id="pg-svg" class="w-full" style="max-width: 550px; max-height: 450px;"></svg> </div> </div> <!-- Action buttons --> <div class="flex flex-wrap gap-3"> <button id="pg-download-svg" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg>
+Download SVG
+</button> <button id="pg-download-png" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg>
+Download PNG
+</button> <button id="pg-copy-svg" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path> </svg>
+Copy SVG
+</button> <button id="pg-copy-smiles" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path> </svg>
+Copy SMILES
+</button> <button id="pg-share" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path> </svg>
+Share Link
+</button> </div> <!-- Molecular formula (if computed) --> <div id="pg-formula" class="text-sm text-gray-500 dark:text-gray-400 hidden">
+Formula: <span id="pg-formula-text" class="font-mono"></span> </div> </div> <!-- Sidebar --> <div class="space-y-4"> <!-- Options Panel --> <details class="card" open> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Drawing Options
+</summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <div> <label for="opt-theme" class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Theme preset</label> <select id="opt-theme" class="w-full text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5"> <option value="light">light</option><option value="dark">dark / black</option><option value="oldschool">oldschool</option><option value="solarized">solarized</option><option value="solarized-dark">solarized-dark</option><option value="matrix">matrix</option><option value="github">github</option><option value="carbon">carbon</option><option value="cyberpunk">cyberpunk</option><option value="gruvbox">gruvbox</option><option value="gruvbox-dark">gruvbox-dark</option> </select> <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Changes atom colors and the preview surface background.</p> </div> <div> <label for="opt-atomVisualization" class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Atom style</label> <select id="opt-atomVisualization" class="w-full text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5"> <option value="default">Default</option> <option value="balls">Balls</option> <option value="allballs">All balls</option> </select> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Scale</span> <span id="opt-scale-val" class="font-mono">0</span> </label> <input id="opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond length</span> <span id="opt-bondLength-val" class="font-mono">19</span> </label> <input id="opt-bondLength" type="range" min="5" max="30" value="19" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond thickness</span> <span id="opt-bondThickness-val" class="font-mono">1.1</span> </label> <input id="opt-bondThickness" type="range" min="0.1" max="5" value="1.1" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Short bond length</span> <span id="opt-shortBondLength-val" class="font-mono">0.6</span> </label> <input id="opt-shortBondLength" type="range" min="0.1" max="1" value="0.6" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond spacing</span> <span id="opt-bondSpacing-val" class="font-mono">3.2</span> </label> <input id="opt-bondSpacing" type="range" min="0" max="10" value="3.2" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Font size</span> <span id="opt-fontSizeLarge-val" class="font-mono">6.3</span> </label> <input id="opt-fontSizeLarge" type="range" min="1" max="20" value="6.3" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Canvas width</span> <span id="opt-width-val" class="font-mono">550</span> </label> <input id="opt-width" type="range" min="100" max="1000" value="550" step="50" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Canvas height</span> <span id="opt-height-val" class="font-mono">450</span> </label> <input id="opt-height" type="range" min="100" max="1000" value="450" step="50" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Terminal carbons</span> <input id="opt-terminalCarbons" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Explicit hydrogens</span> <input id="opt-explicitHydrogens" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Compact drawing</span> <input id="opt-compactDrawing" type="checkbox" checked class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Debug mode</span> <input id="opt-debug" type="checkbox" class="accent-accent w-4 h-4"> </label> </div> </details> <details class="card" open> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Reaction Options
+</summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <p class="text-xs text-gray-500 dark:text-gray-400">Used when the input is a reaction SMILES string (`reactants&gt;reagents&gt;products`).</p> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Spacing</span> <span id="opt-rxnSpacing-val" class="font-mono">10</span> </label> <input id="opt-rxnSpacing" type="range" min="0" max="20" value="10" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Font size</span> <span id="opt-rxnFontSize-val" class="font-mono">9</span> </label> <input id="opt-rxnFontSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Plus size</span> <span id="opt-rxnPlusSize-val" class="font-mono">9</span> </label> <input id="opt-rxnPlusSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Plus thickness</span> <span id="opt-rxnPlusThickness-val" class="font-mono">1</span> </label> <input id="opt-rxnPlusThickness" type="range" min="0" max="5" value="1" step="0.1" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Arrow length</span> <span id="opt-rxnArrowLength-val" class="font-mono">120</span> </label> <input id="opt-rxnArrowLength" type="range" min="0" max="500" value="120" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Arrow thickness</span> <span id="opt-rxnArrowThickness-val" class="font-mono">1</span> </label> <input id="opt-rxnArrowThickness" type="range" min="0.1" max="10" value="1" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Arrow head size</span> <span id="opt-rxnArrowHeadSize-val" class="font-mono">6</span> </label> <input id="opt-rxnArrowHeadSize" type="range" min="1" max="10" value="6" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Arrow margin</span> <span id="opt-rxnArrowMargin-val" class="font-mono">3</span> </label> <input id="opt-rxnArrowMargin" type="range" min="0" max="10" value="3" step="0.1" class="w-full accent-accent"> </div> </div> </details> <!-- Presets Panel --> <details class="card" open> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Preset Molecules
+</summary> <div class="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4"> <div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Simple</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CO"> Methanol </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC"> Ethane </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(=O)O"> Acetic acid </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="O"> Water </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Rings</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="Oc1ccccc1"> Phenol </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="c1ccc2cc3ccccc3cc2c1"> Anthracene </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C1CCCCC1"> Cyclohexane </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C1CC1"> Cyclopropane </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Drugs</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(=O)Oc1ccccc1C(=O)O"> Aspirin </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="Cn1c(=O)c2c(ncn2C)n(c1=O)C"> Caffeine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CN1CC[C@]23c4c5ccc(O)c4O[C@H]2[C@@H](O)C=C[C@H]3[C@@H]1C5"> Morphine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC1([C@@H](N2[C@H](S1)[C@@H](C2=O)NC(=O)Cc3ccccc3)C(=O)O)C"> Penicillin G </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Complex</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C[C@H](CCCC(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O)C)C"> Cholesterol </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="OC[C@H]1OC(O)[C@H](O)[C@@H](O)[C@@H]1O"> Glucose </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="c1nc(c2c(n1)n(cn2)[C@@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O)O)N"> ATP </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Stereo</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="N[C@@H](C)C(=O)O"> L-Alanine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CN1CCC[C@H]1c2cccnc2"> Nicotine </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="O=C1CCC(N2C(=O)c3ccccc3C2=O)C(=O)N1"> Thalidomide </button> </div> </div><div> <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Reactions</div> <div class="flex flex-wrap gap-1.5"> <button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CBr.[OH-]>>CO.[Br-]"> SN2 </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(=O)O.CO>>CC(=O)OC.O"> Esterification </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="C=CC=C.C=C>>C1CC=CCC1"> Diels-Alder </button><button class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-smiles="CC(=O)O.NCC>>CC(=O)NCC.O"> Amide formation </button> </div> </div> </div> </details> </div> </div> </div> <!-- Batch export panel --> <div id="panel-batch" class="hidden"> <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6"> <!-- Main area --> <div class="space-y-4"> <!-- SMILES textarea input --> <div> <div class="flex items-center justify-between mb-2"> <label for="batch-input" class="text-sm font-medium text-gray-700 dark:text-gray-300">SMILES (one per line)</label> <div class="flex items-center gap-2"> <span id="batch-count" class="text-xs text-gray-500 dark:text-gray-400">0 molecules</span> <input type="file" id="batch-file-input" accept=".csv,.smi,.txt,.tsv" class="hidden"> <button id="batch-import-btn" class="text-xs px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Import File</button> </div> </div> <textarea id="batch-input" rows="6" placeholder="c1ccccc1
+CC(=O)Oc1ccccc1C(=O)O
+Cn1c(=O)c2c(ncn2C)n(c1=O)C" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all resize-y" spellcheck="false"></textarea> </div> <!-- Batch error display --> <div id="batch-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div> <!-- Action buttons --> <div class="flex flex-wrap gap-3"> <button id="batch-render-btn" class="btn-primary">Render All</button> <button id="batch-export-png" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg>
+Export PNG
+</button> <button id="batch-export-svg" class="btn-secondary"> <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path> </svg>
+Export SVG
+</button> </div> <!-- Pagination bar --> <div id="batch-pagination" class="flex items-center justify-center gap-3 hidden"> <button id="batch-page-prev" class="btn-secondary text-xs px-3 py-1" disabled>&laquo; Prev</button> <span id="batch-page-info" class="text-sm text-gray-600 dark:text-gray-400">Page 1 of 1</span> <button id="batch-page-next" class="btn-secondary text-xs px-3 py-1" disabled>Next &raquo;</button> </div> <!-- Selection action bar --> <div id="batch-selection-bar" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 hidden"> <span id="batch-selection-count" class="text-sm font-medium text-accent">0 selected</span> <button id="batch-select-all" class="text-xs px-2 py-0.5 rounded border border-accent/30 text-accent hover:bg-accent/10 transition-colors">Select All</button> <button id="batch-deselect-all" class="text-xs px-2 py-0.5 rounded border border-accent/30 text-accent hover:bg-accent/10 transition-colors">Deselect All</button> <button id="batch-delete-selected" class="text-xs px-2 py-0.5 rounded border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Delete Selected</button> </div> <!-- Grid preview area --> <div id="batch-preview-surface" class="card p-4 sm:p-6"> <div id="batch-grid" class="grid gap-2" style="grid-template-columns: repeat(3, 1fr);"> <div class="flex items-center justify-center text-sm text-gray-400 dark:text-gray-500 col-span-full py-16">
+Enter SMILES above and click "Render All"
+</div> </div> </div> </div> <!-- Sidebar --> <div class="space-y-4"> <!-- Grid Layout Panel --> <details class="card" open> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Grid Layout
+</summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <!-- Grid presets --> <div> <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Presets</div> <div class="flex flex-wrap gap-1.5"> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="2" data-rows="2">2x2</button> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="3" data-rows="3">3x3</button> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="3" data-rows="4">3x4</button> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="4" data-rows="4">4x4</button> <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="5" data-rows="5">5x5</button> </div> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Columns</span> <span id="batch-opt-cols-val" class="font-mono">3</span> </label> <input id="batch-opt-cols" type="range" min="1" max="8" value="3" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Rows</span> <span id="batch-opt-rows-val" class="font-mono">3</span> </label> <input id="batch-opt-rows" type="range" min="1" max="10" value="3" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Cell size (px)</span> <span id="batch-opt-cellSize-val" class="font-mono">250</span> </label> <input id="batch-opt-cellSize" type="range" min="100" max="500" value="250" step="10" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Show labels</span> <input id="batch-opt-showLabels" type="checkbox" checked class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Show formula</span> <input id="batch-opt-showFormula" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Show mol. weight</span> <input id="batch-opt-showMW" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Theme</span> <select id="batch-opt-theme" class="text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1"> <option value="light">light</option><option value="dark">dark / black</option><option value="oldschool">oldschool</option><option value="solarized">solarized</option><option value="solarized-dark">solarized-dark</option><option value="matrix">matrix</option><option value="github">github</option><option value="carbon">carbon</option><option value="cyberpunk">cyberpunk</option><option value="gruvbox">gruvbox</option><option value="gruvbox-dark">gruvbox-dark</option> </select> </label> </div> </details> <!-- Publication Export Panel --> <details class="card"> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Publication Export
+</summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <label class="flex items-center justify-between text-xs gap-3"> <div> <span class="text-gray-600 dark:text-gray-400 font-medium">Publication style</span> <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 leading-tight">Uniform bond lengths, black atoms/bonds</p> </div> <input id="batch-opt-pubStyle" type="checkbox" class="accent-accent w-4 h-4 flex-shrink-0"> </label> <hr class="border-gray-100 dark:border-gray-800"> <div> <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Export scale</div> <div class="flex flex-wrap gap-1.5"> <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="1">1x (72 DPI)</button> <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-accent text-accent ring-2 ring-accent/30" data-scale="2">2x (144 DPI)</button> <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="3">3x (216 DPI)</button> <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="4">4x (288 DPI)</button> </div> </div> <hr class="border-gray-100 dark:border-gray-800"> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Transparent background</span> <input id="batch-opt-transparentBg" type="checkbox" class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Force white background</span> <input id="batch-opt-whiteBg" type="checkbox" class="accent-accent w-4 h-4"> </label> <hr class="border-gray-100 dark:border-gray-800"> <div> <label class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Grid title</label> <input id="batch-opt-title" type="text" placeholder="e.g. Figure 1 — Drug candidates" class="w-full text-xs px-2 py-1.5 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-accent/50"> </div> </div> </details> <!-- Drawing Options Panel --> <details class="card" open> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Drawing Options
+</summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <div> <label for="batch-opt-atomVisualization" class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Atom style</label> <select id="batch-opt-atomVisualization" class="w-full text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5"> <option value="default">Default</option> <option value="balls">Balls</option> <option value="allballs">All balls</option> </select> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Scale</span> <span id="batch-opt-scale-val" class="font-mono">0</span> </label> <input id="batch-opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond length</span> <span id="batch-opt-bondLength-val" class="font-mono">19</span> </label> <input id="batch-opt-bondLength" type="range" min="5" max="30" value="19" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond thickness</span> <span id="batch-opt-bondThickness-val" class="font-mono">1.1</span> </label> <input id="batch-opt-bondThickness" type="range" min="0.1" max="5" value="1.1" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Short bond length</span> <span id="batch-opt-shortBondLength-val" class="font-mono">0.6</span> </label> <input id="batch-opt-shortBondLength" type="range" min="0.1" max="1" value="0.6" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Bond spacing</span> <span id="batch-opt-bondSpacing-val" class="font-mono">3.2</span> </label> <input id="batch-opt-bondSpacing" type="range" min="0" max="10" value="3.2" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Font size</span> <span id="batch-opt-fontSizeLarge-val" class="font-mono">6.3</span> </label> <input id="batch-opt-fontSizeLarge" type="range" min="1" max="20" value="6.3" step="0.1" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Compact drawing</span> <input id="batch-opt-compactDrawing" type="checkbox" checked class="accent-accent w-4 h-4"> </label> <label class="flex items-center justify-between text-xs"> <span class="text-gray-600 dark:text-gray-400">Terminal carbons</span> <input id="batch-opt-terminalCarbons" type="checkbox" class="accent-accent w-4 h-4"> </label> </div> </details> <details class="card" open> <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
+Reaction Options
+</summary> <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4"> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Spacing</span> <span id="batch-opt-rxnSpacing-val" class="font-mono">10</span> </label> <input id="batch-opt-rxnSpacing" type="range" min="0" max="20" value="10" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Font size</span> <span id="batch-opt-rxnFontSize-val" class="font-mono">9</span> </label> <input id="batch-opt-rxnFontSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Plus size</span> <span id="batch-opt-rxnPlusSize-val" class="font-mono">9</span> </label> <input id="batch-opt-rxnPlusSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Plus thickness</span> <span id="batch-opt-rxnPlusThickness-val" class="font-mono">1</span> </label> <input id="batch-opt-rxnPlusThickness" type="range" min="0" max="5" value="1" step="0.1" class="w-full accent-accent"> </div> <hr class="border-gray-100 dark:border-gray-800"> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Arrow length</span> <span id="batch-opt-rxnArrowLength-val" class="font-mono">120</span> </label> <input id="batch-opt-rxnArrowLength" type="range" min="0" max="500" value="120" step="1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Arrow thickness</span> <span id="batch-opt-rxnArrowThickness-val" class="font-mono">1</span> </label> <input id="batch-opt-rxnArrowThickness" type="range" min="0.1" max="10" value="1" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Arrow head size</span> <span id="batch-opt-rxnArrowHeadSize-val" class="font-mono">6</span> </label> <input id="batch-opt-rxnArrowHeadSize" type="range" min="1" max="10" value="6" step="0.1" class="w-full accent-accent"> </div> <div> <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1"> <span>Arrow margin</span> <span id="batch-opt-rxnArrowMargin-val" class="font-mono">3</span> </label> <input id="batch-opt-rxnArrowMargin" type="range" min="0" max="10" value="3" step="0.1" class="w-full accent-accent"> </div> </div> </details> </div> </div> </div> </div>  </main> <footer class="border-t border-gray-200 dark:border-gray-800 mt-auto"> <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"> <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400"> <div class="flex items-center gap-4"> <span>MIT License</span> <span class="hidden sm:inline">&middot;</span> <a href="https://doi.org/10.1021/acs.jcim.7b00425" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">
+Cite the paper
+</a> <span class="hidden sm:inline">&middot;</span> <a href="https://github.com/reymond-group/smilesDrawer" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">
+GitHub
+</a> </div> </div> </div> </footer> </body></html> <script>(function(){const themePresets = {"light":{"C":"#222222","O":"#e74c3c","N":"#3498db","F":"#27ae60","CL":"#16a085","BR":"#d35400","I":"#8e44ad","P":"#d35400","S":"#f1c40f","B":"#e67e22","SI":"#e67e22","H":"#666666","BACKGROUND":"#ffffff"},"dark":{"C":"#ffffff","O":"#e74c3c","N":"#3498db","F":"#27ae60","CL":"#16a085","BR":"#d35400","I":"#8e44ad","P":"#d35400","S":"#f1c40f","B":"#e67e22","SI":"#e67e22","H":"#aaaaaa","BACKGROUND":"#141414"},"oldschool":{"C":"#000000","O":"#000000","N":"#000000","F":"#000000","CL":"#000000","BR":"#000000","I":"#000000","P":"#000000","S":"#000000","B":"#000000","SI":"#000000","H":"#000000","BACKGROUND":"#ffffff"},"solarized":{"C":"#586e75","O":"#dc322f","N":"#268bd2","F":"#859900","CL":"#16a085","BR":"#cb4b16","I":"#6c71c4","P":"#d33682","S":"#b58900","B":"#2aa198","SI":"#2aa198","H":"#657b83","BACKGROUND":"#fdf6e3"},"solarized-dark":{"C":"#93a1a1","O":"#dc322f","N":"#268bd2","F":"#859900","CL":"#16a085","BR":"#cb4b16","I":"#6c71c4","P":"#d33682","S":"#b58900","B":"#2aa198","SI":"#2aa198","H":"#839496","BACKGROUND":"#002b36"},"matrix":{"C":"#678c61","O":"#2fc079","N":"#4f7e7e","F":"#90d762","CL":"#82d967","BR":"#23755a","I":"#409931","P":"#c1ff8a","S":"#faff00","B":"#50b45a","SI":"#409931","H":"#426644","BACKGROUND":"#0f120f"},"github":{"C":"#24292f","O":"#cf222e","N":"#0969da","F":"#2da44e","CL":"#6fdd8b","BR":"#bc4c00","I":"#8250df","P":"#bf3989","S":"#d4a72c","B":"#fb8f44","SI":"#bc4c00","H":"#57606a","BACKGROUND":"#ffffff"},"carbon":{"C":"#161616","O":"#da1e28","N":"#0f62fe","F":"#198038","CL":"#007d79","BR":"#fa4d56","I":"#8a3ffc","P":"#ff832b","S":"#f1c21b","B":"#8a3800","SI":"#e67e22","H":"#525252","BACKGROUND":"#f4f4f4"},"cyberpunk":{"C":"#ea00d9","O":"#ff3131","N":"#0abdc6","F":"#00ff9f","CL":"#00fe00","BR":"#fe9f20","I":"#ff00ff","P":"#fe7f00","S":"#fcee0c","B":"#ff00ff","SI":"#ffffff","H":"#913cb1","BACKGROUND":"#111827"},"gruvbox":{"C":"#665c54","O":"#cc241d","N":"#458588","F":"#98971a","CL":"#79740e","BR":"#d65d0e","I":"#b16286","P":"#af3a03","S":"#d79921","B":"#689d6a","SI":"#427b58","H":"#7c6f64","BACKGROUND":"#fbf1c7"},"gruvbox-dark":{"C":"#ebdbb2","O":"#cc241d","N":"#458588","F":"#98971a","CL":"#b8bb26","BR":"#d65d0e","I":"#b16286","P":"#fe8019","S":"#d79921","B":"#8ec07c","SI":"#83a598","H":"#bdae93","BACKGROUND":"#282828"}};
+const themeSurfaceModes = {"light":"light","dark":"dark","oldschool":"light","solarized":"light","solarized-dark":"dark","matrix":"dark","github":"light","carbon":"light","cyberpunk":"dark","gruvbox":"light","gruvbox-dark":"dark"};
+const renderOverrides = {"C=CCBr.[Na+].[I-]>CC(=O)C>C=CCI.[Na+].[Br-]  __{'textAboveArrow': 'acetone', 'textBelowArrow': '90%'}__":{"bondLength":16.8,"fontSizeLarge":5.4,"padding":20},"CC1([C@@H](N2[C@H](S1)[C@@H](C2=O)NC(=O)Cc3ccccc3)C(=O)O)C":{"bondLength":15.4,"fontSizeLarge":5.2,"padding":8},"C[C@H](CCCC(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O)C)C":{"bondLength":16.2,"fontSizeLarge":5.4,"padding":8},"OC[C@H]1OC(O)[C@H](O)[C@@H](O)[C@@H]1O":{"bondLength":17.8,"fontSizeLarge":5.6,"padding":8},"CN1CC[C@]23c4c5ccc(O)c4O[C@H]2[C@@H](O)C=C[C@H]3[C@@H]1C5":{"bondLength":15.6,"fontSizeLarge":5.2,"padding":8},"C[C@]12CC[C@H]3[C@@H](CCC4=CC(=O)CC[C@@]34C)[C@@H]1CC[C@@H]2O":{"bondLength":16,"fontSizeLarge":5.3,"padding":8},"c1nc(c2c(n1)n(cn2)[C@@H]3[C@@H]([C@@H]([C@H](O3)COP(=O)(O)OP(=O)(O)OP(=O)(O)O)O)O)N":{"bondLength":13,"fontSizeLarge":4.9,"padding":8}};
 
-                    <!-- Error display -->
-                    <div id="pg-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div>
-
-                    <!-- Molecule rendering area -->
-                    <div id="pg-preview-surface" class="card p-4 sm:p-8">
-                        <div id="pg-svg-wrap" class="flex items-center justify-center" style="min-height: 400px;">
-                            <svg id="pg-svg" class="w-full" style="max-width: 550px; max-height: 450px;"></svg>
-                        </div>
-                    </div>
-
-                    <!-- Action buttons -->
-                    <div class="flex flex-wrap gap-3">
-                        <button id="pg-download-svg" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Download SVG
-                        </button>
-                        <button id="pg-download-png" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Download PNG
-                        </button>
-                        <button id="pg-copy-svg" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            Copy SVG
-                        </button>
-                        <button id="pg-copy-smiles" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            Copy SMILES
-                        </button>
-                        <button id="pg-share" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                            </svg>
-                            Share Link
-                        </button>
-                    </div>
-
-                    <!-- Molecular formula (if computed) -->
-                    <div id="pg-formula" class="text-sm text-gray-500 dark:text-gray-400 hidden">
-                        Formula: <span id="pg-formula-text" class="font-mono"></span>
-                    </div>
-                </div>
-
-                <!-- Sidebar -->
-                <div class="space-y-4">
-                    <!-- Options Panel -->
-                    <details class="card" open>
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Drawing Options
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <div>
-                                <label for="opt-theme" class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Theme preset</label>
-                                <select id="opt-theme" class="w-full text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5">
-                                    {themeOptions.map(option => (
-                                        <option value={option.value}>{option.label}</option>
-                                    ))}
-                                </select>
-                                <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Changes atom colors and the preview surface background.</p>
-                            </div>
-                            <div>
-                                <label for="opt-atomVisualization" class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Atom style</label>
-                                <select id="opt-atomVisualization" class="w-full text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5">
-                                    <option value="default">Default</option>
-                                    <option value="balls">Balls</option>
-                                    <option value="allballs">All balls</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Scale</span>
-                                    <span id="opt-scale-val" class="font-mono">0</span>
-                                </label>
-                                <input id="opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond length</span>
-                                    <span id="opt-bondLength-val" class="font-mono">19</span>
-                                </label>
-                                <input id="opt-bondLength" type="range" min="5" max="30" value="19" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond thickness</span>
-                                    <span id="opt-bondThickness-val" class="font-mono">1.1</span>
-                                </label>
-                                <input id="opt-bondThickness" type="range" min="0.1" max="5" value="1.1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Short bond length</span>
-                                    <span id="opt-shortBondLength-val" class="font-mono">0.6</span>
-                                </label>
-                                <input id="opt-shortBondLength" type="range" min="0.1" max="1" value="0.6" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond spacing</span>
-                                    <span id="opt-bondSpacing-val" class="font-mono">3.2</span>
-                                </label>
-                                <input id="opt-bondSpacing" type="range" min="0" max="10" value="3.2" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Font size</span>
-                                    <span id="opt-fontSizeLarge-val" class="font-mono">6.3</span>
-                                </label>
-                                <input id="opt-fontSizeLarge" type="range" min="1" max="20" value="6.3" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Canvas width</span>
-                                    <span id="opt-width-val" class="font-mono">550</span>
-                                </label>
-                                <input id="opt-width" type="range" min="100" max="1000" value="550" step="50" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Canvas height</span>
-                                    <span id="opt-height-val" class="font-mono">450</span>
-                                </label>
-                                <input id="opt-height" type="range" min="100" max="1000" value="450" step="50" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Terminal carbons</span>
-                                <input id="opt-terminalCarbons" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Explicit hydrogens</span>
-                                <input id="opt-explicitHydrogens" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Compact drawing</span>
-                                <input id="opt-compactDrawing" type="checkbox" checked class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Debug mode</span>
-                                <input id="opt-debug" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                        </div>
-                    </details>
-
-                    <details class="card" open>
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Reaction Options
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Used when the input is a reaction SMILES string (`reactants&gt;reagents&gt;products`).</p>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Spacing</span>
-                                    <span id="opt-rxnSpacing-val" class="font-mono">10</span>
-                                </label>
-                                <input id="opt-rxnSpacing" type="range" min="0" max="20" value="10" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Font size</span>
-                                    <span id="opt-rxnFontSize-val" class="font-mono">9</span>
-                                </label>
-                                <input id="opt-rxnFontSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Plus size</span>
-                                    <span id="opt-rxnPlusSize-val" class="font-mono">9</span>
-                                </label>
-                                <input id="opt-rxnPlusSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Plus thickness</span>
-                                    <span id="opt-rxnPlusThickness-val" class="font-mono">1</span>
-                                </label>
-                                <input id="opt-rxnPlusThickness" type="range" min="0" max="5" value="1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow length</span>
-                                    <span id="opt-rxnArrowLength-val" class="font-mono">120</span>
-                                </label>
-                                <input id="opt-rxnArrowLength" type="range" min="0" max="500" value="120" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow thickness</span>
-                                    <span id="opt-rxnArrowThickness-val" class="font-mono">1</span>
-                                </label>
-                                <input id="opt-rxnArrowThickness" type="range" min="0.1" max="10" value="1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow head size</span>
-                                    <span id="opt-rxnArrowHeadSize-val" class="font-mono">6</span>
-                                </label>
-                                <input id="opt-rxnArrowHeadSize" type="range" min="1" max="10" value="6" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow margin</span>
-                                    <span id="opt-rxnArrowMargin-val" class="font-mono">3</span>
-                                </label>
-                                <input id="opt-rxnArrowMargin" type="range" min="0" max="10" value="3" step="0.1" class="w-full accent-accent">
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- Presets Panel -->
-                    <details class="card" open>
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Preset Molecules
-                        </summary>
-                        <div class="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            {Object.entries(playgroundPresets).map(([category, mols]) => (
-                                <div>
-                                    <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">{category}</div>
-                                    <div class="flex flex-wrap gap-1.5">
-                                        {mols.map(mol => (
-                                            <button
-                                                class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors"
-                                                data-smiles={mol.smiles}
-                                            >
-                                                {mol.name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </details>
-                </div>
-            </div>
-        </div>
-
-        <!-- Batch export panel -->
-        <div id="panel-batch" class="hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-                <!-- Main area -->
-                <div class="space-y-4">
-                    <!-- SMILES textarea input -->
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <label for="batch-input" class="text-sm font-medium text-gray-700 dark:text-gray-300">SMILES (one per line)</label>
-                            <div class="flex items-center gap-2">
-                                <span id="batch-count" class="text-xs text-gray-500 dark:text-gray-400">0 molecules</span>
-                                <input type="file" id="batch-file-input" accept=".csv,.smi,.txt,.tsv" class="hidden">
-                                <button id="batch-import-btn" class="text-xs px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Import File</button>
-                            </div>
-                        </div>
-                        <textarea
-                            id="batch-input"
-                            rows="6"
-                            placeholder="c1ccccc1&#10;CC(=O)Oc1ccccc1C(=O)O&#10;Cn1c(=O)c2c(ncn2C)n(c1=O)C"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all resize-y"
-                            spellcheck="false"
-                        ></textarea>
-                    </div>
-
-                    <!-- Batch error display -->
-                    <div id="batch-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div>
-
-                    <!-- Action buttons -->
-                    <div class="flex flex-wrap gap-3">
-                        <button id="batch-render-btn" class="btn-primary">Render All</button>
-                        <button id="batch-export-png" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Export PNG
-                        </button>
-                        <button id="batch-export-svg" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Export SVG
-                        </button>
-                    </div>
-
-                    <!-- Pagination bar -->
-                    <div id="batch-pagination" class="flex items-center justify-center gap-3 hidden">
-                        <button id="batch-page-prev" class="btn-secondary text-xs px-3 py-1" disabled>&laquo; Prev</button>
-                        <span id="batch-page-info" class="text-sm text-gray-600 dark:text-gray-400">Page 1 of 1</span>
-                        <button id="batch-page-next" class="btn-secondary text-xs px-3 py-1" disabled>Next &raquo;</button>
-                    </div>
-
-                    <!-- Selection action bar -->
-                    <div id="batch-selection-bar" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 hidden">
-                        <span id="batch-selection-count" class="text-sm font-medium text-accent">0 selected</span>
-                        <button id="batch-select-all" class="text-xs px-2 py-0.5 rounded border border-accent/30 text-accent hover:bg-accent/10 transition-colors">Select All</button>
-                        <button id="batch-deselect-all" class="text-xs px-2 py-0.5 rounded border border-accent/30 text-accent hover:bg-accent/10 transition-colors">Deselect All</button>
-                        <button id="batch-delete-selected" class="text-xs px-2 py-0.5 rounded border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Delete Selected</button>
-                    </div>
-
-                    <!-- Grid preview area -->
-                    <div id="batch-preview-surface" class="card p-4 sm:p-6">
-                        <div id="batch-grid" class="grid gap-2" style="grid-template-columns: repeat(3, 1fr);">
-                            <div class="flex items-center justify-center text-sm text-gray-400 dark:text-gray-500 col-span-full py-16">
-                                Enter SMILES above and click "Render All"
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sidebar -->
-                <div class="space-y-4">
-                    <!-- Grid Layout Panel -->
-                    <details class="card" open>
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Grid Layout
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <!-- Grid presets -->
-                            <div>
-                                <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Presets</div>
-                                <div class="flex flex-wrap gap-1.5">
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="2" data-rows="2">2x2</button>
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="3" data-rows="3">3x3</button>
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="3" data-rows="4">3x4</button>
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="4" data-rows="4">4x4</button>
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="5" data-rows="5">5x5</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Columns</span>
-                                    <span id="batch-opt-cols-val" class="font-mono">3</span>
-                                </label>
-                                <input id="batch-opt-cols" type="range" min="1" max="8" value="3" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Rows</span>
-                                    <span id="batch-opt-rows-val" class="font-mono">3</span>
-                                </label>
-                                <input id="batch-opt-rows" type="range" min="1" max="10" value="3" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Cell size (px)</span>
-                                    <span id="batch-opt-cellSize-val" class="font-mono">250</span>
-                                </label>
-                                <input id="batch-opt-cellSize" type="range" min="100" max="500" value="250" step="10" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Show labels</span>
-                                <input id="batch-opt-showLabels" type="checkbox" checked class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Show formula</span>
-                                <input id="batch-opt-showFormula" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Show mol. weight</span>
-                                <input id="batch-opt-showMW" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Theme</span>
-                                <select id="batch-opt-theme" class="text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1">
-                                    {themeOptions.map(option => (
-                                        <option value={option.value}>{option.label}</option>
-                                    ))}
-                                </select>
-                            </label>
-                        </div>
-                    </details>
-
-                    <!-- Publication Export Panel -->
-                    <details class="card">
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Publication Export
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <label class="flex items-center justify-between text-xs gap-3">
-                                <div>
-                                    <span class="text-gray-600 dark:text-gray-400 font-medium">Publication style</span>
-                                    <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 leading-tight">Uniform bond lengths, black atoms/bonds</p>
-                                </div>
-                                <input id="batch-opt-pubStyle" type="checkbox" class="accent-accent w-4 h-4 flex-shrink-0">
-                            </label>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Export scale</div>
-                                <div class="flex flex-wrap gap-1.5">
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="1">1x (72 DPI)</button>
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-accent text-accent ring-2 ring-accent/30" data-scale="2">2x (144 DPI)</button>
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="3">3x (216 DPI)</button>
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="4">4x (288 DPI)</button>
-                                </div>
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Transparent background</span>
-                                <input id="batch-opt-transparentBg" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Force white background</span>
-                                <input id="batch-opt-whiteBg" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Grid title</label>
-                                <input id="batch-opt-title" type="text" placeholder="e.g. Figure 1 — Drug candidates" class="w-full text-xs px-2 py-1.5 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-accent/50">
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- Drawing Options Panel -->
-                    <details class="card" open>
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Drawing Options
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <div>
-                                <label for="batch-opt-atomVisualization" class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Atom style</label>
-                                <select id="batch-opt-atomVisualization" class="w-full text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5">
-                                    <option value="default">Default</option>
-                                    <option value="balls">Balls</option>
-                                    <option value="allballs">All balls</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Scale</span>
-                                    <span id="batch-opt-scale-val" class="font-mono">0</span>
-                                </label>
-                                <input id="batch-opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond length</span>
-                                    <span id="batch-opt-bondLength-val" class="font-mono">19</span>
-                                </label>
-                                <input id="batch-opt-bondLength" type="range" min="5" max="30" value="19" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond thickness</span>
-                                    <span id="batch-opt-bondThickness-val" class="font-mono">1.1</span>
-                                </label>
-                                <input id="batch-opt-bondThickness" type="range" min="0.1" max="5" value="1.1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Short bond length</span>
-                                    <span id="batch-opt-shortBondLength-val" class="font-mono">0.6</span>
-                                </label>
-                                <input id="batch-opt-shortBondLength" type="range" min="0.1" max="1" value="0.6" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond spacing</span>
-                                    <span id="batch-opt-bondSpacing-val" class="font-mono">3.2</span>
-                                </label>
-                                <input id="batch-opt-bondSpacing" type="range" min="0" max="10" value="3.2" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Font size</span>
-                                    <span id="batch-opt-fontSizeLarge-val" class="font-mono">6.3</span>
-                                </label>
-                                <input id="batch-opt-fontSizeLarge" type="range" min="1" max="20" value="6.3" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Compact drawing</span>
-                                <input id="batch-opt-compactDrawing" type="checkbox" checked class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Terminal carbons</span>
-                                <input id="batch-opt-terminalCarbons" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                        </div>
-                    </details>
-
-                    <details class="card" open>
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Reaction Options
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Spacing</span>
-                                    <span id="batch-opt-rxnSpacing-val" class="font-mono">10</span>
-                                </label>
-                                <input id="batch-opt-rxnSpacing" type="range" min="0" max="20" value="10" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Font size</span>
-                                    <span id="batch-opt-rxnFontSize-val" class="font-mono">9</span>
-                                </label>
-                                <input id="batch-opt-rxnFontSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Plus size</span>
-                                    <span id="batch-opt-rxnPlusSize-val" class="font-mono">9</span>
-                                </label>
-                                <input id="batch-opt-rxnPlusSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Plus thickness</span>
-                                    <span id="batch-opt-rxnPlusThickness-val" class="font-mono">1</span>
-                                </label>
-                                <input id="batch-opt-rxnPlusThickness" type="range" min="0" max="5" value="1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow length</span>
-                                    <span id="batch-opt-rxnArrowLength-val" class="font-mono">120</span>
-                                </label>
-                                <input id="batch-opt-rxnArrowLength" type="range" min="0" max="500" value="120" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow thickness</span>
-                                    <span id="batch-opt-rxnArrowThickness-val" class="font-mono">1</span>
-                                </label>
-                                <input id="batch-opt-rxnArrowThickness" type="range" min="0.1" max="10" value="1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow head size</span>
-                                    <span id="batch-opt-rxnArrowHeadSize-val" class="font-mono">6</span>
-                                </label>
-                                <input id="batch-opt-rxnArrowHeadSize" type="range" min="1" max="10" value="6" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow margin</span>
-                                    <span id="batch-opt-rxnArrowMargin-val" class="font-mono">3</span>
-                                </label>
-                                <input id="batch-opt-rxnArrowMargin" type="range" min="0" max="10" value="3" step="0.1" class="w-full accent-accent">
-                            </div>
-                        </div>
-                    </details>
-                </div>
-            </div>
-        </div>
-    </div>
-</Layout>
-
-<script is:inline define:vars={{themePresets, themeSurfaceModes, renderOverrides}}>
 (function() {
     document.addEventListener('DOMContentLoaded', function() {
         var site = window.SmilesWebsite;
@@ -990,9 +476,9 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         draw();
     });
 })();
-</script>
+})();</script> <script>(function(){const themePresets = {"light":{"C":"#222222","O":"#e74c3c","N":"#3498db","F":"#27ae60","CL":"#16a085","BR":"#d35400","I":"#8e44ad","P":"#d35400","S":"#f1c40f","B":"#e67e22","SI":"#e67e22","H":"#666666","BACKGROUND":"#ffffff"},"dark":{"C":"#ffffff","O":"#e74c3c","N":"#3498db","F":"#27ae60","CL":"#16a085","BR":"#d35400","I":"#8e44ad","P":"#d35400","S":"#f1c40f","B":"#e67e22","SI":"#e67e22","H":"#aaaaaa","BACKGROUND":"#141414"},"oldschool":{"C":"#000000","O":"#000000","N":"#000000","F":"#000000","CL":"#000000","BR":"#000000","I":"#000000","P":"#000000","S":"#000000","B":"#000000","SI":"#000000","H":"#000000","BACKGROUND":"#ffffff"},"solarized":{"C":"#586e75","O":"#dc322f","N":"#268bd2","F":"#859900","CL":"#16a085","BR":"#cb4b16","I":"#6c71c4","P":"#d33682","S":"#b58900","B":"#2aa198","SI":"#2aa198","H":"#657b83","BACKGROUND":"#fdf6e3"},"solarized-dark":{"C":"#93a1a1","O":"#dc322f","N":"#268bd2","F":"#859900","CL":"#16a085","BR":"#cb4b16","I":"#6c71c4","P":"#d33682","S":"#b58900","B":"#2aa198","SI":"#2aa198","H":"#839496","BACKGROUND":"#002b36"},"matrix":{"C":"#678c61","O":"#2fc079","N":"#4f7e7e","F":"#90d762","CL":"#82d967","BR":"#23755a","I":"#409931","P":"#c1ff8a","S":"#faff00","B":"#50b45a","SI":"#409931","H":"#426644","BACKGROUND":"#0f120f"},"github":{"C":"#24292f","O":"#cf222e","N":"#0969da","F":"#2da44e","CL":"#6fdd8b","BR":"#bc4c00","I":"#8250df","P":"#bf3989","S":"#d4a72c","B":"#fb8f44","SI":"#bc4c00","H":"#57606a","BACKGROUND":"#ffffff"},"carbon":{"C":"#161616","O":"#da1e28","N":"#0f62fe","F":"#198038","CL":"#007d79","BR":"#fa4d56","I":"#8a3ffc","P":"#ff832b","S":"#f1c21b","B":"#8a3800","SI":"#e67e22","H":"#525252","BACKGROUND":"#f4f4f4"},"cyberpunk":{"C":"#ea00d9","O":"#ff3131","N":"#0abdc6","F":"#00ff9f","CL":"#00fe00","BR":"#fe9f20","I":"#ff00ff","P":"#fe7f00","S":"#fcee0c","B":"#ff00ff","SI":"#ffffff","H":"#913cb1","BACKGROUND":"#111827"},"gruvbox":{"C":"#665c54","O":"#cc241d","N":"#458588","F":"#98971a","CL":"#79740e","BR":"#d65d0e","I":"#b16286","P":"#af3a03","S":"#d79921","B":"#689d6a","SI":"#427b58","H":"#7c6f64","BACKGROUND":"#fbf1c7"},"gruvbox-dark":{"C":"#ebdbb2","O":"#cc241d","N":"#458588","F":"#98971a","CL":"#b8bb26","BR":"#d65d0e","I":"#b16286","P":"#fe8019","S":"#d79921","B":"#8ec07c","SI":"#83a598","H":"#bdae93","BACKGROUND":"#282828"}};
+const themeSurfaceModes = {"light":"light","dark":"dark","oldschool":"light","solarized":"light","solarized-dark":"dark","matrix":"dark","github":"light","carbon":"light","cyberpunk":"dark","gruvbox":"light","gruvbox-dark":"dark"};
 
-<script is:inline define:vars={{themePresets, themeSurfaceModes}}>
 (function() {
     document.addEventListener('DOMContentLoaded', function() {
         // ─── Tab switching ────────────────────────────────────────────
@@ -2091,4 +1577,4 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         }
     });
 })();
-</script>
+})();</script>

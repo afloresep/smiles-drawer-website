@@ -1,27 +1,53 @@
 ---
+import {heroExamples, renderOverrides} from '../data/molecules.js';
+
+const defaultExample = heroExamples[0];
+const base = import.meta.env.BASE_URL;
 ---
-<div class="w-full max-w-2xl mx-auto">
+<div class="w-full max-w-5xl mx-auto">
     <div class="relative">
         <input
             id="hero-smiles-input"
             type="text"
-            value="c1ccccc1"
+            value={defaultExample.smiles}
             placeholder="Enter a SMILES string..."
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-lg font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
+            class="w-full px-5 py-4 rounded-[1.4rem] border border-white/80 dark:border-white/10 bg-white/85 dark:bg-gray-950/80 text-gray-900 dark:text-white text-base sm:text-lg font-mono shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/50 transition-all"
             spellcheck="false"
             autocomplete="off"
         />
-        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500 hidden sm:block">
-            Press Enter or just type
+        <div id="hero-hint" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500 hidden sm:block">
+            Paste or edit
         </div>
     </div>
-    <div class="mt-6 flex justify-center">
-        <div class="card p-6 w-full max-w-md aspect-square flex items-center justify-center bg-white dark:bg-gray-900">
-            <svg id="hero-molecule-svg" class="w-full h-full"></svg>
+    <div class="mt-5">
+        <div class="text-[11px] uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500 mb-3 text-center">Specimen Set</div>
+        <div class="flex flex-wrap justify-center gap-2.5">
+            {heroExamples.map((example) => (
+                <button
+                    class="hero-example-btn inline-flex items-center gap-2 px-3 py-2 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/85 dark:bg-gray-950/70 text-left hover:border-accent hover:text-accent transition-colors"
+                    data-smiles={example.smiles}
+                    data-name={example.name}
+                    data-render-config={renderOverrides[example.smiles] ? JSON.stringify(renderOverrides[example.smiles]) : undefined}
+                    type="button"
+                >
+                    <span class="text-[11px] uppercase tracking-[0.16em] text-gray-400 dark:text-gray-500">{example.kind}</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">{example.name}</span>
+                </button>
+            ))}
+        </div>
+    </div>
+    <div class="mt-8 flex justify-center">
+        <div id="hero-preview-panel" class="card p-4 sm:p-6 lg:p-8 w-full">
+            <div class="flex items-center justify-end mb-4">
+                <a href={`${base}/playground`} class="hidden sm:inline-flex text-xs font-medium text-accent hover:opacity-80 transition-opacity">Open full playground</a>
+            </div>
+            <div id="hero-svg-wrap" class="flex w-full items-center justify-center rounded-[1.5rem] border border-white/80 dark:border-white/5 bg-white/65 dark:bg-black/20" style="min-height: 24rem;">
+                <svg id="hero-molecule-svg" class="w-full"></svg>
+            </div>
         </div>
     </div>
     <div id="hero-error" class="mt-3 text-center text-sm text-red-500 dark:text-red-400 hidden"></div>
-    <div class="mt-4 flex justify-center gap-3">
+    <div class="mt-5 flex justify-center gap-3">
         <button id="hero-download-svg" class="btn-secondary text-sm">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -37,46 +63,132 @@
     </div>
 </div>
 
-<script is:inline>
+<script is:inline define:vars={{renderOverrides}}>
 document.addEventListener('DOMContentLoaded', function() {
+    var site = window.SmilesWebsite;
     var input = document.getElementById('hero-smiles-input');
     var svg = document.getElementById('hero-molecule-svg');
     var errorEl = document.getElementById('hero-error');
     var downloadBtn = document.getElementById('hero-download-svg');
     var copyBtn = document.getElementById('hero-copy-smiles');
+    var hint = document.getElementById('hero-hint');
+    var previewPanel = document.getElementById('hero-preview-panel');
+    var svgWrap = document.getElementById('hero-svg-wrap');
+    var exampleButtons = document.querySelectorAll('.hero-example-btn');
+
+    function updateHint() {
+        if (!hint) return;
+        if (input.value.length > 20) {
+            hint.style.display = 'none';
+        } else {
+            hint.style.display = '';
+        }
+    }
+    updateHint();
 
     function getDrawTheme() {
-        return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        return site.getPageTheme();
+    }
+
+    function syncActiveExamples() {
+        var current = input.value.trim();
+        exampleButtons.forEach(function(btn) {
+            var active = btn.getAttribute('data-smiles') === current;
+            btn.classList.toggle('border-accent', active);
+            btn.classList.toggle('text-accent', active);
+            btn.classList.toggle('bg-accent/5', active);
+            btn.classList.toggle('ring-2', active);
+            btn.classList.toggle('ring-accent/20', active);
+        });
+    }
+
+    function syncPreviewPanel(smiles) {
+        if (!svgWrap) return;
+        svgWrap.style.minHeight = site.isReaction(smiles) ? '19rem' : '24rem';
+    }
+
+    function getPreviewWidth() {
+        if (svgWrap && svgWrap.clientWidth) return svgWrap.clientWidth;
+        if (previewPanel && previewPanel.clientWidth) return previewPanel.clientWidth;
+        return 0;
+    }
+
+    function getBaseOptions(mode) {
+        var defaults = site.getDefaultRenderOptions();
+        var previewWidth = getPreviewWidth() || defaults.width;
+
+        if (mode === 'reaction') {
+            return {
+                width: Math.max(Math.min(previewWidth - 24, 920), defaults.width),
+                height: 360,
+                padding: defaults.padding,
+                explicitHydrogens: false,
+                bondLength: defaults.bondLength,
+                bondThickness: defaults.bondThickness,
+                shortBondLength: defaults.shortBondLength,
+                bondSpacing: defaults.bondSpacing,
+                fontSizeLarge: defaults.fontSizeLarge,
+                scale: defaults.scale
+            };
+        }
+
+        return {
+            width: defaults.width,
+            height: defaults.height,
+            padding: defaults.padding,
+            explicitHydrogens: false,
+            bondLength: defaults.bondLength,
+            bondThickness: defaults.bondThickness,
+            shortBondLength: defaults.shortBondLength,
+            bondSpacing: defaults.bondSpacing,
+            fontSizeLarge: defaults.fontSizeLarge,
+            scale: defaults.scale
+        };
     }
 
     function drawHero() {
         var smiles = input.value.trim();
-        if (!smiles) {
-            svg.innerHTML = '';
-            errorEl.classList.add('hidden');
-            return;
-        }
-        try {
-            var drawer = new SmilesDrawer.SvgDrawer({width: 400, height: 400, compactDrawing: false});
-            SmilesDrawer.parse(smiles, function(tree) {
-                svg.innerHTML = '';
-                drawer.draw(tree, svg, getDrawTheme());
-                errorEl.classList.add('hidden');
-            }, function(err) {
-                errorEl.textContent = 'Invalid SMILES: ' + err;
+        var isReaction = site.isReaction(smiles);
+        syncActiveExamples();
+        syncPreviewPanel(smiles);
+        svg = site.renderSmiles({
+            adaptive: true,
+            baseOptions: getBaseOptions(isReaction ? 'reaction' : 'molecule'),
+            layout: {
+                containerWidth: isReaction ? getPreviewWidth() : Math.min(getPreviewWidth(), site.getDefaultRenderOptions().width),
+                minHeight: isReaction ? 300 : 0
+            },
+            onError: function(err, kind, nextSvg) {
+                svg = nextSvg;
+                errorEl.textContent = (kind === 'reaction' ? 'Invalid reaction SMILES: ' : 'Invalid SMILES: ') + err;
                 errorEl.classList.remove('hidden');
-            });
-        }
-        catch (e) {
-            errorEl.textContent = 'Error: ' + e.message;
-            errorEl.classList.remove('hidden');
-        }
+            },
+            onSuccess: function(result) {
+                svg = result.svg;
+                errorEl.classList.add('hidden');
+            },
+            renderConfig: renderOverrides[smiles],
+            smiles: smiles,
+            svg: svg,
+            svgId: 'hero-molecule-svg',
+            themeName: getDrawTheme()
+        }).svg;
     }
 
     var debounceTimer;
     input.addEventListener('input', function() {
+        updateHint();
+        syncActiveExamples();
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(drawHero, 200);
+    });
+
+    exampleButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            input.value = btn.getAttribute('data-smiles');
+            updateHint();
+            drawHero();
+        });
     });
 
     // Re-render when dark mode toggles
@@ -86,7 +198,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
 
-    drawHero();
+    var resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (input.value.trim()) drawHero();
+        }, 120);
+    });
+
+    site.waitForFonts(drawHero);
 
     downloadBtn.addEventListener('click', function() {
         var svgData = new XMLSerializer().serializeToString(svg);
@@ -94,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
         a.href = url;
-        a.download = 'molecule.svg';
+        a.download = 'smilesdrawer.svg';
         a.click();
         URL.revokeObjectURL(url);
     });

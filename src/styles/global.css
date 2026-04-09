@@ -3,9 +3,24 @@
 @tailwind utilities;
 
 @layer base {
+    :root {
+        color-scheme: light;
+    }
+
+    html.dark {
+        color-scheme: dark;
+    }
+
     body {
-        @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100;
+        @apply text-gray-900 dark:text-gray-100;
         font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        background-color: #f3f5f1;
+        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 245, 241, 1));
+    }
+
+    html.dark body {
+        background-color: #070c0f;
+        background-image: linear-gradient(180deg, rgba(11, 15, 18, 1), rgba(7, 12, 15, 1));
     }
 
     ::selection {
@@ -17,21 +32,24 @@
     .btn-primary {
         @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg
                bg-accent text-white font-medium text-sm
-               hover:bg-accent-500 active:bg-accent-600
-               transition-colors duration-150;
+               shadow-[0_16px_34px_-20px_rgba(15,23,42,0.32)]
+               hover:bg-accent-500 active:bg-accent-600 hover:-translate-y-0.5
+               transition-all duration-200;
     }
 
     .btn-secondary {
         @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg
-               border border-gray-200 dark:border-gray-700
+               border border-gray-200/90 dark:border-gray-700/80
+               bg-white/70 dark:bg-gray-900/70
                text-gray-700 dark:text-gray-300 font-medium text-sm
-               hover:bg-gray-50 dark:hover:bg-gray-800
-               transition-colors duration-150;
+               hover:bg-white dark:hover:bg-gray-900 hover:-translate-y-0.5
+               transition-all duration-200;
     }
 
     .card {
-        @apply rounded-xl border border-gray-200 dark:border-gray-800
-               bg-white dark:bg-gray-900
-               shadow-sm hover:shadow-md transition-shadow duration-200;
+        @apply rounded-[1.5rem] border border-gray-200/80 dark:border-gray-800/80
+               bg-white/85 dark:bg-gray-900/75 backdrop-blur-sm
+               shadow-[0_24px_60px_-36px_rgba(15,23,42,0.35)]
+               hover:shadow-[0_28px_70px_-36px_rgba(15,23,42,0.45)] transition-all duration-300;
     }
 }

@@ -5,39 +5,53 @@ interface Props {
     showPlaygroundLink?: boolean;
     showDownload?: boolean;
     clickable?: boolean;
+    wide?: boolean;
+    weights?: string;
+    render?: Record<string, any>;
 }
 
-const {name, smiles, showPlaygroundLink = false, showDownload = false, clickable = false} = Astro.props;
+const {name, smiles, showPlaygroundLink = false, showDownload = false, clickable = false, wide = false, weights, render} = Astro.props;
 const cardId = `mol-${name.replace(/\s+/g, '-').toLowerCase()}`;
 ---
 <div
     class:list={[
-        'card p-4 flex flex-col items-center gap-3',
-        clickable && 'cursor-pointer hover:border-accent/50'
+        'card group p-4 sm:p-5 flex flex-col gap-3',
+        clickable && 'cursor-pointer hover:border-accent/50',
+        wide && 'sm:col-span-2'
     ]}
     data-smiles={smiles}
     data-molecule-card={clickable ? 'true' : undefined}
 >
-    <div class="w-full aspect-square flex items-center justify-center bg-gray-50 dark:bg-gray-800/50 rounded-lg overflow-hidden">
-        <svg id={cardId} data-smiles={smiles} class="molecule-svg w-full h-full"></svg>
+    <div class:list={[
+        'w-full flex items-center justify-center rounded-[1.25rem] overflow-hidden border border-white/70 dark:border-white/5 bg-white/70 dark:bg-black/20',
+        wide ? 'aspect-[2/1]' : 'aspect-square'
+    ]} data-theme-surface="true">
+        <svg
+            id={cardId}
+            data-smiles={smiles}
+            class:list={['molecule-svg w-full h-full', weights && 'weight-svg']}
+            data-smiles-weights={weights || undefined}
+            data-smiles-options={weights ? '{"sigma":40,"opacity":0.7}' : undefined}
+            data-render-config={render ? JSON.stringify(render) : undefined}
+        ></svg>
     </div>
-    <div class="text-center w-full">
-        <div class="font-medium text-sm text-gray-900 dark:text-white">{name}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400 font-mono truncate max-w-full" title={smiles}>{smiles}</div>
+    <div class="w-full space-y-1">
+        <div class="font-semibold text-sm text-gray-900 dark:text-white tracking-[-0.02em]">{name}</div>
+        <div class="text-[11px] text-gray-500 dark:text-gray-400 font-mono truncate max-w-full" title={smiles}>{smiles}</div>
     </div>
     {(showPlaygroundLink || showDownload) && (
         <div class="flex items-center gap-2 w-full">
             {showPlaygroundLink && (
                 <a
                     href={`/playground?smiles=${encodeURIComponent(smiles)}`}
-                    class="flex-1 text-center text-xs px-2 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-accent hover:border-accent/50 transition-colors"
+                    class="flex-1 text-center text-xs px-2.5 py-2 rounded-lg border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:text-accent hover:border-accent/50 transition-colors"
                 >
                     Open in Playground
                 </a>
             )}
             {showDownload && (
                 <button
-                    class="download-svg-btn text-xs px-2 py-1.5 rounded-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-accent hover:border-accent/50 transition-colors"
+                    class="download-svg-btn text-xs px-3 py-2 rounded-lg border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:text-accent hover:border-accent/50 transition-colors"
                     data-target={cardId}
                 >
                     SVG

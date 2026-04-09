@@ -1,323 +1,409 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import CodeBlock from '../components/CodeBlock.astro';
+const base = import.meta.env.BASE_URL;
 ---
-<Layout title="Getting Started" description="Learn how to add SmilesDrawer to your project. CDN, npm, React, Vue, Svelte — we've got you covered.">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">Getting Started</h1>
-        <p class="text-lg text-gray-600 dark:text-gray-400 mb-12">Three ways to start drawing molecules.</p>
-
-        <!-- Path 1: CDN -->
-        <section class="mb-16">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-accent/10 text-accent font-bold text-sm">1</span>
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Just add a script tag</h2>
-            </div>
-            <p class="text-gray-600 dark:text-gray-400 mb-4 ml-11">
-                The fastest path. No build tools, no npm, no framework. Perfect for quick prototypes, Jupyter notebooks, or static HTML pages.
+<Layout title="Getting Started" description="SmilesDrawer docs covering installation, basic drawing, reactions, weights, themes, and framework integration.">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <section class="mb-10 sm:mb-12">
+            <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500">SmilesDrawer 2.2.1</div>
+            <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[-0.04em] text-gray-900 dark:text-white">No server, no images, no templates. Just SMILES.</h1>
+            <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-3xl">
+                Start with the smallest working setup, then use the examples and playground when you need reactions, highlighting, or rendering tweaks for denser structures.
             </p>
-            <div class="ml-11">
-                <CodeBlock
-                    lang="html"
-                    filename="index.html"
-                    code={`<!DOCTYPE html>
-<html>
-<head>
-    <script src="https://unpkg.com/smiles-drawer@2.1.7/dist/smiles-drawer.min.js"><\/script>
-</head>
-<body>
-    <svg data-smiles="c1ccccc1"></svg>
-    <svg data-smiles="CC(=O)Oc1ccccc1C(=O)O"></svg>
+        </section>
 
-    <script>SmiDrawer.apply();<\/script>
-</body>
-</html>`}
-                />
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">
-                    <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">SmiDrawer.apply()</code> scans the page for any element with a <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles</code> attribute and renders the molecule into it. Works with both <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">&lt;svg&gt;</code> and <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">&lt;canvas&gt;</code> elements.
+        <div class="flex flex-wrap gap-2 mb-10">
+            <a href="#installation" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Installation</a>
+            <a href="#simple-drawing" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Basic Drawing</a>
+            <a href="#reactions" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Reactions</a>
+            <a href="#weights" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Weights</a>
+            <a href="#customization" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Customization</a>
+            <a href="#frameworks" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Frameworks</a>
+        </div>
+
+        <section id="installation" class="scroll-mt-24 mb-14">
+            <div class="grid gap-4 md:grid-cols-3">
+                <div class="card p-5">
+                    <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Package Manager</div>
+                    <h2 class="mt-2 text-xl font-semibold text-gray-900 dark:text-white">Install from NPM</h2>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Available as `smiles-drawer` and works with `npm`, `pnpm`, and `yarn`.</p>
+                    <div class="mt-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/70 px-3 py-2 font-mono text-sm text-gray-700 dark:text-gray-300">npm install smiles-drawer</div>
+                </div>
+                <div class="card p-5">
+                    <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">CDN</div>
+                    <h2 class="mt-2 text-xl font-semibold text-gray-900 dark:text-white">Drop in a script tag</h2>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">If you just want to render in the browser, the CDN build is enough to get started.</p>
+                    <div class="mt-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/70 px-3 py-2 font-mono text-xs text-gray-700 dark:text-gray-300 break-all">https://unpkg.com/smiles-drawer@2/dist/smiles-drawer.min.js</div>
+                </div>
+                <div class="card p-5">
+                    <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Tools</div>
+                    <h2 class="mt-2 text-xl font-semibold text-gray-900 dark:text-white">Use the site itself</h2>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">The fastest way to learn the rendering is to compare the docs, the examples, and the playground side by side.</p>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <a href={`${base}/playground`} class="btn-secondary text-xs">Playground</a>
+                        <a href={`${base}/examples`} class="btn-secondary text-xs">Examples</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="simple-drawing" class="scroll-mt-24 mb-14">
+            <div class="max-w-3xl mb-6">
+                <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Basic Drawing</div>
+                <h2 class="mt-2 text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-white">Choose between `apply()`, `draw()`, and `parse()` depending on how much control you need.</h2>
+                <p class="mt-3 text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                    `apply()` is the fastest start, `draw()` is the practical default for dynamic UIs, and `parse()` is only necessary when you explicitly need the parse tree.
                 </p>
             </div>
-        </section>
 
-        <!-- Path 2: npm -->
-        <section class="mb-16">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-accent/10 text-accent font-bold text-sm">2</span>
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">npm install</h2>
+            <div class="grid gap-6 lg:grid-cols-2">
+                <div class="card p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Apply static molecules</h3>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Use this when all SMILES strings are known at page load and every drawing can share the same dimensions.</p>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="html"
+                            filename="index.html"
+                            code={`<script src="https://unpkg.com/smiles-drawer@2/dist/smiles-drawer.min.js"><\/script>
+
+<canvas data-smiles="Cn1cnc2c1C(=O)N(C(=O)N2C)C"></canvas>
+<canvas data-smiles="c1(C=O)cc(OC)c(O)cc1"></canvas>
+
+<script>
+    SmilesDrawer.apply({ width: 550, height: 450 });
+<\/script>`}
+                        />
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">Use `apply()` when you want the smallest possible setup and don’t need per-target sizing.</p>
+                </div>
+
+                <div class="card p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Draw dynamically</h3>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Create a `SmiDrawer` when user input changes over time or when molecules and reactions need different targets.</p>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="html"
+                            filename="app.html"
+                            code={`<input id="input" value="O=C(O)CNCP(=O)(O)O" />
+<svg id="output"></svg>
+
+<script src="https://unpkg.com/smiles-drawer@2/dist/smiles-drawer.min.js"><\/script>
+<script>
+    var drawer = new SmilesDrawer.SmiDrawer({ width: 550, height: 450 });
+    var input = document.getElementById('input');
+
+    function render(smiles) {
+        drawer.draw(smiles, '#output');
+    }
+
+    input.addEventListener('input', function() {
+        render(input.value);
+    });
+
+    render(input.value);
+<\/script>`}
+                        />
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">This is usually the most practical entrypoint for application UIs, playgrounds, and framework components.</p>
+                </div>
             </div>
-            <p class="text-gray-600 dark:text-gray-400 mb-4 ml-11">
-                For bundled applications. Import as an ES module.
-            </p>
-            <div class="ml-11 space-y-4">
-                <CodeBlock
-                    lang="bash"
-                    code="npm install smiles-drawer"
-                />
-                <CodeBlock
-                    lang="javascript"
-                    filename="app.js"
-                    code={`import SmilesDrawer from 'smiles-drawer';
 
-// Option 1: Quick apply (scans DOM for data-smiles attributes)
-SmilesDrawer.SmiDrawer.apply();
-
-// Option 2: Programmatic drawing
-const drawer = new SmilesDrawer.SvgDrawer({ width: 500, height: 500 });
-const svgElement = document.getElementById('my-molecule');
-
-SmilesDrawer.parse('c1ccccc1', function(tree) {
-    drawer.draw(tree, svgElement, 'light');
-}, function(err) {
-    console.error('Parse error:', err);
-});`}
-                />
-            </div>
-        </section>
-
-        <!-- Path 3: Frameworks -->
-        <section class="mb-16">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-accent/10 text-accent font-bold text-sm">3</span>
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Framework examples</h2>
-            </div>
-
-            <div class="ml-11 space-y-8">
-                <!-- React -->
-                <div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">React</h3>
+            <div class="card p-5 sm:p-6 mt-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Parse then draw</h3>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Only reach for `SmilesDrawer.parse()` when you explicitly need the parse result before rendering, or when you want to choose between `Drawer` and `SvgDrawer` yourself.</p>
+                <div class="mt-4">
                     <CodeBlock
-                        lang="jsx"
-                        filename="MoleculeViewer.jsx"
-                        code={`import { useRef, useEffect } from 'react';
+                        lang="javascript"
+                        filename="parse.js"
+                        code={`var drawer = new SmilesDrawer.SvgDrawer({ width: 550, height: 450 });
+
+SmilesDrawer.parse(smiles, function(result) {
+    drawer.draw(result, document.getElementById('output'), 'light');
+}, function(error) {
+    console.error(error);
+});`}
+                    />
+                </div>
+            </div>
+        </section>
+
+        <section id="reactions" class="scroll-mt-24 mb-14">
+            <div class="grid gap-6 lg:grid-cols-2">
+                <div class="card p-5 sm:p-6">
+                    <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Reactions</div>
+                    <h2 class="mt-2 text-2xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-white">Reaction SMILES use `reactants&gt;reagents&gt;products`.</h2>
+                    <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">Use `SmilesDrawer.SmiDrawer.apply()` or `drawer.draw()` when you want the library to parse and render the reaction in one step.</p>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="html"
+                            filename="reaction.html"
+                            code={`<svg data-smiles="[Pb]>>[Au]"></svg>
+
+<script src="https://unpkg.com/smiles-drawer@2/dist/smiles-drawer.min.js"><\/script>
+<script>
+    SmilesDrawer.SmiDrawer.apply();
+<\/script>`}
+                        />
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                        Arrow labels still use the trailing settings block hack, for example
+                        <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded ml-1">{`__{textAboveArrow: 'MAGIC', textBelowArrow: '42°C'}__`}</code>.
+                    </p>
+                </div>
+
+                <div class="card p-5 sm:p-6">
+                    <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Weights</div>
+                    <h2 class="mt-2 text-2xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-white">Weighted overlays take one numeric value per heavy atom.</h2>
+                    <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">Positive values render green, negative values render red, and the intensity scales with the magnitude of the weight.</p>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="javascript"
+                            filename="weights.js"
+                            code={`var drawer = new SmilesDrawer.SmiDrawer({ width: 550, height: 450 });
+
+drawer.draw(
+    'CCCCCCN',
+    '#weights-output',
+    'light',
+    null,
+    null,
+    [-3, -2, -1, 0, 1, 2, 3]
+);`}
+                        />
+                    </div>
+                    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">For SVG output, weights generally look best when you keep the final surface on a light background.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="customization" class="scroll-mt-24 mb-14">
+            <div class="max-w-3xl mb-6">
+                <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Customization</div>
+                <h2 class="mt-2 text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-white">Most of the site’s rendering fixes come down to a small set of options.</h2>
+                <p class="mt-3 text-sm sm:text-base text-gray-600 dark:text-gray-400">For this site, the biggest levers are `bondLength`, `fontSizeLarge`, `padding`, and whether `compactDrawing` or `explicitHydrogens` are enabled.</p>
+            </div>
+
+            <div class="card p-5 sm:p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Site default render preset</h3>
+                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">These are the starting values used on the website and in the playground because they hold up better for most molecules than the larger legacy baseline.</p>
+                <div class="mt-4">
+                    <CodeBlock
+                        lang="javascript"
+                        filename="site-defaults.js"
+                        code={`var options = {
+    scale: 0,
+    width: 550,
+    height: 450,
+    bondLength: 19,
+    bondThickness: 1.1,
+    shortBondLength: 0.6,
+    bondSpacing: 3.2,
+    fontSizeLarge: 6.3
+};`}
+                    />
+                </div>
+            </div>
+
+            <div class="card overflow-hidden">
+                <div class="overflow-x-auto p-5 sm:p-6">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <th class="text-left py-3 pr-4 font-medium text-gray-900 dark:text-white">Option</th>
+                                <th class="text-left py-3 pr-4 font-medium text-gray-900 dark:text-white">Default</th>
+                                <th class="text-left py-3 font-medium text-gray-900 dark:text-white">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 dark:text-gray-400">
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">width / height</td>
+                                <td class="py-2 pr-4 font-mono text-xs">550 / 450</td>
+                                <td class="py-2">Drawing dimensions.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">padding</td>
+                                <td class="py-2 pr-4 font-mono text-xs">10</td>
+                                <td class="py-2">Whitespace inside the drawing bounds.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">bondLength</td>
+                                <td class="py-2 pr-4 font-mono text-xs">19</td>
+                                <td class="py-2">The main scale control for how large the structure feels.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">bondThickness</td>
+                                <td class="py-2 pr-4 font-mono text-xs">1.1</td>
+                                <td class="py-2">Stroke width for bonds.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">shortBondLength</td>
+                                <td class="py-2 pr-4 font-mono text-xs">0.6</td>
+                                <td class="py-2">Relative length for shortened bonds such as inner double bonds.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">bondSpacing</td>
+                                <td class="py-2 pr-4 font-mono text-xs">3.2</td>
+                                <td class="py-2">Spacing between double and triple bonds.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">fontSizeLarge</td>
+                                <td class="py-2 pr-4 font-mono text-xs">6.3</td>
+                                <td class="py-2">Main atom label size.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">atomVisualization</td>
+                                <td class="py-2 pr-4 font-mono text-xs">default</td>
+                                <td class="py-2">`default`, `balls`, or `none`.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">compactDrawing</td>
+                                <td class="py-2 pr-4 font-mono text-xs">true</td>
+                                <td class="py-2">Abbreviates terminals and pseudo-elements when possible.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">terminalCarbons</td>
+                                <td class="py-2 pr-4 font-mono text-xs">false</td>
+                                <td class="py-2">Show terminal carbon labels such as CH3.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 dark:border-gray-800">
+                                <td class="py-2 pr-4 font-mono text-xs">explicitHydrogens</td>
+                                <td class="py-2 pr-4 font-mono text-xs">true</td>
+                                <td class="py-2">Render explicit hydrogens from the SMILES input.</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 pr-4 font-mono text-xs">experimentalSSSR</td>
+                                <td class="py-2 pr-4 font-mono text-xs">false</td>
+                                <td class="py-2">Try this when large ring systems produce stretched or awkward layouts.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-3 mt-6">
+                <div class="card p-5">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Too much abbreviation</h3>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Set <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">compactDrawing</code> to <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">false</code>.</p>
+                </div>
+                <div class="card p-5">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Unwanted hydrogens</h3>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Set <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">explicitHydrogens</code> to <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">false</code>.</p>
+                </div>
+                <div class="card p-5">
+                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">Large ring issues</h3>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Try <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">experimentalSSSR</code> when rings stretch or overlap badly.</p>
+                </div>
+            </div>
+
+            <div class="grid gap-6 lg:grid-cols-2 mt-6">
+                <div class="card p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Built-in themes</h3>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Pass a theme name as the final argument to `apply()` or `draw()`.</p>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="javascript"
+                            filename="themes.js"
+                            code={`SmilesDrawer.apply(options, 'canvas[data-smiles]', 'matrix');
+
+var drawer = new SmilesDrawer.SmiDrawer(options);
+drawer.draw(smiles, '#output', 'solarized');`}
+                        />
+                    </div>
+                </div>
+                <div class="card p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Custom themes</h3>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Provide a `themes` object in your options, then draw with the custom theme name just like a built-in preset.</p>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="javascript"
+                            filename="custom-theme.js"
+                            code={`var options = {
+    width: 550,
+    height: 450,
+    themes: {
+        'my-theme': {
+            C: '#1f2937',
+            O: '#dc2626',
+            N: '#2563eb',
+            H: '#6b7280',
+            BACKGROUND: '#ffffff'
+        }
+    }
+};`}
+                        />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="frameworks" class="scroll-mt-24 mb-14">
+            <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+                <div class="card p-5 sm:p-6">
+                    <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Frameworks</div>
+                    <h2 class="mt-2 text-2xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-white">The integration pattern is the same everywhere.</h2>
+                    <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">Create a render target, draw when the component mounts, and redraw when the SMILES string or relevant options change.</p>
+                    <div class="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <div><span class="font-medium text-gray-900 dark:text-white">Preact</span>: component + ref + redraw on prop changes</div>
+                        <div><span class="font-medium text-gray-900 dark:text-white">React</span>: `useEffect` around a persistent SVG ref</div>
+                        <div><span class="font-medium text-gray-900 dark:text-white">Svelte</span>: bind the SVG element and redraw after updates</div>
+                        <div><span class="font-medium text-gray-900 dark:text-white">Vue</span>: ref + watcher pattern</div>
+                        <div><span class="font-medium text-gray-900 dark:text-white">Web Components</span>: custom element lifecycle + redraw on attribute changes</div>
+                    </div>
+                </div>
+
+                <div class="card p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Wrapper pattern</h3>
+                    <div class="mt-4">
+                        <CodeBlock
+                            lang="jsx"
+                            filename="MoleculeFigure.jsx"
+                            code={`import { useEffect, useRef } from 'react';
 import SmilesDrawer from 'smiles-drawer';
 
-export default function MoleculeViewer({ smiles, theme = 'light' }) {
+export default function MoleculeFigure({ smiles, theme = 'light' }) {
     const svgRef = useRef(null);
 
     useEffect(() => {
         if (!svgRef.current || !smiles) return;
-        const drawer = new SmilesDrawer.SvgDrawer({ width: 400, height: 400 });
-        SmilesDrawer.parse(smiles, (tree) => {
-            svgRef.current.innerHTML = '';
-            drawer.draw(tree, svgRef.current, theme);
-        }, (err) => console.error(err));
+
+        const drawer = new SmilesDrawer.SmiDrawer({ width: 320, height: 220 });
+        drawer.draw(smiles, svgRef.current, theme);
     }, [smiles, theme]);
 
     return <svg ref={svgRef} />;
 }`}
-                    />
-                </div>
-
-                <!-- Vue -->
-                <div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">Vue</h3>
-                    <CodeBlock
-                        lang="vue"
-                        filename="MoleculeViewer.vue"
-                        code={`<template>
-  <svg ref="svgEl"></svg>
-</template>
-
-<script setup>
-import { ref, watch, onMounted } from 'vue';
-import SmilesDrawer from 'smiles-drawer';
-
-const props = defineProps({ smiles: String, theme: { type: String, default: 'light' } });
-const svgEl = ref(null);
-
-function draw() {
-  if (!svgEl.value || !props.smiles) return;
-  const drawer = new SmilesDrawer.SvgDrawer({ width: 400, height: 400 });
-  SmilesDrawer.parse(props.smiles, (tree) => {
-    svgEl.value.innerHTML = '';
-    drawer.draw(tree, svgEl.value, props.theme);
-  }, (err) => console.error(err));
-}
-
-onMounted(draw);
-watch(() => [props.smiles, props.theme], draw);
-<\/script>`}
-                    />
-                </div>
-
-                <!-- Svelte -->
-                <div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">Svelte</h3>
-                    <CodeBlock
-                        lang="svelte"
-                        filename="MoleculeViewer.svelte"
-                        code={`<script>
-  import SmilesDrawer from 'smiles-drawer';
-  import { onMount, afterUpdate } from 'svelte';
-
-  export let smiles = '';
-  export let theme = 'light';
-
-  let svgEl;
-
-  function draw() {
-    if (!svgEl || !smiles) return;
-    const drawer = new SmilesDrawer.SvgDrawer({ width: 400, height: 400 });
-    SmilesDrawer.parse(smiles, (tree) => {
-      svgEl.innerHTML = '';
-      drawer.draw(tree, svgEl, theme);
-    }, (err) => console.error(err));
-  }
-
-  onMount(draw);
-  afterUpdate(draw);
-<\/script>
-
-<svg bind:this={svgEl}></svg>`}
-                    />
-                </div>
-
-                <!-- data-smiles pattern -->
-                <div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-3">HTML data-attribute pattern</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-3 text-sm">
-                        The simplest approach for static content. Just set <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles</code> on any SVG or canvas element and call <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">apply()</code>.
-                    </p>
-                    <CodeBlock
-                        lang="html"
-                        code={`<!-- Molecules render automatically -->
-<svg data-smiles="CCO" data-smiles-theme="light"></svg>
-<svg data-smiles="c1ccccc1" data-smiles-theme="dark"></svg>
-<canvas data-smiles="CC(=O)O"></canvas>
-
-<script>
-  // Options can be passed to apply()
-  SmiDrawer.apply({ bondThickness: 1.5, fontSizeLarge: 8 });
-<\/script>`}
-                    />
+                        />
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Options reference -->
         <section>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Options Reference</h2>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b border-gray-200 dark:border-gray-700">
-                            <th class="text-left py-3 pr-4 font-medium text-gray-900 dark:text-white">Option</th>
-                            <th class="text-left py-3 pr-4 font-medium text-gray-900 dark:text-white">Type</th>
-                            <th class="text-left py-3 pr-4 font-medium text-gray-900 dark:text-white">Default</th>
-                            <th class="text-left py-3 font-medium text-gray-900 dark:text-white">Description</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-gray-600 dark:text-gray-400">
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">width</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">500</td>
-                            <td class="py-2">Width of the drawing canvas</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">height</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">500</td>
-                            <td class="py-2">Height of the drawing canvas</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">bondLength</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">15</td>
-                            <td class="py-2">Length of bonds in pixels</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">bondThickness</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">1.0</td>
-                            <td class="py-2">Thickness of bonds</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">bondSpacing</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">0.18</td>
-                            <td class="py-2">Spacing between double/triple bonds (fraction of bond length)</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">shortBondLength</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">0.85</td>
-                            <td class="py-2">Length of short bonds (fraction of bond length)</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">isomeric</td>
-                            <td class="py-2 pr-4">Boolean</td>
-                            <td class="py-2 pr-4 font-mono text-xs">true</td>
-                            <td class="py-2">Display stereochemistry (wedge/dash bonds)</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">debug</td>
-                            <td class="py-2 pr-4">Boolean</td>
-                            <td class="py-2 pr-4 font-mono text-xs">false</td>
-                            <td class="py-2">Show vertex indices and ring info</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">terminalCarbons</td>
-                            <td class="py-2 pr-4">Boolean</td>
-                            <td class="py-2 pr-4 font-mono text-xs">false</td>
-                            <td class="py-2">Show terminal carbon labels (CH3, etc.)</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">explicitHydrogens</td>
-                            <td class="py-2 pr-4">Boolean</td>
-                            <td class="py-2 pr-4 font-mono text-xs">false</td>
-                            <td class="py-2">Show explicit hydrogen atoms</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">compactDrawing</td>
-                            <td class="py-2 pr-4">Boolean</td>
-                            <td class="py-2 pr-4 font-mono text-xs">true</td>
-                            <td class="py-2">Use compact layout for macrocycles</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">padding</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">20.0</td>
-                            <td class="py-2">Padding around the molecule drawing</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">fontSizeLarge</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">6</td>
-                            <td class="py-2">Font size for atom labels</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">fontSizeSmall</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">4</td>
-                            <td class="py-2">Font size for subscripts (e.g., H count)</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">overlapSensitivity</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">0.42</td>
-                            <td class="py-2">Sensitivity for overlap detection</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">overlapResolutionIterations</td>
-                            <td class="py-2 pr-4">Number</td>
-                            <td class="py-2 pr-4 font-mono text-xs">1</td>
-                            <td class="py-2">Number of overlap resolution iterations</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">experimental</td>
-                            <td class="py-2 pr-4">Boolean</td>
-                            <td class="py-2 pr-4 font-mono text-xs">false</td>
-                            <td class="py-2">Enable experimental features</td>
-                        </tr>
-                        <tr class="border-b border-gray-100 dark:border-gray-800">
-                            <td class="py-2 pr-4 font-mono text-xs">themes</td>
-                            <td class="py-2 pr-4">Object</td>
-                            <td class="py-2 pr-4 font-mono text-xs">{`{...}`}</td>
-                            <td class="py-2">Custom color themes (light/dark)</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="card p-6 sm:p-8">
+                <div class="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+                    <div>
+                        <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Further Reading</div>
+                        <h2 class="mt-2 text-2xl font-semibold tracking-[-0.03em] text-gray-900 dark:text-white">Next steps</h2>
+                        <p class="mt-3 text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-2xl">
+                            Use the playground to tune your own structures, compare against the examples page when something looks off, and keep the API reference nearby if you need framework integration.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <a href={`${base}/playground`} class="btn-primary">Playground</a>
+                        <a href={`${base}/examples`} class="btn-secondary">Examples</a>
+                    </div>
+                </div>
+                <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+                    <a href="#simple-drawing" class="rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-accent transition-colors">Basic Drawing</a>
+                    <a href="#customization" class="rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-accent transition-colors">Customization</a>
+                    <a href="#reactions" class="rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-accent transition-colors">Drawing Reactions</a>
+                    <a href="#frameworks" class="rounded-xl border border-gray-200 dark:border-gray-700 px-4 py-3 hover:border-accent transition-colors">Framework Pattern</a>
+                </div>
+                <p class="mt-6 text-sm text-gray-500 dark:text-gray-400">
+                    If you use SmilesDrawer in research, cite
+                    <a href="https://doi.org/10.1021/acs.jcim.7b00425" target="_blank" rel="noopener noreferrer" class="text-accent hover:opacity-80 transition-opacity">10.1021/acs.jcim.7b00425</a>.
+                </p>
             </div>
         </section>
     </div>

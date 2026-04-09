@@ -1,99 +1,183 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import MoleculeCard from '../components/MoleculeCard.astro';
-import {molecules} from '../data/molecules.js';
+import {molecules, reactions, renderOverrides, weightExamples} from '../data/molecules.js';
+import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
-const categories = [
-    {key: 'simple', title: 'Simple Molecules', description: 'Basic organic molecules'},
-    {key: 'aromatic', title: 'Aromatic Rings', description: 'Benzene derivatives and polycyclic aromatics'},
-    {key: 'heterocycles', title: 'Heterocycles', description: 'Rings containing nitrogen, oxygen, or sulfur'},
-    {key: 'drugs', title: 'Drugs & Pharmaceuticals', description: 'Common drug molecules'},
-    {key: 'complex', title: 'Complex Molecules', description: 'Steroids, sugars, and macromolecules'},
-    {key: 'stereo', title: 'Stereochemistry', description: 'Molecules with chiral centers'},
+const moleculeCategories = [
+    {key: 'simple', title: 'Simple Molecules', description: 'Basic organic structures and the fastest path to sanity-checking a render preset.'},
+    {key: 'aromatic', title: 'Aromatic Rings', description: 'Aromatics, fused rings, and common systems where spacing and bond clarity matter.'},
+    {key: 'heterocycles', title: 'Heterocycles', description: 'Nitrogen-, oxygen-, and sulfur-containing rings that quickly expose label crowding.'},
+    {key: 'drugs', title: 'Drugs', description: 'Common pharmaceutical structures with stereochemistry and denser functional group labeling.'},
+    {key: 'complex', title: 'Complex Molecules', description: 'Larger structures where automatic sizing and selective overrides make the biggest difference.'},
+    {key: 'stereo', title: 'Stereochemistry', description: 'Chiral examples for checking wedge bonds, hydrogens, and compact drawing tradeoffs.'},
+];
+
+const allNavItems = [
+    ...moleculeCategories.map(c => ({key: c.key, title: c.title})),
+    {key: 'reactions', title: 'Reactions'},
+    {key: 'weights', title: 'Weights'},
 ];
 ---
-<Layout title="Examples" description="Gallery of molecules rendered with SmilesDrawer. Browse simple molecules, aromatics, drugs, and complex structures.">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="mb-10">
-            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">Examples</h1>
-            <p class="text-lg text-gray-600 dark:text-gray-400">
-                A gallery of molecules rendered with SmilesDrawer. Click "Open in Playground" to customize any molecule.
-            </p>
-        </div>
+<Layout title="Examples" description="Gallery of molecules, reactions, and atom-weight overlays rendered with SmilesDrawer.">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-14">
+        <section class="mb-10 sm:mb-12">
+            <div class="grid gap-6 lg:grid-cols-[1.2fr_auto] lg:items-end">
+                <div>
+                    <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500">Gallery</div>
+                    <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[-0.04em] text-gray-900 dark:text-white">Dense examples, reaction layouts, and weighted overlays in one place.</h1>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-3xl">
+                        These examples use the same baseline rendering settings as the rest of the site, then scale down only where a structure would otherwise get cramped.
+                    </p>
+                </div>
+                <div class="card p-4 sm:p-5">
+                    <label for="gallery-theme" class="block text-[11px] font-medium uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500 mb-2">Render Theme</label>
+                    <select id="gallery-theme" class="min-w-[13rem] text-sm bg-white/80 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2">
+                        {themeOptions.map(option => (
+                            <option value={option.value}>{option.label}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+        </section>
 
-        <!-- Quick nav -->
         <div class="flex flex-wrap gap-2 mb-10">
-            {categories.map(cat => (
+            {allNavItems.map(item => (
                 <a
-                    href={`#${cat.key}`}
-                    class="text-sm px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors"
+                    href={`#${item.key}`}
+                    class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors"
                 >
-                    {cat.title}
+                    {item.title}
                 </a>
             ))}
         </div>
 
-        <!-- Theme selector for gallery -->
-        <div class="flex items-center gap-3 mb-8">
-            <span class="text-sm text-gray-600 dark:text-gray-400">Render theme:</span>
-            <select id="gallery-theme" class="text-sm bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5">
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-            </select>
-        </div>
-
-        {categories.map(cat => (
-            <section id={cat.key} class="mb-16 scroll-mt-20">
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{cat.title}</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">{cat.description}</p>
+        {moleculeCategories.map(cat => (
+            <section id={cat.key} class="mb-16 scroll-mt-24 border-t border-white/70 dark:border-white/5 pt-8">
+                <div class="max-w-3xl mb-6">
+                    <h2 class="text-2xl font-bold tracking-[-0.03em] text-gray-900 dark:text-white">{cat.title}</h2>
+                    <p class="mt-2 text-sm sm:text-base text-gray-500 dark:text-gray-400">{cat.description}</p>
+                </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                     {molecules[cat.key].map(mol => (
                         <MoleculeCard
                             name={mol.name}
-                            smiles={mol.smiles}
-                            showPlaygroundLink={true}
+                            render={renderOverrides[mol.smiles]}
                             showDownload={true}
+                            showPlaygroundLink={true}
+                            smiles={mol.smiles}
                         />
                     ))}
                 </div>
             </section>
         ))}
+
+        <section id="reactions" class="mb-16 scroll-mt-24 border-t border-white/70 dark:border-white/5 pt-8">
+            <div class="max-w-3xl mb-6">
+                <h2 class="text-2xl font-bold tracking-[-0.03em] text-gray-900 dark:text-white">Reactions</h2>
+                <p class="mt-2 text-sm sm:text-base text-gray-500 dark:text-gray-400">Reaction SMILES rendered with reagent placement and arrow annotations intact.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {reactions.map(rxn => (
+                    <MoleculeCard
+                        name={rxn.name}
+                        render={renderOverrides[rxn.smiles]}
+                        showDownload={true}
+                        showPlaygroundLink={true}
+                        smiles={rxn.smiles}
+                    />
+                ))}
+            </div>
+        </section>
+
+        <section id="weights" class="scroll-mt-24 border-t border-white/70 dark:border-white/5 pt-8">
+            <div class="max-w-3xl mb-6">
+                <h2 class="text-2xl font-bold tracking-[-0.03em] text-gray-900 dark:text-white">Weights / Heatmap</h2>
+                <p class="mt-2 text-sm sm:text-base text-gray-500 dark:text-gray-400">Per-atom signed values rendered into a red/green overlay, using the same site themes as the rest of the gallery.</p>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                {weightExamples.map(ex => (
+                    <MoleculeCard
+                        name={ex.name}
+                        render={renderOverrides[ex.smiles]}
+                        showDownload={true}
+                        smiles={ex.smiles}
+                        weights={ex.weights}
+                    />
+                ))}
+            </div>
+        </section>
     </div>
 </Layout>
 
-<script is:inline>
+<script is:inline define:vars={{themePresets, themeSurfaceModes}}>
 document.addEventListener('DOMContentLoaded', function() {
+    var manualTheme = null;
+    var site = window.SmilesWebsite;
+    var themeSelect = document.getElementById('gallery-theme');
+
     function getDrawTheme() {
         return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     }
 
-    // Gallery uses page dark mode by default, but the selector can override
-    var manualTheme = null;
-
-    function renderAll() {
-        var theme = manualTheme || getDrawTheme();
-        document.querySelectorAll('.molecule-svg').forEach(function(svg) {
-            var smiles = svg.getAttribute('data-smiles');
-            if (!smiles) return;
-            try {
-                var drawer = new SmilesDrawer.SvgDrawer({width: 200, height: 200, compactDrawing: false});
-                SmilesDrawer.parse(smiles, function(tree) {
-                    svg.innerHTML = '';
-                    drawer.draw(tree, svg, theme);
-                }, function() {});
-            }
-            catch (e) {}
+    function parseWeights(value) {
+        return value.split(',').map(function(part) {
+            return parseFloat(part.trim());
+        }).filter(function(weight) {
+            return !isNaN(weight);
         });
     }
 
-    renderAll();
+    function renderAll() {
+        var theme = manualTheme || getDrawTheme();
 
-    // Re-render when dark mode toggles
+        document.querySelectorAll('[data-theme-surface="true"]').forEach(function(surface) {
+            site.applyThemeSurface(surface, theme, themePresets, themeSurfaceModes);
+        });
+
+        document.querySelectorAll('.molecule-svg').forEach(function(svg) {
+            var smiles = svg.getAttribute('data-smiles');
+            var weightsAttr = svg.getAttribute('data-smiles-weights');
+            var surface = svg.closest('[data-theme-surface]');
+            var weights = weightsAttr ? parseWeights(weightsAttr) : null;
+            var defaults = site.getDefaultRenderOptions();
+
+            if (!smiles) return;
+
+            svg = site.renderSmiles({
+                adaptive: true,
+                baseOptions: {
+                    width: defaults.width,
+                    height: defaults.height,
+                    explicitHydrogens: false,
+                    padding: defaults.padding,
+                    bondLength: defaults.bondLength,
+                    bondThickness: defaults.bondThickness,
+                    shortBondLength: defaults.shortBondLength,
+                    bondSpacing: defaults.bondSpacing,
+                    fontSizeLarge: defaults.fontSizeLarge,
+                    scale: defaults.scale,
+                    themes: themePresets
+                },
+                layout: {
+                    containerWidth: surface && surface.clientWidth ? surface.clientWidth : 0,
+                    minHeight: site.isReaction(smiles) ? 160 : 0
+                },
+                onError: function() {},
+                renderConfig: site.getRenderConfig(svg),
+                smiles: smiles,
+                svg: svg,
+                themeName: theme,
+                weights: weights && weights.length ? weights : null
+            }).svg;
+        });
+    }
+
+    site.waitForFonts(renderAll);
+
     new MutationObserver(function(mutations) {
-        mutations.forEach(function(m) {
-            if (m.attributeName === 'class') {
-                // Sync selector to match page theme when no manual override
-                var themeSelect = document.getElementById('gallery-theme');
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'class') {
                 if (themeSelect && !manualTheme) {
                     themeSelect.value = getDrawTheme();
                 }
@@ -102,8 +186,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
 
-    // Theme selector
-    var themeSelect = document.getElementById('gallery-theme');
     if (themeSelect) {
         themeSelect.value = getDrawTheme();
         themeSelect.addEventListener('change', function() {
@@ -112,20 +194,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Download SVG buttons
-    document.querySelectorAll('.download-svg-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
+    var resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(renderAll, 120);
+    });
+
+    document.querySelectorAll('.download-svg-btn').forEach(function(button) {
+        button.addEventListener('click', function(event) {
             var targetId = this.getAttribute('data-target');
             var svg = document.getElementById(targetId);
+            var svgData;
+            var blob;
+            var url;
+            var link;
+
+            event.stopPropagation();
             if (!svg) return;
-            var svgData = new XMLSerializer().serializeToString(svg);
-            var blob = new Blob([svgData], {type: 'image/svg+xml'});
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = targetId + '.svg';
-            a.click();
+
+            svgData = new XMLSerializer().serializeToString(svg);
+            blob = new Blob([svgData], {type: 'image/svg+xml'});
+            url = URL.createObjectURL(blob);
+            link = document.createElement('a');
+            link.href = url;
+            link.download = targetId + '.svg';
+            link.click();
             URL.revokeObjectURL(url);
         });
     });
