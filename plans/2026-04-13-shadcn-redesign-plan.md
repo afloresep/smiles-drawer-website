@@ -291,10 +291,10 @@ export default {
 - [ ] **Step 2: Install `tailwindcss-animate`**
 
 ```bash
-npm install -D tailwindcss-animate
+npm install tailwindcss-animate
 ```
 
-Expected: dep added.
+Expected: dep added to `dependencies`. Note that `tailwindcss-animate` is required by `tailwind.config.mjs` at build time (it's in the `plugins` array), so it goes in `dependencies` not `devDependencies` — same rule as `astro-icon`. A CI install with `npm ci --omit=dev` must resolve it.
 
 - [ ] **Step 3: Replace `src/styles/global.css`**
 
