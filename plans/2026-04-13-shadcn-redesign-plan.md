@@ -984,7 +984,6 @@ Create a new file `src/components/islands/HeroPlayground.tsx`:
 
 ```tsx
 import {useEffect, useRef, useState} from "react"
-import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Card} from "@/components/ui/card"
 import {Badge} from "@/components/ui/badge"
@@ -993,9 +992,20 @@ import {heroExamples} from "@/data/molecules.js"
 
 export default function HeroPlayground() {
     const [smiles, setSmiles] = useState(heroExamples[0].smiles)
-    const [activeIdx, setActiveIdx] = useState(0)
+    const [theme, setTheme] = useState<"light" | "dark">("light")
     const svgRef = useRef<SVGSVGElement>(null)
     const {ready, error, drawer} = useSmilesDrawer()
+
+    useEffect(() => {
+        if (typeof document === "undefined") return
+        const update = () => {
+            setTheme(document.documentElement.classList.contains("dark") ? "dark" : "light")
+        }
+        update()
+        const observer = new MutationObserver(update)
+        observer.observe(document.documentElement, {attributes: true, attributeFilter: ["class"]})
+        return () => observer.disconnect()
+    }, [])
 
     useEffect(() => {
         if (!ready || !drawer || !svgRef.current) return
@@ -1010,38 +1020,40 @@ export default function HeroPlayground() {
                 padding: 12,
             })
             drawer.parse(smiles, function (tree: any) {
-                opts.draw(tree, svg, document.documentElement.classList.contains("dark") ? "dark" : "light")
+                opts.draw(tree, svg, theme)
             }, function (_err: any) {
-                // ignore parse errors in hero — fallback to empty render
+                // fallback: leave svg empty on parse failure
             })
         } catch (e) {
-            // swallow render errors in hero — never break the landing
+            // never break the landing on render errors
         }
-    }, [smiles, ready, drawer])
+    }, [smiles, theme, ready, drawer])
 
     return (
         <Card className="relative overflow-hidden border-border/60 bg-card/50 backdrop-blur p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-2 mb-4">
-                {heroExamples.map((ex, i) => (
-                    <button
-                        key={ex.smiles}
-                        onClick={() => {
-                            setSmiles(ex.smiles)
-                            setActiveIdx(i)
-                        }}
-                        className={
-                            "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium transition-colors " +
-                            (i === activeIdx
-                                ? "border-foreground bg-foreground text-background"
-                                : "border-border bg-background text-muted-foreground hover:text-foreground")
-                        }
-                    >
-                        <span>{ex.name}</span>
-                        <Badge variant="secondary" className="px-1.5 py-0 text-[10px] font-normal">
-                            {ex.kind}
-                        </Badge>
-                    </button>
-                ))}
+                {heroExamples.map((ex) => {
+                    const isActive = ex.smiles === smiles
+                    return (
+                        <button
+                            key={ex.smiles}
+                            type="button"
+                            onClick={() => setSmiles(ex.smiles)}
+                            aria-pressed={isActive}
+                            className={
+                                "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium transition-colors " +
+                                (isActive
+                                    ? "border-foreground bg-foreground text-background"
+                                    : "border-border bg-background text-muted-foreground hover:text-foreground")
+                            }
+                        >
+                            <span>{ex.name}</span>
+                            <Badge variant="secondary" className="px-1.5 py-0 text-[10px] font-normal">
+                                {ex.kind}
+                            </Badge>
+                        </button>
+                    )
+                })}
             </div>
             <div className="flex gap-2 mb-4">
                 <Input
