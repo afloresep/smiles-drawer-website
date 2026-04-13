@@ -91,11 +91,10 @@ Expected: packages added to `dependencies` and `devDependencies`. No errors.
 - [ ] **Step 3: Install lucide and astro-icon**
 
 ```bash
-npm install lucide-react
-npm install -D astro-icon @iconify-json/lucide
+npm install lucide-react astro-icon @iconify-json/lucide
 ```
 
-Expected: packages added.
+Expected: packages added to `dependencies`. Note that `astro-icon` and `@iconify-json/lucide` go into `dependencies` (not `devDependencies`) because `astro.config.mjs` imports `astro-icon` at build time — installing only production deps in CI must still resolve the integration. `@iconify-json/lucide` is a runtime peer of `astro-icon` and follows the same rule.
 
 - [ ] **Step 4: Register `@astrojs/react` and `astro-icon` in `astro.config.mjs`**
 
