@@ -211,6 +211,8 @@ After `shadcn init`, the config files contain a mix of shadcn's additions and th
 Open `tailwind.config.mjs`. The post-init contents will look something like the example below — but the existing `accent` color block (`#50C5A9` and shades) and the existing `fontFamily` (`Space Grotesk`, `IBM Plex Mono`) must be **removed**. Replace the file's entire contents with:
 
 ```js
+import tailwindcssAnimate from 'tailwindcss-animate';
+
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: ['class'],
@@ -284,7 +286,7 @@ export default {
             },
         },
     },
-    plugins: [require('tailwindcss-animate')],
+    plugins: [tailwindcssAnimate],
 };
 ```
 
