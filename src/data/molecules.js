@@ -16,7 +16,7 @@ export const molecules = {
     ],
     drugs: [
         {name: 'Aspirin', smiles: 'CC(=O)Oc1ccccc1C(=O)O'},
-        {name: 'Caffeine', smiles: 'Cn1c(=O)c2c(ncn2C)n(c1=O)C'},
+        {name: 'Caffeine', smiles: 'Cn1cnc2c1C(=O)N(C(=O)N2C)C'},
         {name: 'Morphine', smiles: 'CN1CC[C@]23c4c5ccc(O)c4O[C@H]2[C@@H](O)C=C[C@H]3[C@@H]1C5'},
     ],
     complex: [
@@ -49,7 +49,7 @@ export const weightExamples = [
 export const showcaseMolecules = [
     {name: 'Finkelstein Reaction', smiles: "C=CCBr.[Na+].[I-]>CC(=O)C>C=CCI.[Na+].[Br-]  __{'textAboveArrow': 'acetone', 'textBelowArrow': '90%'}__", wide: true},
     {name: 'Aspirin', smiles: 'CC(=O)Oc1ccccc1C(=O)O'},
-    {name: 'Caffeine', smiles: 'Cn1c(=O)c2c(ncn2C)n(c1=O)C'},
+    {name: 'Caffeine', smiles: 'Cn1cnc2c1C(=O)N(C(=O)N2C)C'},
     {name: 'Penicillin G', smiles: 'CC1([C@@H](N2[C@H](S1)[C@@H](C2=O)NC(=O)Cc3ccccc3)C(=O)O)C'},
     {name: 'Cholesterol', smiles: 'C[C@H](CCCC(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O)C)C'},
     {name: 'Glucose', smiles: 'OC[C@H]1OC(O)[C@H](O)[C@@H](O)[C@@H]1O'},
@@ -83,7 +83,7 @@ export const playgroundPresets = {
     ],
     Drugs: [
         {name: 'Aspirin', smiles: 'CC(=O)Oc1ccccc1C(=O)O'},
-        {name: 'Caffeine', smiles: 'Cn1c(=O)c2c(ncn2C)n(c1=O)C'},
+        {name: 'Caffeine', smiles: 'Cn1cnc2c1C(=O)N(C(=O)N2C)C'},
         {name: 'Morphine', smiles: 'CN1CC[C@]23c4c5ccc(O)c4O[C@H]2[C@@H](O)C=C[C@H]3[C@@H]1C5'},
         {name: 'Penicillin G', smiles: 'CC1([C@@H](N2[C@H](S1)[C@@H](C2=O)NC(=O)Cc3ccccc3)C(=O)O)C'},
     ],

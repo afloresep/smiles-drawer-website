@@ -95,7 +95,7 @@ const base = import.meta.env.BASE_URL;
                                 code={`<script src="https://unpkg.com/smiles-drawer@2/dist/smiles-drawer.min.js"><\/script>
 <canvas data-smiles="Cn1cnc2c1C(=O)N(C(=O)N2C)C"></canvas>
 <script>
-    SmilesDrawer.apply({ width: 550, height: 450 });
+    SmilesDrawer.apply();
 <\/script>`}
                             />
                         </div>
@@ -109,7 +109,7 @@ const base = import.meta.env.BASE_URL;
                                     <code class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 text-xs text-gray-600 dark:border-gray-700/80 dark:bg-gray-900 dark:text-gray-300">SmilesDrawer.apply()</code>
                                 </div>
                                 <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
-                                    Draw everything already in the page.
+                                    Renders every <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">&lt;canvas&gt;</code> with a <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">data-smiles</code> attribute. Optional arguments: options, selector, theme, and error callback.
                                 </p>
                             </div>
                             <div class="border-b border-gray-200/80 pb-6 dark:border-gray-800/90">
@@ -118,15 +118,15 @@ const base = import.meta.env.BASE_URL;
                                     <code class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 text-xs text-gray-600 dark:border-gray-700/80 dark:bg-gray-900 dark:text-gray-300">new SmilesDrawer.SmiDrawer(...).draw()</code>
                                 </div>
                                 <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
-                                    Use this when the target or input changes.
+                                    Pass molecule options to the constructor, then call <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">.draw(smiles, target, theme)</code>. <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">target</code> can be a CSS selector, an <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">&lt;svg&gt;</code>/<code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">&lt;canvas&gt;</code>/<code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">&lt;img&gt;</code> element, or one of those tag names to return a fresh element. <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">theme</code> is <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">'light'</code> or <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">'dark'</code>.
                                 </p>
                             </div>
                             <div>
                                 <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Defaults</div>
                                 <div class="mt-4 flex flex-wrap gap-2 text-xs font-mono text-gray-600 dark:text-gray-300">
-                                    <span class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 dark:border-gray-700/80 dark:bg-gray-900">550 x 450 canvas</span>
-                                    <span class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 dark:border-gray-700/80 dark:bg-gray-900">fontSizeLarge 19</span>
-                                    <span class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 dark:border-gray-700/80 dark:bg-gray-900">bondLength 6.3</span>
+                                    <span class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 dark:border-gray-700/80 dark:bg-gray-900">500 x 500 canvas</span>
+                                    <span class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 dark:border-gray-700/80 dark:bg-gray-900">fontSizeLarge 11</span>
+                                    <span class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 dark:border-gray-700/80 dark:bg-gray-900">bondLength 30</span>
                                 </div>
                             </div>
                         </div>
@@ -241,7 +241,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (input && smiles) {
                 input.value = smiles;
                 input.dispatchEvent(new Event('input'));
-                window.scrollTo({top: 0, behavior: 'smooth'});
+                var panel = document.getElementById('hero-preview-panel');
+                if (panel) {
+                    panel.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
             }
         });
     });

@@ -393,12 +393,18 @@
             };
         }
 
+        // Library ratio is sigma = bondLength / 3 (defaults: sigma 10, bondLength 30).
+        // Mirror that ratio so custom bond lengths don't produce oversized heat blobs.
+        var autoSigma = profile.options && profile.options.bondLength
+            ? profile.options.bondLength / 3
+            : 10;
+
         try {
             if (kind === 'reaction') {
                 new SmiDrawer(
                     mergeObjects({}, profile.options, config && config.reactionWeights ? {
                         weights: mergeObjects({
-                            sigma: 40,
+                            sigma: autoSigma,
                             opacity: 0.72,
                             additionalPadding: 30
                         }, config.weightOptions || {})
@@ -413,7 +419,7 @@
                 new SmiDrawer(
                     mergeObjects({}, profile.options, {
                         weights: mergeObjects({
-                            sigma: 40,
+                            sigma: autoSigma,
                             opacity: 0.72,
                             additionalPadding: 30
                         }, config.weightOptions || {})

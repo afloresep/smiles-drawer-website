@@ -1,6 +1,6 @@
 export const themeOptions = [
     {value: 'light', label: 'light'},
-    {value: 'dark', label: 'dark / black'},
+    {value: 'dark', label: 'dark'},
     {value: 'oldschool', label: 'oldschool'},
     {value: 'solarized', label: 'solarized'},
     {value: 'solarized-dark', label: 'solarized-dark'},

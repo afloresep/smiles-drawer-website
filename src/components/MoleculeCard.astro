@@ -34,7 +34,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
             data-smiles={smiles}
             class:list={['molecule-svg w-full h-full', (weights || reactionWeights) && 'weight-svg']}
             data-smiles-weights={weights || undefined}
-            data-smiles-options={weights ? '{"sigma":40,"opacity":0.7}' : undefined}
+            data-smiles-options={weights ? '{"opacity":0.7}' : undefined}
             data-smiles-highlights={highlights ? JSON.stringify(highlights) : undefined}
             data-smiles-reaction-weights={reactionWeights ? JSON.stringify(reactionWeights) : undefined}
             data-render-config={render ? JSON.stringify(render) : undefined}
@@ -59,7 +59,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
                     class="download-svg-btn text-xs px-3 py-2 rounded-lg border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:text-accent hover:border-accent/50 transition-colors"
                     data-target={cardId}
                 >
-                    SVG
+                    Download SVG
                 </button>
             )}
         </div>

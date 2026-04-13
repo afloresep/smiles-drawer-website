@@ -35,18 +35,6 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                         <button id="pg-draw-btn" class="btn-primary">Draw</button>
                     </div>
 
-                    <!-- Weight input -->
-                    <div>
-                        <input
-                            id="pg-weights"
-                            type="text"
-                            placeholder="Atom weights (e.g. 1,-0.5,0,0.3,...) — optional heatmap overlay"
-                            class="w-full px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
-                            spellcheck="false"
-                            autocomplete="off"
-                        />
-                    </div>
-
                     <!-- Error display -->
                     <div id="pg-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div>
 
@@ -124,13 +112,6 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                             </div>
                             <div>
                                 <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Scale</span>
-                                    <span id="opt-scale-val" class="font-mono">0</span>
-                                </label>
-                                <input id="opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
                                     <span>Bond length</span>
                                     <span id="opt-bondLength-val" class="font-mono">19</span>
                                 </label>
@@ -198,12 +179,20 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                         </div>
                     </details>
 
-                    <details class="card" open>
+                    <details class="card">
                         <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
                             Reaction Options
                         </summary>
                         <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
                             <p class="text-xs text-gray-500 dark:text-gray-400">Used when the input is a reaction SMILES string (`reactants&gt;reagents&gt;products`).</p>
+                            <div>
+                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                    <span>Scale</span>
+                                    <span id="opt-scale-val" class="font-mono">0</span>
+                                </label>
+                                <input id="opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent">
+                                <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">0 = auto-fit. Scales the rendered reaction.</p>
+                            </div>
                             <div>
                                 <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
                                     <span>Spacing</span>
@@ -266,7 +255,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     </details>
 
                     <!-- Presets Panel -->
-                    <details class="card" open>
+                    <details class="card">
                         <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
                             Preset Molecules
                         </summary>
@@ -303,14 +292,14 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                             <label for="batch-input" class="text-sm font-medium text-gray-700 dark:text-gray-300">SMILES (one per line)</label>
                             <div class="flex items-center gap-2">
                                 <span id="batch-count" class="text-xs text-gray-500 dark:text-gray-400">0 molecules</span>
-                                <input type="file" id="batch-file-input" accept=".csv,.smi,.txt,.tsv" class="hidden">
+                                <input type="file" id="batch-file-input" accept=".smi,.txt" class="hidden">
                                 <button id="batch-import-btn" class="text-xs px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Import File</button>
                             </div>
                         </div>
                         <textarea
                             id="batch-input"
                             rows="6"
-                            placeholder="c1ccccc1&#10;CC(=O)Oc1ccccc1C(=O)O&#10;Cn1c(=O)c2c(ncn2C)n(c1=O)C"
+                            placeholder="c1ccccc1&#10;CC(=O)Oc1ccccc1C(=O)O&#10;Cn1cnc2c1C(=O)N(C(=O)N2C)C"
                             class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all resize-y"
                             spellcheck="false"
                         ></textarea>
@@ -440,23 +429,33 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                             </label>
                             <hr class="border-gray-100 dark:border-gray-800" />
                             <div>
-                                <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Export scale</div>
+                                <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">PNG export DPI</div>
                                 <div class="flex flex-wrap gap-1.5">
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="1">1x (72 DPI)</button>
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-accent text-accent ring-2 ring-accent/30" data-scale="2">2x (144 DPI)</button>
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="3">3x (216 DPI)</button>
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="4">4x (288 DPI)</button>
+                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="1">72 DPI</button>
+                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="2">144 DPI</button>
+                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-accent text-accent ring-2 ring-accent/30" data-scale="4.1667">300 DPI</button>
+                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="8.3333">600 DPI</button>
                                 </div>
+                                <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-2 leading-tight">For print, 300 DPI or higher is recommended. Export SVG instead for lossless scaling.</p>
                             </div>
                             <hr class="border-gray-100 dark:border-gray-800" />
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Transparent background</span>
-                                <input id="batch-opt-transparentBg" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Force white background</span>
-                                <input id="batch-opt-whiteBg" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
+                            <div>
+                                <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Background</div>
+                                <div class="space-y-1.5">
+                                    <label class="flex items-center gap-2 text-xs">
+                                        <input name="batch-opt-bg" id="batch-opt-bg-theme" type="radio" value="theme" checked class="accent-accent">
+                                        <span class="text-gray-600 dark:text-gray-400">Theme color</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs">
+                                        <input name="batch-opt-bg" id="batch-opt-bg-white" type="radio" value="white" class="accent-accent">
+                                        <span class="text-gray-600 dark:text-gray-400">White</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs">
+                                        <input name="batch-opt-bg" id="batch-opt-bg-transparent" type="radio" value="transparent" class="accent-accent">
+                                        <span class="text-gray-600 dark:text-gray-400">Transparent</span>
+                                    </label>
+                                </div>
+                            </div>
                             <hr class="border-gray-100 dark:border-gray-800" />
                             <div>
                                 <label class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Grid title</label>
@@ -466,7 +465,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     </details>
 
                     <!-- Drawing Options Panel -->
-                    <details class="card" open>
+                    <details class="card">
                         <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
                             Drawing Options
                         </summary>
@@ -478,13 +477,6 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                                     <option value="balls">Balls</option>
                                     <option value="allballs">All balls</option>
                                 </select>
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Scale</span>
-                                    <span id="batch-opt-scale-val" class="font-mono">0</span>
-                                </label>
-                                <input id="batch-opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent">
                             </div>
                             <div>
                                 <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
@@ -530,14 +522,26 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                                 <span class="text-gray-600 dark:text-gray-400">Terminal carbons</span>
                                 <input id="batch-opt-terminalCarbons" type="checkbox" class="accent-accent w-4 h-4">
                             </label>
+                            <label class="flex items-center justify-between text-xs">
+                                <span class="text-gray-600 dark:text-gray-400">Explicit hydrogens</span>
+                                <input id="batch-opt-explicitHydrogens" type="checkbox" class="accent-accent w-4 h-4">
+                            </label>
                         </div>
                     </details>
 
-                    <details class="card" open>
+                    <details class="card">
                         <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
                             Reaction Options
                         </summary>
                         <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
+                            <div>
+                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                                    <span>Scale</span>
+                                    <span id="batch-opt-scale-val" class="font-mono">0</span>
+                                </label>
+                                <input id="batch-opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent">
+                                <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">0 = auto-fit. Scales the rendered reaction.</p>
+                            </div>
                             <div>
                                 <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
                                     <span>Spacing</span>
@@ -612,7 +616,6 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         var svg = document.getElementById('pg-svg');
         var errorEl = document.getElementById('pg-error');
         var drawBtn = document.getElementById('pg-draw-btn');
-        var weightsInput = document.getElementById('pg-weights');
         var previewSurface = document.getElementById('pg-preview-surface');
 
         // Check if a SMILES string is a reaction (contains > outside brackets)
@@ -621,10 +624,11 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         }
 
         // Option elements
-        var sliders = ['scale', 'bondLength', 'bondThickness', 'shortBondLength', 'bondSpacing', 'fontSizeLarge', 'width', 'height'];
+        var sliders = ['bondLength', 'bondThickness', 'shortBondLength', 'bondSpacing', 'fontSizeLarge', 'width', 'height'];
         var checkboxes = ['terminalCarbons', 'explicitHydrogens', 'compactDrawing', 'debug'];
         var selects = ['atomVisualization'];
-        var reactionSliders = ['rxnSpacing', 'rxnFontSize', 'rxnPlusSize', 'rxnPlusThickness', 'rxnArrowLength', 'rxnArrowThickness', 'rxnArrowHeadSize', 'rxnArrowMargin'];
+        // 'scale' lives with reaction sliders — it only behaves as expected when rendering reactions.
+        var reactionSliders = ['scale', 'rxnSpacing', 'rxnFontSize', 'rxnPlusSize', 'rxnPlusThickness', 'rxnArrowLength', 'rxnArrowThickness', 'rxnArrowHeadSize', 'rxnArrowMargin'];
 
         function getDefaultTheme() {
             return site.getPageTheme();
@@ -729,15 +733,10 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             rxnOpts.height = Math.max(baseHeight, 360);
             rxnOpts.bondLength = Math.max(opts.bondLength || 19, 19);
 
-            return rxnOpts;
-        }
+            var scaleEl = document.getElementById('opt-scale');
+            if (scaleEl) rxnOpts.scale = parseFloat(scaleEl.value);
 
-        function parseWeights(value) {
-            return value.split(',').map(function(part) {
-                return parseFloat(part.trim());
-            }).filter(function(weight) {
-                return !isNaN(weight);
-            });
+            return rxnOpts;
         }
 
         // Fully reset the SVG element so no stale attributes from SmiDrawer persist
@@ -762,18 +761,9 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
             var opts = getOptions();
             var reactionOpts = getReactionOptions();
-            var weights = weightsInput ? weightsInput.value.trim() : '';
             var useReaction = isReaction(smiles);
-            var parsedWeights = null;
 
             try {
-                if (!useReaction && weights) {
-                    parsedWeights = parseWeights(weights);
-                    if (parsedWeights.length === 0) {
-                        throw new Error('Weights must be comma-separated numbers.');
-                    }
-                }
-
                 svg = site.renderSmiles({
                     adaptive: false,
                     baseOptions: useReaction ? getReactionMoleculeOptions(opts) : opts,
@@ -796,8 +786,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     smiles: smiles,
                     svg: svg,
                     svgId: 'pg-svg',
-                    themeName: theme,
-                    weights: parsedWeights
+                    themeName: theme
                 }).svg;
             } catch (e) {
                 errorEl.textContent = 'Error: ' + e.message;
@@ -830,14 +819,6 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                 if (input.value.trim()) draw();
             }, 150);
         });
-
-        // Weight input triggers redraw
-        if (weightsInput) {
-            weightsInput.addEventListener('input', function() {
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(draw, 200);
-            });
-        }
 
         // Update slider value displays and redraw on change
         sliders.forEach(function(name) {
@@ -957,10 +938,62 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             });
         });
 
-        // Share link
+        function collectState() {
+            var state = {};
+            sliders.forEach(function(name) {
+                var el = document.getElementById('opt-' + name);
+                if (el) state[name] = el.value;
+            });
+            reactionSliders.forEach(function(name) {
+                var el = document.getElementById('opt-' + name);
+                if (el) state[name] = el.value;
+            });
+            checkboxes.forEach(function(name) {
+                var el = document.getElementById('opt-' + name);
+                if (el) state[name] = el.checked;
+            });
+            selects.forEach(function(name) {
+                var el = document.getElementById('opt-' + name);
+                if (el) state[name] = el.value;
+            });
+            var themeEl = document.getElementById('opt-theme');
+            if (themeEl) state.theme = themeEl.value;
+            return state;
+        }
+
+        function applyState(state) {
+            if (!state) return;
+            Object.keys(state).forEach(function(name) {
+                if (name === 'theme') {
+                    var tEl = document.getElementById('opt-theme');
+                    if (tEl) {
+                        tEl.value = state[name];
+                        tEl.setAttribute('data-follow-page', 'false');
+                    }
+                    return;
+                }
+                var el = document.getElementById('opt-' + name);
+                if (!el) return;
+                if (el.type === 'checkbox') {
+                    el.checked = !!state[name];
+                } else {
+                    el.value = state[name];
+                }
+                var valEl = document.getElementById('opt-' + name + '-val');
+                if (valEl) valEl.textContent = el.value;
+            });
+        }
+
+        // Share link — includes full option state so the recipient sees the same render
         document.getElementById('pg-share').addEventListener('click', function() {
             var url = new URL(window.location);
             url.searchParams.set('smiles', input.value);
+            try {
+                var encoded = btoa(JSON.stringify(collectState()));
+                url.searchParams.set('cfg', encoded);
+            } catch (e) {
+                url.searchParams.delete('cfg');
+            }
             navigator.clipboard.writeText(url.toString()).then(function() {
                 showToast('Link copied to clipboard');
             });
@@ -981,10 +1014,19 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             }, 2000);
         }
 
-        // Read SMILES from URL on load
+        // Read SMILES + saved state from URL on load
         var params = new URLSearchParams(window.location.search);
         if (params.has('smiles')) {
             input.value = params.get('smiles');
+        }
+        if (params.has('cfg')) {
+            try {
+                applyState(JSON.parse(atob(params.get('cfg'))));
+                if (previewSurface) {
+                    var tEl = document.getElementById('opt-theme');
+                    if (tEl) applySurfaceTheme(previewSurface, tEl.value);
+                }
+            } catch (e) { /* ignore malformed cfg */ }
         }
 
         draw();
@@ -1051,11 +1093,14 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         var batchPreviewSurface = document.getElementById('batch-preview-surface');
 
         // Publication export elements
-        var transparentBgCheck = document.getElementById('batch-opt-transparentBg');
-        var whiteBgCheck = document.getElementById('batch-opt-whiteBg');
         var titleInput = document.getElementById('batch-opt-title');
-        var exportScale = 2;
+        var exportScale = 4.1667;
         var pubStyleCheck = document.getElementById('batch-opt-pubStyle');
+
+        function getBackgroundMode() {
+            var selected = document.querySelector('input[name="batch-opt-bg"]:checked');
+            return selected ? selected.value : 'theme';
+        }
 
         // Selection bar elements
         var selectionBar = document.getElementById('batch-selection-bar');
@@ -1071,10 +1116,11 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         var pageNextBtn = document.getElementById('batch-page-next');
 
         // Drawing options
-        var batchSliders = ['scale', 'bondLength', 'bondThickness', 'shortBondLength', 'bondSpacing', 'fontSizeLarge'];
-        var batchCheckboxes = ['compactDrawing', 'terminalCarbons'];
+        var batchSliders = ['bondLength', 'bondThickness', 'shortBondLength', 'bondSpacing', 'fontSizeLarge'];
+        var batchCheckboxes = ['compactDrawing', 'terminalCarbons', 'explicitHydrogens'];
         var batchSelects = ['atomVisualization'];
-        var batchReactionSliders = ['rxnSpacing', 'rxnFontSize', 'rxnPlusSize', 'rxnPlusThickness', 'rxnArrowLength', 'rxnArrowThickness', 'rxnArrowHeadSize', 'rxnArrowMargin'];
+        // 'scale' lives with reaction sliders — it only behaves as expected when rendering reactions.
+        var batchReactionSliders = ['scale', 'rxnSpacing', 'rxnFontSize', 'rxnPlusSize', 'rxnPlusThickness', 'rxnArrowLength', 'rxnArrowThickness', 'rxnArrowHeadSize', 'rxnArrowMargin'];
 
         // ─── Data model ───────────────────────────────────────────────
         var batchData = [];
@@ -1254,19 +1300,73 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             return result;
         }
 
-        function formatMolecularFormula(atoms) {
-            var parts = [];
-            var keys = Object.keys(atoms);
+        // Returns the formula as a list of [element, count] pairs in Hill order.
+        function formulaSegments(atoms) {
+            var segs = [];
             if (atoms['C']) {
-                parts.push('C' + (atoms['C'] > 1 ? atoms['C'] : ''));
-                if (atoms['H']) parts.push('H' + (atoms['H'] > 1 ? atoms['H'] : ''));
+                segs.push(['C', atoms['C']]);
+                if (atoms['H']) segs.push(['H', atoms['H']]);
             }
-            keys.sort();
+            var keys = Object.keys(atoms).sort();
             keys.forEach(function(k) {
                 if (k === 'C' || k === 'H') return;
-                parts.push(k + (atoms[k] > 1 ? atoms[k] : ''));
+                segs.push([k, atoms[k]]);
             });
-            return parts.join('');
+            return segs;
+        }
+
+        function formatMolecularFormula(atoms) {
+            return formulaSegments(atoms).map(function(seg) {
+                return seg[0] + (seg[1] > 1 ? seg[1] : '');
+            }).join('');
+        }
+
+        function formatMolecularFormulaHtml(atoms) {
+            return formulaSegments(atoms).map(function(seg) {
+                return seg[0] + (seg[1] > 1 ? '<sub>' + seg[1] + '</sub>' : '');
+            }).join('');
+        }
+
+        function formatMolecularFormulaSvg(atoms) {
+            var segs = formulaSegments(atoms);
+            var out = '';
+            for (var i = 0; i < segs.length; i++) {
+                var seg = segs[i];
+                out += seg[0];
+                if (seg[1] > 1) {
+                    out += '<tspan dy="3" font-size="75%">' + seg[1] + '</tspan>';
+                    if (i < segs.length - 1) {
+                        out += '<tspan dy="-3" font-size="100%"></tspan>';
+                    }
+                }
+            }
+            return out;
+        }
+
+        function drawFormulaOnCanvas(ctx, atoms, cx, y, baseFont, color, fontFamily) {
+            var segs = formulaSegments(atoms);
+            var parts = [];
+            segs.forEach(function(seg) {
+                parts.push({s: seg[0], sub: false});
+                if (seg[1] > 1) parts.push({s: String(seg[1]), sub: true});
+            });
+            var subFont = Math.max(6, Math.round(baseFont * 0.75));
+            var totalW = 0;
+            parts.forEach(function(p) {
+                ctx.font = (p.sub ? subFont : baseFont) + 'px ' + fontFamily;
+                totalW += ctx.measureText(p.s).width;
+            });
+            var prevAlign = ctx.textAlign;
+            ctx.textAlign = 'left';
+            ctx.fillStyle = color;
+            var cursor = cx - totalW / 2;
+            parts.forEach(function(p) {
+                ctx.font = (p.sub ? subFont : baseFont) + 'px ' + fontFamily;
+                var drawY = p.sub ? y + Math.round(baseFont * 0.25) : y;
+                ctx.fillText(p.s, cursor, drawY);
+                cursor += ctx.measureText(p.s).width;
+            });
+            ctx.textAlign = prevAlign;
         }
 
         function computeMolecularWeight(atoms) {
@@ -1317,6 +1417,16 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
         function getBatchTheme() {
             return batchTheme ? batchTheme.value : 'light';
+        }
+
+        // Reaction-only: copy molecule opts and overlay the reaction-specific tweaks.
+        function applyBatchReactionMoleculeOverrides(opts) {
+            var out = {};
+            for (var k in opts) out[k] = opts[k];
+            out.bondLength = Math.max(out.bondLength || 19, 19);
+            var scaleEl = document.getElementById('batch-opt-scale');
+            if (scaleEl) out.scale = parseFloat(scaleEl.value);
+            return out;
         }
 
         // ─── Parse batch input ────────────────────────────────────────
@@ -1492,7 +1602,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                         if (showFormula) {
                             var formulaDiv = document.createElement('div');
                             formulaDiv.className = 'text-xs text-gray-400 dark:text-gray-500 mt-0.5 text-center font-mono';
-                            formulaDiv.textContent = formatMolecularFormula(atoms);
+                            formulaDiv.innerHTML = formatMolecularFormulaHtml(atoms);
                             cell.appendChild(formulaDiv);
                         }
                         if (showMW) {
@@ -1545,9 +1655,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                 try {
                     if (isReaction(item.smiles)) {
                         svgEl.id = 'batch-svg-' + globalIdx;
-                        var rxnBatchOpts = {};
-                        for (var rk in drawOpts) rxnBatchOpts[rk] = drawOpts[rk];
-                        rxnBatchOpts.bondLength = Math.max(rxnBatchOpts.bondLength || 19, 19);
+                        var rxnBatchOpts = applyBatchReactionMoleculeOverrides(drawOpts);
                         var sd = new SmiDrawer(rxnBatchOpts, reactionOpts);
                         sd.draw(item.smiles, '#batch-svg-' + globalIdx, theme);
                     } else {
@@ -1616,7 +1724,9 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
         colsSlider.addEventListener('input', function() { colsVal.textContent = colsSlider.value; debouncedRender(); });
         rowsSlider.addEventListener('input', function() { rowsVal.textContent = rowsSlider.value; debouncedRender(); });
-        cellSizeSlider.addEventListener('input', function() { cellSizeVal.textContent = cellSizeSlider.value; debouncedRender(); });
+        // Large cell sizes push the slider off-screen during drag; only re-render on release.
+        cellSizeSlider.addEventListener('input', function() { cellSizeVal.textContent = cellSizeSlider.value; });
+        cellSizeSlider.addEventListener('change', function() { if (batchData.length > 0) renderBatch(); });
 
         batchSliders.forEach(function(name) {
             var el = document.getElementById('batch-opt-' + name);
@@ -1664,7 +1774,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         // Publication export - scale presets
         document.querySelectorAll('.batch-scale-preset').forEach(function(btn) {
             btn.addEventListener('click', function() {
-                exportScale = parseInt(this.getAttribute('data-scale'));
+                exportScale = parseFloat(this.getAttribute('data-scale'));
                 document.querySelectorAll('.batch-scale-preset').forEach(function(b) {
                     b.className = 'batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors';
                 });
@@ -1679,15 +1789,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             });
         }
 
-        // Mutually exclusive bg checkboxes
-        if (transparentBgCheck && whiteBgCheck) {
-            transparentBgCheck.addEventListener('change', function() {
-                if (this.checked) whiteBgCheck.checked = false;
-            });
-            whiteBgCheck.addEventListener('change', function() {
-                if (this.checked) transparentBgCheck.checked = false;
-            });
-        }
+        // Background radio — no cross-exclusion logic needed; radios handle it.
 
         // ─── Export helpers ───────────────────────────────────────────
         function getExportLabelHeight() {
@@ -1713,9 +1815,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             document.body.appendChild(svgEl);
             try {
                 if (isReaction(smiles)) {
-                    var rxnExpOpts = {};
-                    for (var re in drawOpts) rxnExpOpts[re] = drawOpts[re];
-                    rxnExpOpts.bondLength = Math.max(rxnExpOpts.bondLength || 19, 19);
+                    var rxnExpOpts = applyBatchReactionMoleculeOverrides(drawOpts);
                     var sd = new SmiDrawer(rxnExpOpts, reactionOpts);
                     sd.draw(smiles, '#' + tempId, theme);
                 } else {
@@ -1734,15 +1834,25 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
         // ─── Publication style helpers ────────────────────────────────
         function makePublicationColors(svgEl) {
-            var elements = svgEl.querySelectorAll('line, text, circle, path, polygon, polyline');
+            // Default mode bonds stroke with a gradient (url('#...')) whose
+            // stop-colors come from the theme. We have to clobber those stops
+            // for publication B&W to take effect — simply rewriting stroke/fill
+            // on drawn elements leaves the gradient-referenced bonds untouched.
+            var stops = svgEl.querySelectorAll('stop');
+            for (var s = 0; s < stops.length; s++) {
+                if (stops[s].getAttribute('stop-color')) {
+                    stops[s].setAttribute('stop-color', '#000000');
+                }
+            }
+            var elements = svgEl.querySelectorAll('line, text, tspan, circle, path, polygon, polyline, rect');
             for (var i = 0; i < elements.length; i++) {
                 var el = elements[i];
                 var stroke = el.getAttribute('stroke');
-                if (stroke && stroke !== 'none' && stroke !== 'transparent') {
+                if (stroke && stroke !== 'none' && stroke !== 'transparent' && stroke.indexOf('url(') !== 0) {
                     el.setAttribute('stroke', '#000000');
                 }
                 var fill = el.getAttribute('fill');
-                if (fill && fill !== 'none' && fill !== 'transparent') {
+                if (fill && fill !== 'none' && fill !== 'transparent' && fill.indexOf('url(') !== 0) {
                     el.setAttribute('fill', '#000000');
                 }
             }
@@ -1784,9 +1894,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                 document.body.appendChild(svgEl);
                 try {
                     if (isReaction(smiles)) {
-                        var rxnOpts = {};
-                        for (var k in drawOpts) rxnOpts[k] = drawOpts[k];
-                        rxnOpts.bondLength = Math.max(rxnOpts.bondLength || 19, 19);
+                        var rxnOpts = applyBatchReactionMoleculeOverrides(drawOpts);
                         var sd = new SmiDrawer(rxnOpts, reactionOpts);
                         sd.draw(smiles, '#' + tempId, theme);
                     } else {
@@ -1824,8 +1932,9 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             var rows = Math.ceil(batchData.length / cols);
             var scale = exportScale;
             var pubStyle = pubStyleCheck && pubStyleCheck.checked;
-            var transparentBg = pubStyle ? false : (transparentBgCheck && transparentBgCheck.checked);
-            var whiteBg = pubStyle ? true : (whiteBgCheck && whiteBgCheck.checked);
+            var bgMode = getBackgroundMode();
+            var transparentBg = pubStyle ? false : bgMode === 'transparent';
+            var whiteBg = pubStyle ? true : bgMode === 'white';
             var theme = (pubStyle || whiteBg) ? 'light' : getBatchTheme();
             var isDark = themeSurfaceModes[theme] === 'dark';
             var exportBackground = whiteBg ? '#ffffff' : ((themePresets[theme] && themePresets[theme].BACKGROUND) || '#ffffff');
@@ -1907,9 +2016,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     if (showFormula) {
                         try {
                             var atoms = parseSmilesAtoms(item.smiles);
-                            ctx.fillStyle = subColor;
-                            ctx.font = '10px monospace';
-                            ctx.fillText(formatMolecularFormula(atoms), labelX, labelY + 11);
+                            drawFormulaOnCanvas(ctx, atoms, labelX, labelY + 11, 10, subColor, 'monospace');
                             labelY += 14;
                         } catch (e) { labelY += 14; }
                     }
@@ -1965,8 +2072,9 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             var cellTotal = cellSize + labelHeight;
             var rows = Math.ceil(batchData.length / cols);
             var pubStyle = pubStyleCheck && pubStyleCheck.checked;
-            var whiteBg = pubStyle ? true : (whiteBgCheck && whiteBgCheck.checked);
-            var transparentBg = pubStyle ? false : (transparentBgCheck && transparentBgCheck.checked);
+            var bgMode = getBackgroundMode();
+            var whiteBg = pubStyle ? true : bgMode === 'white';
+            var transparentBg = pubStyle ? false : bgMode === 'transparent';
             var theme = (pubStyle || whiteBg) ? 'light' : getBatchTheme();
             var isDark = themeSurfaceModes[theme] === 'dark';
             var exportBackground = whiteBg ? '#ffffff' : ((themePresets[theme] && themePresets[theme].BACKGROUND) || '#ffffff');
@@ -2038,7 +2146,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                 if (showFormula) {
                     try {
                         var atoms = parseSmilesAtoms(item.smiles);
-                        parts.push('<text x="' + (cellSize / 2) + '" y="' + (labelY + 11) + '" text-anchor="middle" font-family="monospace" font-size="10" fill="' + subColor + '">' + esc(formatMolecularFormula(atoms)) + '</text>');
+                        parts.push('<text x="' + (cellSize / 2) + '" y="' + (labelY + 11) + '" text-anchor="middle" font-family="monospace" font-size="10" fill="' + subColor + '">' + formatMolecularFormulaSvg(atoms) + '</text>');
                     } catch (e) { /* skip */ }
                     labelY += 14;
                 }
