@@ -1745,6 +1745,11 @@ c1ccc2[nH]ccc2c1</textarea>
             var elements = svgEl.querySelectorAll('line, text, tspan, circle, path, polygon, polyline, rect');
             for (var i = 0; i < elements.length; i++) {
                 var el = elements[i];
+                // Skip anything inside a <mask>: masks use white rects/text to
+                // define visible cutouts (e.g. holes around atom labels so bonds
+                // don't overprint text). Rewriting white → black flips the mask
+                // and hides everything the mask-group contains.
+                if (el.closest && el.closest('mask')) continue;
                 var stroke = el.getAttribute('stroke');
                 if (stroke && stroke !== 'none' && stroke !== 'transparent' && stroke.indexOf('url(') !== 0) {
                     el.setAttribute('stroke', '#000000');
