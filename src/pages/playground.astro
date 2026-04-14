@@ -25,52 +25,39 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         <!-- =========================================== -->
         <div id="panel-single" class="grid lg:grid-cols-[300px_minmax(0,1fr)] min-h-[640px]">
             <aside class="border-r border-rule bg-white">
-                <div class="flex gap-1.5 p-3 bg-paper border-b border-rule">
-                    <button type="button" class="density-btn flex-1 text-[10px] font-bold uppercase tracking-[0.05em] px-2 py-1.5 border border-ink rounded-sm data-[active=true]:bg-mint" data-groups="pg-preset,pg-theme,pg-sizing" data-active="true">Essential</button>
-                    <button type="button" class="density-btn flex-1 text-[10px] font-bold uppercase tracking-[0.05em] px-2 py-1.5 border border-ink rounded-sm data-[active=true]:bg-mint" data-groups="pg-preset,pg-theme,pg-sizing,pg-canvas,pg-display,pg-atoms,pg-reaction">All</button>
-                    <button type="button" class="density-btn flex-1 text-[10px] font-bold uppercase tracking-[0.05em] px-2 py-1.5 border border-ink rounded-sm data-[active=true]:bg-mint" data-groups="pg-reaction">Reaction</button>
+                <!-- Preset molecules kept as hidden offscreen elements so the
+                     preserved script's `.preset-btn` click handlers still find
+                     targets. Not shown in the sidebar — users click Import file
+                     (batch) or type their own SMILES. -->
+                <div class="hidden">
+                    {Object.entries(playgroundPresets).map(([category, mols]) => (
+                        <div>
+                            {mols.map(mol => (
+                                <button type="button" class="preset-btn" data-smiles={mol.smiles}>{mol.name}</button>
+                            ))}
+                        </div>
+                    ))}
                 </div>
 
-                <details id="pg-preset" class="acc-group border-b border-rule" open>
+                <details id="pg-theme" class="acc-group border-b border-rule">
                     <summary class="acc-row">
                         <span class="acc-num">001</span>
-                        <span class="acc-title">PRESET</span>
-                        <span class="acc-hint">pick a molecule</span>
-                        <span class="acc-chev">›</span>
-                    </summary>
-                    <div class="acc-body">
-                        {Object.entries(playgroundPresets).map(([category, mols]) => (
-                            <div class="mb-3 last:mb-0">
-                                <div class="text-[9px] font-semibold uppercase tracking-[0.1em] text-ink-hint mb-1.5">{category}</div>
-                                <div class="flex flex-wrap gap-1.5">
-                                    {mols.map(mol => (
-                                        <button type="button" class="preset-btn text-[10px] font-semibold px-2 py-1 rounded-sm border border-rule text-ink hover:border-mint hover:bg-mint-tint" data-smiles={mol.smiles}>{mol.name}</button>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </details>
-
-                <details id="pg-theme" class="acc-group border-b border-rule" open>
-                    <summary class="acc-row">
-                        <span class="acc-num">002</span>
                         <span class="acc-title">THEME</span>
-                        <span class="acc-hint">render palette</span>
+                        <span class="acc-hint">Render palette</span>
                         <span class="acc-chev">›</span>
                     </summary>
                     <div class="acc-body">
-                        <select id="opt-theme" class="w-full text-[11px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
+                        <select id="opt-theme" class="w-full text-[12px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
                             {themeOptions.map(o => <option value={o.value}>{o.label}</option>)}
                         </select>
                     </div>
                 </details>
 
-                <details id="pg-sizing" class="acc-group border-b border-rule" open>
+                <details id="pg-sizing" class="acc-group border-b border-rule">
                     <summary class="acc-row">
-                        <span class="acc-num">003</span>
+                        <span class="acc-num">002</span>
                         <span class="acc-title">SIZING</span>
-                        <span class="acc-hint">bond · font</span>
+                        <span class="acc-hint">Bond · font size</span>
                         <span class="acc-chev">›</span>
                     </summary>
                     <div class="acc-body space-y-3">
@@ -91,9 +78,9 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
                 <details id="pg-canvas" class="acc-group border-b border-rule">
                     <summary class="acc-row">
-                        <span class="acc-num">004</span>
+                        <span class="acc-num">003</span>
                         <span class="acc-title">CANVAS</span>
-                        <span class="acc-hint">W · H · spacing</span>
+                        <span class="acc-hint">Width · height · spacing</span>
                         <span class="acc-chev">›</span>
                     </summary>
                     <div class="acc-body space-y-3">
@@ -118,9 +105,9 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
                 <details id="pg-display" class="acc-group border-b border-rule">
                     <summary class="acc-row">
-                        <span class="acc-num">005</span>
+                        <span class="acc-num">004</span>
                         <span class="acc-title">DISPLAY</span>
-                        <span class="acc-hint">atoms · debug</span>
+                        <span class="acc-hint">Atoms · hydrogens · debug</span>
                         <span class="acc-chev">›</span>
                     </summary>
                     <div class="acc-body space-y-2">
@@ -145,14 +132,14 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
                 <details id="pg-atoms" class="acc-group border-b border-rule">
                     <summary class="acc-row">
-                        <span class="acc-num">006</span>
+                        <span class="acc-num">005</span>
                         <span class="acc-title">ATOMS</span>
-                        <span class="acc-hint">atom style</span>
+                        <span class="acc-hint">Atom style</span>
                         <span class="acc-chev">›</span>
                     </summary>
                     <div class="acc-body">
-                        <label class="block text-[10px] font-medium text-ink-muted mb-1">Atom style</label>
-                        <select id="opt-atomVisualization" class="w-full text-[11px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
+                        <label class="block text-[11px] font-medium text-ink-muted mb-1">Atom style</label>
+                        <select id="opt-atomVisualization" class="w-full text-[12px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
                             <option value="default">Default</option>
                             <option value="balls">Balls</option>
                             <option value="allballs">All balls</option>
@@ -162,9 +149,9 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
                 <details id="pg-reaction" class="acc-group">
                     <summary class="acc-row">
-                        <span class="acc-num">007</span>
+                        <span class="acc-num">006</span>
                         <span class="acc-title">REACTION</span>
-                        <span class="acc-hint">9 opts · rxn input</span>
+                        <span class="acc-hint">Reaction SMILES options</span>
                         <span class="acc-chev">›</span>
                     </summary>
                     <div class="acc-body space-y-3">
@@ -212,7 +199,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             <!-- SINGLE MAIN PANE -->
             <div class="flex flex-col bg-white">
                 <div class="flex items-stretch border-b border-rule">
-                    <span class="flex items-center px-4 border-r border-rule text-[9px] font-bold uppercase tracking-[0.14em] text-ink-hint">SMILES</span>
+                    <span class="flex items-center px-4 border-r border-rule text-[10px] font-bold uppercase tracking-[0.14em] text-ink">SMILES</span>
                     <input
                         id="pg-input"
                         type="text"
@@ -240,8 +227,8 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     </div>
                 </div>
 
-                <div id="pg-formula" class="hidden border-t border-rule px-4 py-2 text-[11px] text-ink-muted bg-paper">
-                    Formula: <span id="pg-formula-text" class="font-mono text-ink"></span>
+                <div id="pg-formula" class="hidden border-t border-rule px-4 py-2 text-[12px] text-ink bg-paper">
+                    <span class="font-semibold text-ink">Formula:</span> <span id="pg-formula-text" class="font-mono text-ink"></span>
                 </div>
             </div>
         </div>
@@ -249,14 +236,14 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         <!-- =========================================== -->
         <!-- BATCH MODE                                   -->
         <!-- =========================================== -->
-        <div id="panel-batch" class="hidden lg:grid lg:grid-cols-[300px_minmax(0,1fr)] min-h-[840px]">
+        <div id="panel-batch" class="hidden grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] min-h-[840px]">
             <aside class="border-r border-rule bg-white">
 
-                <details class="acc-group border-b border-rule" open>
+                <details class="acc-group border-b border-rule">
                     <summary class="acc-row">
                         <span class="acc-num">001</span>
                         <span class="acc-title">GRID</span>
-                        <span class="acc-hint">cols × rows · size</span>
+                        <span class="acc-hint">Columns · rows · cell size</span>
                         <span class="acc-chev">›</span>
                     </summary>
                     <div class="acc-body space-y-3">
@@ -282,11 +269,11 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     </div>
                 </details>
 
-                <details class="acc-group border-b border-rule" open>
+                <details class="acc-group border-b border-rule">
                     <summary class="acc-row">
                         <span class="acc-num">002</span>
                         <span class="acc-title">DISPLAY</span>
-                        <span class="acc-hint">labels · formula · MW</span>
+                        <span class="acc-hint">Labels · formula · MW</span>
                         <span class="acc-chev">›</span>
                     </summary>
                     <div class="acc-body space-y-2">
@@ -305,44 +292,44 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     </div>
                 </details>
 
-                <details class="acc-group border-b border-rule" open>
+                <details class="acc-group border-b border-rule">
                     <summary class="acc-row">
                         <span class="acc-num">003</span>
                         <span class="acc-title">THEME</span>
-                        <span class="acc-hint">render palette</span>
+                        <span class="acc-hint">Render palette</span>
                         <span class="acc-chev">›</span>
                     </summary>
                     <div class="acc-body">
-                        <select id="batch-opt-theme" class="w-full text-[11px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
+                        <select id="batch-opt-theme" class="w-full text-[12px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
                             {themeOptions.map(o => <option value={o.value}>{o.label}</option>)}
                         </select>
                     </div>
                 </details>
 
-                <!-- PUBLICATION EXPORT (mint-tinted group) -->
-                <details class="acc-group bg-mint-tint" open style="border-top: 2px solid #9dd4c0;">
-                    <summary class="acc-row bg-mint-tint">
-                        <span class="acc-num text-mint-deep">004</span>
-                        <span class="acc-title text-mint-deep">PUBLICATION EXPORT</span>
-                        <span class="acc-hint text-mint-deep">uniform · B&W · DPI</span>
-                        <span class="acc-chev text-mint-deep">›</span>
+                <!-- PUBLICATION EXPORT — same visual treatment as the other accordions -->
+                <details class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">004</span>
+                        <span class="acc-title">PUBLICATION EXPORT</span>
+                        <span class="acc-hint">Uniform · B&W · DPI · figure title</span>
+                        <span class="acc-chev">›</span>
                     </summary>
-                    <div class="acc-body bg-mint-tint" style="border-left-color: #3e8572;">
+                    <div class="acc-body">
                         <label class="flex items-start justify-between gap-3 mb-3">
                             <div>
                                 <div class="text-[11px] font-semibold text-ink">Publication style</div>
                                 <div class="text-[9px] text-ink-subtle mt-0.5">Uniform bond lengths, black atoms/bonds</div>
                             </div>
-                            <span class="relative inline-flex mt-0.5"><input id="batch-opt-pubStyle" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint-deep"></span></span>
+                            <span class="relative inline-flex mt-0.5"><input id="batch-opt-pubStyle" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
                         </label>
 
                         <div class="mb-3">
-                            <label class="block text-[10px] font-medium text-ink-muted mb-1">DPI / Resolution</label>
+                            <label class="block text-[11px] font-medium text-ink-muted mb-1">DPI / Resolution</label>
                             <div class="grid grid-cols-4 gap-1">
-                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-white border border-rule rounded-sm" data-scale="1">72</button>
-                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-white border border-rule rounded-sm" data-scale="2">144</button>
-                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-mint-deep text-white border border-mint-deep rounded-sm" data-scale="4.1667">300</button>
-                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-white border border-rule rounded-sm" data-scale="8.3333">600</button>
+                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-white border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-scale="1">72</button>
+                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-white border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-scale="2">144</button>
+                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-mint border-mint border rounded-sm" data-scale="4.1667">300</button>
+                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-white border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-scale="8.3333">600</button>
                             </div>
                         </div>
 
@@ -371,23 +358,23 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
                         <div class="space-y-2 mb-3">
                             <div>
-                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond length</span><span id="batch-opt-bondLength-val" class="readout bg-white">19</span></label>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond length</span><span id="batch-opt-bondLength-val" class="readout">19</span></label>
                                 <input id="batch-opt-bondLength" type="range" class="rail" min="5" max="30" value="19" step="1" />
                             </div>
                             <div>
-                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond thickness</span><span id="batch-opt-bondThickness-val" class="readout bg-white">1.1</span></label>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond thickness</span><span id="batch-opt-bondThickness-val" class="readout">1.1</span></label>
                                 <input id="batch-opt-bondThickness" type="range" class="rail" min="0.1" max="5" value="1.1" step="0.1" />
                             </div>
                             <div>
-                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Short bond length</span><span id="batch-opt-shortBondLength-val" class="readout bg-white">0.6</span></label>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Short bond length</span><span id="batch-opt-shortBondLength-val" class="readout">0.6</span></label>
                                 <input id="batch-opt-shortBondLength" type="range" class="rail" min="0.1" max="1" value="0.6" step="0.1" />
                             </div>
                             <div>
-                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond spacing</span><span id="batch-opt-bondSpacing-val" class="readout bg-white">3.2</span></label>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond spacing</span><span id="batch-opt-bondSpacing-val" class="readout">3.2</span></label>
                                 <input id="batch-opt-bondSpacing" type="range" class="rail" min="0" max="10" value="3.2" step="0.1" />
                             </div>
                             <div>
-                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Font size</span><span id="batch-opt-fontSizeLarge-val" class="readout bg-white">6.3</span></label>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Font size</span><span id="batch-opt-fontSizeLarge-val" class="readout">6.3</span></label>
                                 <input id="batch-opt-fontSizeLarge" type="range" class="rail" min="1" max="20" value="6.3" step="0.1" />
                             </div>
                         </div>
@@ -395,21 +382,21 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                         <div class="space-y-1.5 mb-3">
                             <label class="flex items-center justify-between text-[11px] text-ink-muted">
                                 <span>Compact drawing</span>
-                                <span class="relative inline-flex"><input id="batch-opt-compactDrawing" type="checkbox" checked class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint-deep"></span></span>
+                                <span class="relative inline-flex"><input id="batch-opt-compactDrawing" type="checkbox" checked class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
                             </label>
                             <label class="flex items-center justify-between text-[11px] text-ink-muted">
                                 <span>Terminal carbons</span>
-                                <span class="relative inline-flex"><input id="batch-opt-terminalCarbons" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint-deep"></span></span>
+                                <span class="relative inline-flex"><input id="batch-opt-terminalCarbons" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
                             </label>
                             <label class="flex items-center justify-between text-[11px] text-ink-muted">
                                 <span>Explicit hydrogens</span>
-                                <span class="relative inline-flex"><input id="batch-opt-explicitHydrogens" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint-deep"></span></span>
+                                <span class="relative inline-flex"><input id="batch-opt-explicitHydrogens" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
                             </label>
                         </div>
 
                         <div class="grid grid-cols-2 gap-2 pt-2 border-t border-rule">
-                            <button id="batch-export-svg" type="button" class="text-[10px] font-bold uppercase tracking-[0.05em] py-2 bg-ink text-white rounded-sm hover:bg-mint-deep">Export SVG</button>
-                            <button id="batch-export-png" type="button" class="text-[10px] font-bold uppercase tracking-[0.05em] py-2 bg-mint-deep text-white rounded-sm hover:bg-ink">Export PNG</button>
+                            <button id="batch-export-svg" type="button" class="text-[10px] font-bold uppercase tracking-[0.05em] py-2 bg-white border border-ink text-ink rounded-sm hover:bg-paper">Export SVG</button>
+                            <button id="batch-export-png" type="button" class="text-[10px] font-bold uppercase tracking-[0.05em] py-2 bg-mint border border-mint text-ink rounded-sm hover:bg-mint-deep hover:text-white hover:border-mint-deep">Export PNG</button>
                         </div>
                     </div>
                 </details>
@@ -466,7 +453,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             <div class="flex flex-col bg-white">
                 <div class="border-b border-rule">
                     <div class="flex items-center justify-between px-4 py-2 border-b border-rule bg-paper">
-                        <span class="text-[9px] font-bold uppercase tracking-[0.14em] text-ink-hint">SMILES · ONE PER LINE</span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-ink">SMILES · ONE PER LINE</span>
                         <div class="flex items-center gap-3">
                             <span id="batch-count" class="text-[10px] text-ink-hint">0 molecules</span>
                             <input type="file" id="batch-file-input" accept=".smi,.txt" class="hidden" />
@@ -477,9 +464,10 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                         id="batch-input"
                         rows="6"
                         spellcheck="false"
-                        placeholder="c1ccccc1&#10;CC(=O)Oc1ccccc1C(=O)O&#10;Cn1cnc2c1C(=O)N(C(=O)N2C)C"
                         class="w-full px-4 py-3 font-mono text-[12px] text-ink bg-transparent outline-none resize-y"
-                    ></textarea>
+                    >Cn1cnc2c1C(=O)N(C(=O)N2C)C
+CC(=O)Oc1ccccc1C(=O)O
+c1ccc2[nH]ccc2c1</textarea>
                     <div id="batch-error" class="hidden px-4 py-2 text-[11px] text-red-600 bg-red-50 border-t border-red-200"></div>
                     <div class="flex items-center justify-end px-4 py-2 border-t border-rule bg-paper">
                         <button id="batch-render-btn" type="button" class="btn-primary">Render All →</button>

@@ -81,11 +81,11 @@
     }
 
     .acc-row .acc-hint {
-        @apply flex-1 font-mono text-[10px] text-ink-hint truncate;
+        @apply flex-1 text-[12px] text-ink-muted truncate;
     }
 
     .acc-row .acc-chev {
-        @apply text-[11px] text-ink-hint transition-transform;
+        @apply text-[12px] text-ink-muted transition-transform;
     }
 
     details.acc-group[open] > summary.acc-row .acc-chev {
@@ -176,6 +176,24 @@
     /* Swiss card used across docs sections */
     .card {
         @apply border border-ink rounded-md bg-white overflow-hidden;
+    }
+
+    /* Batch grid cells: the preserved script sets an explicit pixel
+       width/height on each `.batch-cell-svg` from the cellSize slider.
+       When columns × cellSize exceeds the grid container width the page
+       breaks horizontally. Let cells scale down to their column while
+       preserving their aspect ratio via viewBox. */
+    #batch-grid {
+        min-width: 0;
+    }
+    #batch-grid > div {
+        min-width: 0;
+    }
+    #batch-grid .batch-cell-svg {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100%;
+        aspect-ratio: 1 / 1;
     }
 
     .ic {
