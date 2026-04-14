@@ -53,7 +53,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     </div>
                 </details>
 
-                <details id="pg-sizing" class="acc-group border-b border-rule">
+                <details id="pg-sizing" class="acc-group border-b border-rule" open>
                     <summary class="acc-row">
                         <span class="acc-num">002</span>
                         <span class="acc-title">SIZING</span>
@@ -203,7 +203,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     <input
                         id="pg-input"
                         type="text"
-                        value="Cn1cnc2c1C(=O)N(C(=O)N2C)C"
+                        value="CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
                         spellcheck="false"
                         class="flex-1 px-4 py-3 font-mono text-[13px] text-ink bg-transparent outline-none" />
                     <button id="pg-draw-btn" type="button" class="px-5 py-3 bg-mint text-ink text-[11px] font-bold uppercase tracking-[0.06em] border-l border-ink hover:bg-mint-deep hover:text-white">DRAW</button>
@@ -239,7 +239,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         <div id="panel-batch" class="hidden grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] min-h-[840px]">
             <aside class="border-r border-rule bg-white">
 
-                <details class="acc-group border-b border-rule">
+                <details class="acc-group border-b border-rule" open>
                     <summary class="acc-row">
                         <span class="acc-num">001</span>
                         <span class="acc-title">GRID</span>
@@ -452,8 +452,8 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                         <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-ink">SMILES · ONE PER LINE</span>
                         <div class="flex items-center gap-3">
                             <span id="batch-count" class="text-[10px] text-ink-hint">0 molecules</span>
-                            <input type="file" id="batch-file-input" accept=".smi,.txt" class="hidden" />
-                            <button id="batch-import-btn" type="button" class="text-[10px] font-semibold px-3 py-1 border border-mint-deep text-mint-deep rounded-sm hover:bg-mint-tint">Import file</button>
+                            <input type="file" id="batch-file-input" accept=".smi,.txt,.csv,.tsv" class="hidden" />
+                            <button id="batch-import-btn" type="button" class="text-[10px] font-semibold px-3 py-1 border border-mint-deep text-mint-deep rounded-sm hover:bg-mint-tint" title="Accepts .smi, .txt, .csv, .tsv — one molecule per row">Import file</button>
                         </div>
                     </div>
                     <div class="px-4 py-1.5 border-b border-rule bg-paper text-[10px] text-ink-hint tracking-wide">
@@ -464,7 +464,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                         rows="6"
                         spellcheck="false"
                         class="w-full px-4 py-3 font-mono text-[12px] text-ink bg-transparent outline-none resize-y"
-                    >Cn1cnc2c1C(=O)N(C(=O)N2C)C
+                    >CN1C=NC2=C1C(=O)N(C(=O)N2C)C
 CC(=O)Oc1ccccc1C(=O)O
 c1ccc2[nH]ccc2c1</textarea>
                     <div id="batch-error" class="hidden px-4 py-2 text-[11px] text-red-600 bg-red-50 border-t border-red-200"></div>
@@ -691,9 +691,13 @@ c1ccc2[nH]ccc2c1</textarea>
                 errorEl.classList.remove('hidden');
             }
 
-            // Update URL
             var url = new URL(window.location);
             url.searchParams.set('smiles', smiles);
+            try {
+                url.searchParams.set('cfg', btoa(JSON.stringify(collectState())));
+            } catch (e) {
+                url.searchParams.delete('cfg');
+            }
             window.history.replaceState({}, '', url);
         }
 
@@ -1612,13 +1616,111 @@ c1ccc2[nH]ccc2c1</textarea>
         });
 
         // ─── File import ─────────────────────────────────────────────
+        // Heuristic: does a string look like a SMILES (atoms + bond chars, no whitespace)?
+        function looksLikeSmiles(s) {
+            if (!s || s.length < 2) return false;
+            if (/\s/.test(s)) return false;
+            if (!/[A-Za-z]/.test(s)) return false;
+            var matches = s.match(/[A-Za-z0-9@=#()\[\]\-+\/\\%.]/g);
+            return matches ? (matches.length / s.length) > 0.9 : false;
+        }
+
+        // Split one CSV line, respecting "quoted,fields" and escaped "" quotes.
+        function splitCsvLine(line, sep) {
+            var fields = [];
+            var cur = '';
+            var inQuote = false;
+            for (var i = 0; i < line.length; i++) {
+                var ch = line[i];
+                if (ch === '"') {
+                    if (inQuote && line.charAt(i + 1) === '"') { cur += '"'; i++; }
+                    else inQuote = !inQuote;
+                } else if (ch === sep && !inQuote) {
+                    fields.push(cur);
+                    cur = '';
+                } else {
+                    cur += ch;
+                }
+            }
+            fields.push(cur);
+            return fields;
+        }
+
+        // Convert CSV/TSV text into newline-separated "name\tsmiles" rows
+        // that parseBatchInput already understands. Returns the original
+        // text unchanged if we can't identify a SMILES column.
+        function csvToBatchLines(text, sep) {
+            var lines = text.split(/\r?\n/).map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0; });
+            if (lines.length === 0) return text;
+
+            var headerCells = splitCsvLine(lines[0], sep);
+            var headerNames = headerCells.map(function(c) { return c.toLowerCase().trim(); });
+            var hasHeader = headerNames.some(function(n) {
+                return n === 'smiles' || n === 'name' || n === 'compound' || n === 'title' || n === 'molecule';
+            });
+
+            var smilesIdx = -1;
+            var nameIdx = -1;
+            if (hasHeader) {
+                headerNames.forEach(function(n, i) {
+                    if (n === 'smiles' && smilesIdx < 0) smilesIdx = i;
+                    if (nameIdx < 0 && (n === 'name' || n === 'compound' || n === 'title' || n === 'molecule')) nameIdx = i;
+                });
+            }
+
+            // Fallback: no known header → pick the column with the most SMILES-shaped cells
+            if (smilesIdx < 0) {
+                var dataRows = hasHeader ? lines.slice(1) : lines;
+                var colCount = 0;
+                dataRows.forEach(function(l) {
+                    var c = splitCsvLine(l, sep);
+                    if (c.length > colCount) colCount = c.length;
+                });
+                var bestIdx = -1;
+                var bestScore = 0;
+                for (var c = 0; c < colCount; c++) {
+                    var score = 0;
+                    for (var r = 0; r < dataRows.length; r++) {
+                        var cells = splitCsvLine(dataRows[r], sep);
+                        if (cells[c] && looksLikeSmiles(cells[c].trim())) score++;
+                    }
+                    if (score > bestScore) { bestScore = score; bestIdx = c; }
+                }
+                if (bestScore === 0) return text;
+                smilesIdx = bestIdx;
+                // Pick a name column: first non-SMILES text column in the same row
+                if (dataRows.length > 0) {
+                    var firstDataCells = splitCsvLine(dataRows[0], sep);
+                    for (var k = 0; k < firstDataCells.length; k++) {
+                        if (k === smilesIdx) continue;
+                        var v = (firstDataCells[k] || '').trim();
+                        if (v && !looksLikeSmiles(v)) { nameIdx = k; break; }
+                    }
+                }
+            }
+
+            var out = [];
+            for (var li = (hasHeader ? 1 : 0); li < lines.length; li++) {
+                var row = splitCsvLine(lines[li], sep);
+                var smi = (row[smilesIdx] || '').trim();
+                if (!smi) continue;
+                var nm = nameIdx >= 0 && row[nameIdx] ? row[nameIdx].trim() : '';
+                out.push(nm ? (nm + '\t' + smi) : smi);
+            }
+            return out.length > 0 ? out.join('\n') : text;
+        }
+
         importBtn.addEventListener('click', function() { fileInput.click(); });
         fileInput.addEventListener('change', function() {
             var file = fileInput.files[0];
             if (!file) return;
             var reader = new FileReader();
             reader.onload = function(e) {
-                batchInput.value = e.target.result;
+                var content = e.target.result;
+                var ext = (file.name.split('.').pop() || '').toLowerCase();
+                if (ext === 'csv') content = csvToBatchLines(content, ',');
+                else if (ext === 'tsv') content = csvToBatchLines(content, '\t');
+                batchInput.value = content;
                 parseBatchInput();
                 renderBatch();
             };

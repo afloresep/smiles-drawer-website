@@ -19,8 +19,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <div
     class:list={[
         'group border border-ink rounded-md bg-white overflow-hidden flex flex-col transition-colors',
-        clickable && 'cursor-pointer hover:bg-mint-tint',
-        wide && 'sm:col-span-2'
+        clickable && 'cursor-pointer hover:bg-mint-tint'
     ]}
     data-smiles={smiles}
     data-molecule-card={clickable ? 'true' : undefined}>
