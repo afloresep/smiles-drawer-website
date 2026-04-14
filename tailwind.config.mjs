@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
     content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+    // Keep `dark:*` variants gated on a class that never gets added.
+    // Without this, Tailwind defaults to 'media' and OS dark-mode leaks through
+    // every old `dark:text-gray-400` / `dark:bg-gray-900` in legacy markup.
+    darkMode: 'class',
     theme: {
         extend: {
             colors: {

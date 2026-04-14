@@ -41,13 +41,13 @@ const base = import.meta.env.BASE_URL;
                     <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Package Manager</div>
                     <h2 class="mt-2 text-xl font-semibold text-gray-900 dark:text-white">Install from NPM</h2>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Available as <code class="ic">smiles-drawer</code> and works with <code class="ic">npm</code>, <code class="ic">pnpm</code>, and <code class="ic">yarn</code>.</p>
-                    <div class="mt-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/70 px-3 py-2 font-mono text-sm text-gray-700 dark:text-gray-300">npm install smiles-drawer</div>
+                    <div class="mt-4 rounded-xl border border-ink bg-ink px-3 py-2 font-mono text-sm text-white">npm install smiles-drawer</div>
                 </div>
                 <div class="card p-5">
                     <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">CDN</div>
                     <h2 class="mt-2 text-xl font-semibold text-gray-900 dark:text-white">Drop in a script tag</h2>
                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">If you just want to render in the browser, the CDN build is enough to get started.</p>
-                    <div class="mt-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/70 px-3 py-2 font-mono text-xs text-gray-700 dark:text-gray-300 break-all">https://unpkg.com/smiles-drawer@2/dist/smiles-drawer.min.js</div>
+                    <div class="mt-4 rounded-xl border border-ink bg-ink px-3 py-2 font-mono text-xs text-white break-all">https://unpkg.com/smiles-drawer@2/dist/smiles-drawer.min.js</div>
                 </div>
                 <div class="card p-5">
                     <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Tools</div>
@@ -618,11 +618,11 @@ customElements.define('smiles-drawer', SmilesDrawerElement);`}
                     </div>
                     <div class="space-y-5">
                         <div>
-                            <pre class="text-xs sm:text-sm font-mono bg-gray-50/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words"><code>SmilesDrawer.apply(options, selector = "canvas[data-smiles]", themeName = "light", onError = null)</code></pre>
+                            <pre class="text-xs sm:text-sm font-mono bg-ink border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-white whitespace-pre-wrap break-words"><code>SmilesDrawer.apply(options, selector = "canvas[data-smiles]", themeName = "light", onError = null)</code></pre>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">The smallest entrypoint. Canvas-only and single molecules only — no reactions. Reads <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles</code> from each matching element.</p>
                         </div>
                         <div>
-                            <pre class="text-xs sm:text-sm font-mono bg-gray-50/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words"><code>new SmilesDrawer.SmiDrawer(moleculeOptions, reactionOptions).apply(attribute = "data-smiles", theme = "light", onSuccess, onError)</code></pre>
+                            <pre class="text-xs sm:text-sm font-mono bg-ink border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-white whitespace-pre-wrap break-words"><code>new SmilesDrawer.SmiDrawer(moleculeOptions, reactionOptions).apply(attribute = "data-smiles", theme = "light", onSuccess, onError)</code></pre>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">The more capable apply. Handles molecules and reactions and picks up the magic attributes <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles-theme</code>, <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles-options</code>, <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">data-smiles-weights</code>, and the reaction-weight attributes.</p>
                             <p class="mt-2 text-xs text-amber-600 dark:text-amber-400">A current bug prevents this from drawing to canvas elements — target svgs instead.</p>
                         </div>
@@ -636,20 +636,20 @@ customElements.define('smiles-drawer', SmilesDrawerElement);`}
                     </div>
                     <div class="space-y-5">
                         <div>
-                            <pre class="text-xs sm:text-sm font-mono bg-gray-50/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words"><code>new SmilesDrawer.SmiDrawer(moleculeOptions, reactionOptions).draw(smiles, target, theme = "light", onSuccess, onError, weights = null)</code></pre>
+                            <pre class="text-xs sm:text-sm font-mono bg-ink border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-white whitespace-pre-wrap break-words"><code>new SmilesDrawer.SmiDrawer(moleculeOptions, reactionOptions).draw(smiles, target, theme = "light", onSuccess, onError, weights = null)</code></pre>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">The recommended draw. Accepts both molecule and reaction SMILES. <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">target</code> can be an element, <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">"svg" / "canvas" / "img"</code> to create a new element, a CSS selector, or <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">null</code> for a new SVG.</p>
                             <p class="mt-2 text-xs text-amber-600 dark:text-amber-400">Passing an <code class="text-[10px] bg-amber-100/60 dark:bg-amber-950/60 px-1 py-0.5 rounded">HTMLCanvasElement</code> directly doesn't currently work — pass a selector instead.</p>
                         </div>
                         <div>
-                            <pre class="text-xs sm:text-sm font-mono bg-gray-50/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words"><code>new SmilesDrawer.SvgDrawer(options).draw(data, target, themeName = "light", weights = null, infoOnly = false, highlight_atoms = [], weightsNormalized = false)</code></pre>
+                            <pre class="text-xs sm:text-sm font-mono bg-ink border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-white whitespace-pre-wrap break-words"><code>new SmilesDrawer.SvgDrawer(options).draw(data, target, themeName = "light", weights = null, infoOnly = false, highlight_atoms = [], weightsNormalized = false)</code></pre>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Low-level SVG renderer. Takes a parsed molecule (from <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">SmilesDrawer.parse()</code>) and draws to an existing svg. This is where molecule weights and atom highlighting actually run.</p>
                         </div>
                         <div>
-                            <pre class="text-xs sm:text-sm font-mono bg-gray-50/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words"><code>new SmilesDrawer.Drawer(options).draw(data, target, themeName = "light", infoOnly = false, highlight_atoms = [])</code></pre>
+                            <pre class="text-xs sm:text-sm font-mono bg-ink border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-white whitespace-pre-wrap break-words"><code>new SmilesDrawer.Drawer(options).draw(data, target, themeName = "light", infoOnly = false, highlight_atoms = [])</code></pre>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Canvas equivalent of SvgDrawer. Internally delegates to SvgDrawer and copies the result.</p>
                         </div>
                         <div>
-                            <pre class="text-xs sm:text-sm font-mono bg-gray-50/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words"><code>new SmilesDrawer.ReactionDrawer(reactionOptions, moleculeOptions).draw(reaction, target, theme = "light", weights = null, textAbove, textBelow, infoOnly)</code></pre>
+                            <pre class="text-xs sm:text-sm font-mono bg-ink border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-white whitespace-pre-wrap break-words"><code>new SmilesDrawer.ReactionDrawer(reactionOptions, moleculeOptions).draw(reaction, target, theme = "light", weights = null, textAbove, textBelow, infoOnly)</code></pre>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Renders a pre-parsed reaction. Note the constructor argument order — reaction options come <em>before</em> molecule options here. There is currently no way to control the overall drawing size from here.</p>
                         </div>
                     </div>
@@ -662,11 +662,11 @@ customElements.define('smiles-drawer', SmilesDrawerElement);`}
                     </div>
                     <div class="space-y-5">
                         <div>
-                            <pre class="text-xs sm:text-sm font-mono bg-gray-50/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words"><code>SmilesDrawer.parse(smiles, onSuccess, onError)</code></pre>
+                            <pre class="text-xs sm:text-sm font-mono bg-ink border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-white whitespace-pre-wrap break-words"><code>SmilesDrawer.parse(smiles, onSuccess, onError)</code></pre>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Parse a single molecule. The result arrives through <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">onSuccess</code>. Hand it to <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">SvgDrawer.draw()</code> or <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">Drawer.draw()</code> — this is the path needed for atom highlighting.</p>
                         </div>
                         <div>
-                            <pre class="text-xs sm:text-sm font-mono bg-gray-50/80 dark:bg-gray-900/70 border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words"><code>SmilesDrawer.parseReaction(smiles, onSuccess, onError)</code></pre>
+                            <pre class="text-xs sm:text-sm font-mono bg-ink border border-gray-200 dark:border-gray-700 rounded-xl p-3 text-white whitespace-pre-wrap break-words"><code>SmilesDrawer.parseReaction(smiles, onSuccess, onError)</code></pre>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Parse a reaction SMILES into a reaction object. Hand it to <code class="text-xs bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded">ReactionDrawer.draw()</code>.</p>
                         </div>
                     </div>

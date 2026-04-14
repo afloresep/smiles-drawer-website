@@ -6,18 +6,18 @@ interface Props {
 }
 const { code, lang = 'javascript', filename } = Astro.props;
 ---
-<div class="border border-ink rounded-md overflow-hidden bg-white">
+<div class="border border-ink rounded-md overflow-hidden bg-ink">
     {filename && (
-        <div class="flex items-center justify-between px-4 py-2 border-b border-rule bg-paper">
-            <span class="font-mono text-[11px] text-ink-muted">{filename}</span>
-            <span class="text-[9px] font-semibold uppercase tracking-[0.12em] text-ink-faint">{lang}</span>
+        <div class="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-[#0f0f0f]">
+            <span class="font-mono text-[11px] text-white/80">{filename}</span>
+            <span class="text-[9px] font-semibold uppercase tracking-[0.12em] text-white/40">{lang}</span>
         </div>
     )}
     <div class="relative">
-        <pre class="overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-ink bg-white m-0"><code>{code}</code></pre>
+        <pre class="overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-white bg-ink m-0"><code>{code}</code></pre>
         <button
             type="button"
-            class="code-copy-btn absolute top-3 right-3 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.06em] bg-mint-tint text-mint-deep border border-mint hover:bg-mint hover:text-ink rounded-sm transition-colors"
+            class="code-copy-btn absolute top-3 right-3 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.06em] bg-mint text-ink border border-mint hover:bg-mint-deep hover:text-white rounded-sm transition-colors"
             data-code={code}>
             COPY
         </button>
