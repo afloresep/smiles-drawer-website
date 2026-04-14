@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import HeroPlayground from '../components/HeroPlayground.astro';
+import {heroExamples} from '../data/molecules.js';
 const base = import.meta.env.BASE_URL;
 ---
 <Layout title="Home" description="Draw molecules from SMILES strings. Pure JavaScript, runs in the browser.">
@@ -25,6 +26,22 @@ const base = import.meta.env.BASE_URL;
                     v2.2.1
                     <span class="mx-2 text-ink-faint">·</span>
                     BSD-licensed
+                </div>
+
+                <div class="mt-10 pt-8 border-t border-rule">
+                    <div class="text-[9px] font-bold uppercase tracking-[0.12em] text-ink-faint mb-3">Presets · try one</div>
+                    <div class="flex flex-wrap gap-1.5">
+                        {heroExamples.map((ex) => (
+                            <button
+                                class="hero-example-btn inline-flex items-baseline gap-1.5 text-[11px] px-2.5 py-1 rounded-sm border border-rule text-ink hover:border-mint hover:bg-mint-tint transition-colors"
+                                data-smiles={ex.smiles}
+                                data-name={ex.name}
+                                type="button">
+                                <span class="text-[9px] uppercase tracking-[0.08em] text-ink-hint">{ex.kind}</span>
+                                <span class="font-semibold">{ex.name}</span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
             <div>

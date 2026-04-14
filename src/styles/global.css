@@ -170,7 +170,7 @@
     }
 
     .readout {
-        @apply font-mono text-[10px] text-mint-deep bg-mint-tint px-[6px] py-[1px] rounded-sm;
+        @apply font-mono text-[12px] text-mint-deep bg-mint-tint px-[6px] py-[1px] rounded-sm;
     }
 
     /* Swiss card used across docs sections */
