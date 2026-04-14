@@ -7,53 +7,196 @@
         color-scheme: light;
     }
 
-    html.dark {
-        color-scheme: dark;
+    html {
+        font-feature-settings: "tnum", "cv02", "cv03", "cv04", "cv11";
     }
 
     body {
-        @apply text-gray-900 dark:text-gray-100;
-        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-        background-color: #f3f5f1;
-        background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 245, 241, 1));
-    }
-
-    html.dark body {
-        background-color: #070c0f;
-        background-image: linear-gradient(180deg, rgba(11, 15, 18, 1), rgba(7, 12, 15, 1));
+        @apply text-ink bg-paper antialiased;
+        font-family: "Inter Tight", system-ui, -apple-system, sans-serif;
     }
 
     ::selection {
-        @apply bg-accent/20;
+        @apply bg-mint-tint text-ink;
+    }
+
+    .grid-paper {
+        background-image:
+            linear-gradient(rgba(10, 10, 10, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(10, 10, 10, 0.04) 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-color: #ffffff;
     }
 }
 
 @layer components {
     .btn-primary {
-        @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg
-               bg-accent text-white font-medium text-sm
-               shadow-[0_16px_34px_-20px_rgba(15,23,42,0.32)]
-               hover:bg-accent-500 active:bg-accent-600 hover:-translate-y-0.5
-               transition-all duration-200;
+        @apply inline-flex items-center gap-2 px-4 py-3
+               rounded-md bg-mint border border-mint
+               text-ink font-bold text-[11px] uppercase tracking-[0.05em]
+               transition-colors hover:bg-mint-deep hover:border-mint-deep hover:text-white;
     }
 
     .btn-secondary {
-        @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg
-               border border-gray-200/90 dark:border-gray-700/80
-               bg-white/70 dark:bg-gray-900/70
-               text-gray-700 dark:text-gray-300 font-medium text-sm
-               hover:bg-white dark:hover:bg-gray-900 hover:-translate-y-0.5
-               transition-all duration-200;
+        @apply inline-flex items-center gap-2 px-4 py-3
+               rounded-md bg-white border border-ink
+               text-ink font-bold text-[11px] uppercase tracking-[0.05em]
+               transition-colors hover:bg-paper;
     }
 
+    .btn-ghost {
+        @apply inline-flex items-center gap-1 px-3 py-2
+               font-semibold text-[11px] uppercase tracking-[0.04em]
+               text-ink transition-colors hover:text-mint-deep;
+    }
+
+    .num-label {
+        @apply text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-hint;
+    }
+
+    .eyebrow {
+        @apply inline-flex items-center gap-2 text-[10px] font-semibold
+               uppercase tracking-[0.14em] text-mint-deep;
+    }
+
+    .eyebrow::before {
+        content: "";
+        display: inline-block;
+        width: 18px;
+        height: 2px;
+        background: theme('colors.mint.DEFAULT');
+    }
+
+    .acc-row {
+        @apply flex items-center gap-3 px-4 py-3 cursor-pointer
+               text-[11px] transition-colors hover:bg-paper;
+    }
+
+    .acc-row .acc-num {
+        @apply text-[9px] font-bold uppercase tracking-[0.1em] text-ink-faint min-w-[24px];
+    }
+
+    .acc-row .acc-title {
+        @apply font-bold tracking-[0.04em] text-ink min-w-[96px];
+    }
+
+    .acc-row .acc-hint {
+        @apply flex-1 text-[12px] text-ink-muted truncate;
+    }
+
+    .acc-row .acc-chev {
+        @apply text-[12px] text-ink-muted transition-transform;
+    }
+
+    details.acc-group[open] > summary.acc-row .acc-chev {
+        @apply rotate-90 text-mint-deep;
+    }
+
+    details.acc-group[open] > summary.acc-row {
+        @apply bg-paper;
+    }
+
+    details.acc-group > summary.acc-row {
+        list-style: none;
+    }
+
+    details.acc-group > summary.acc-row::-webkit-details-marker {
+        display: none;
+    }
+
+    .acc-body {
+        @apply pt-2 pb-4 pr-4 pl-10 ml-4 bg-paper;
+        border-left: 2px solid theme('colors.mint.DEFAULT');
+    }
+
+    input[type="range"].rail {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 4px;
+        background: #e4e4de;
+        border-radius: 2px;
+        outline: none;
+        accent-color: theme('colors.mint.DEFAULT');
+    }
+
+    input[type="range"].rail::-webkit-slider-runnable-track {
+        height: 4px;
+        background: transparent;
+    }
+
+    input[type="range"].rail::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: theme('colors.ink.DEFAULT');
+        cursor: pointer;
+        margin-top: -4px;
+    }
+
+    input[type="range"].rail::-moz-range-track {
+        height: 4px;
+        background: transparent;
+        border: none;
+    }
+
+    input[type="range"].rail::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: theme('colors.ink.DEFAULT');
+        border: none;
+        cursor: pointer;
+    }
+
+    .toggle-pill {
+        @apply relative inline-block w-7 h-4 rounded-full bg-[#eee] transition-colors;
+    }
+
+    .toggle-pill::after {
+        content: "";
+        @apply absolute top-[2px] left-[2px] w-3 h-3 rounded-full bg-white transition-[left];
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="checkbox"]:checked + .toggle-pill {
+        background: theme('colors.mint.DEFAULT');
+    }
+
+    input[type="checkbox"]:checked + .toggle-pill::after {
+        left: 14px;
+    }
+
+    .readout {
+        @apply font-mono text-[10px] text-mint-deep bg-mint-tint px-[6px] py-[1px] rounded-sm;
+    }
+
+    /* Swiss card used across docs sections */
     .card {
-        @apply rounded-[1.5rem] border border-gray-200/80 dark:border-gray-800/80
-               bg-white/85 dark:bg-gray-900/75 backdrop-blur-sm
-               shadow-[0_24px_60px_-36px_rgba(15,23,42,0.35)]
-               hover:shadow-[0_28px_70px_-36px_rgba(15,23,42,0.45)] transition-all duration-300;
+        @apply border border-ink rounded-md bg-white overflow-hidden;
+    }
+
+    /* Batch grid cells: the preserved script sets an explicit pixel
+       width/height on each `.batch-cell-svg` from the cellSize slider.
+       When columns × cellSize exceeds the grid container width the page
+       breaks horizontally. Let cells scale down to their column while
+       preserving their aspect ratio via viewBox. */
+    #batch-grid {
+        min-width: 0;
+    }
+    #batch-grid > div {
+        min-width: 0;
+    }
+    #batch-grid .batch-cell-svg {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100%;
+        aspect-ratio: 1 / 1;
     }
 
     .ic {
-        @apply text-[0.9em] font-mono bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-1.5 py-0.5 rounded;
+        @apply font-mono text-[0.9em] bg-paper text-ink-muted px-[6px] py-[2px] rounded-sm border border-rule;
     }
 }

@@ -1,0 +1,157 @@
+# Playground DOM contract — every selector the preserved JS reads.
+# The rewrite MUST include every id / class / name below in the new markup.
+# Format: one directive per line; lines starting with # are comments.
+
+# ===== Mode tabs + panels =====
+#id tab-single
+#id tab-batch
+#id panel-single
+#id panel-batch
+
+# ===== Single-mode: SMILES input and preview =====
+#id pg-input
+#id pg-svg
+#id pg-svg-wrap
+#id pg-error
+#id pg-draw-btn
+#id pg-preview-surface
+#id pg-formula
+#id pg-formula-text
+
+# ===== Single-mode: action buttons =====
+#id pg-download-svg
+#id pg-download-png
+#id pg-copy-svg
+#id pg-copy-smiles
+#id pg-share
+
+# ===== Single-mode: drawing options =====
+#id opt-theme
+#id opt-atomVisualization
+#id opt-bondLength
+#id opt-bondLength-val
+#id opt-bondThickness
+#id opt-bondThickness-val
+#id opt-shortBondLength
+#id opt-shortBondLength-val
+#id opt-bondSpacing
+#id opt-bondSpacing-val
+#id opt-fontSizeLarge
+#id opt-fontSizeLarge-val
+#id opt-width
+#id opt-width-val
+#id opt-height
+#id opt-height-val
+#id opt-terminalCarbons
+#id opt-explicitHydrogens
+#id opt-compactDrawing
+#id opt-debug
+
+# ===== Single-mode: reaction options =====
+#id opt-scale
+#id opt-scale-val
+#id opt-rxnSpacing
+#id opt-rxnSpacing-val
+#id opt-rxnFontSize
+#id opt-rxnFontSize-val
+#id opt-rxnPlusSize
+#id opt-rxnPlusSize-val
+#id opt-rxnPlusThickness
+#id opt-rxnPlusThickness-val
+#id opt-rxnArrowLength
+#id opt-rxnArrowLength-val
+#id opt-rxnArrowThickness
+#id opt-rxnArrowThickness-val
+#id opt-rxnArrowHeadSize
+#id opt-rxnArrowHeadSize-val
+#id opt-rxnArrowMargin
+#id opt-rxnArrowMargin-val
+
+# ===== Single-mode: preset-button class =====
+#class preset-btn
+
+# ===== Batch-mode: top =====
+#id batch-input
+#id batch-count
+#id batch-file-input
+#id batch-import-btn
+#id batch-render-btn
+#id batch-export-png
+#id batch-export-svg
+#id batch-error
+#id batch-grid
+#id batch-preview-surface
+
+# ===== Batch-mode: selection =====
+#id batch-selection-bar
+#id batch-selection-count
+#id batch-select-all
+#id batch-deselect-all
+#id batch-delete-selected
+
+# ===== Batch-mode: pagination =====
+#id batch-pagination
+#id batch-page-info
+#id batch-page-prev
+#id batch-page-next
+
+# ===== Batch-mode: grid options =====
+#id batch-opt-cols
+#id batch-opt-cols-val
+#id batch-opt-rows
+#id batch-opt-rows-val
+#id batch-opt-cellSize
+#id batch-opt-cellSize-val
+#id batch-opt-showLabels
+#id batch-opt-showFormula
+#id batch-opt-showMW
+#id batch-opt-theme
+
+# ===== Batch-mode: publication =====
+#id batch-opt-pubStyle
+#id batch-opt-bg-theme
+#id batch-opt-bg-white
+#id batch-opt-bg-transparent
+#name batch-opt-bg
+#id batch-opt-title
+#id batch-opt-atomVisualization
+
+# ===== Batch-mode: drawing option overrides =====
+#id batch-opt-bondLength
+#id batch-opt-bondLength-val
+#id batch-opt-bondThickness
+#id batch-opt-bondThickness-val
+#id batch-opt-shortBondLength
+#id batch-opt-shortBondLength-val
+#id batch-opt-bondSpacing
+#id batch-opt-bondSpacing-val
+#id batch-opt-fontSizeLarge
+#id batch-opt-fontSizeLarge-val
+#id batch-opt-compactDrawing
+#id batch-opt-terminalCarbons
+#id batch-opt-explicitHydrogens
+
+# ===== Batch-mode: reaction option overrides =====
+#id batch-opt-scale
+#id batch-opt-scale-val
+#id batch-opt-rxnSpacing
+#id batch-opt-rxnSpacing-val
+#id batch-opt-rxnFontSize
+#id batch-opt-rxnFontSize-val
+#id batch-opt-rxnPlusSize
+#id batch-opt-rxnPlusSize-val
+#id batch-opt-rxnPlusThickness
+#id batch-opt-rxnPlusThickness-val
+#id batch-opt-rxnArrowLength
+#id batch-opt-rxnArrowLength-val
+#id batch-opt-rxnArrowThickness
+#id batch-opt-rxnArrowThickness-val
+#id batch-opt-rxnArrowHeadSize
+#id batch-opt-rxnArrowHeadSize-val
+#id batch-opt-rxnArrowMargin
+#id batch-opt-rxnArrowMargin-val
+
+# ===== Batch-mode: preset classes =====
+#class batch-grid-preset
+#class batch-scale-preset
+#class batch-cell-svg

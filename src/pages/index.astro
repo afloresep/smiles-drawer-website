@@ -1,252 +1,65 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import HeroPlayground from '../components/HeroPlayground.astro';
-import MoleculeCard from '../components/MoleculeCard.astro';
-import CodeBlock from '../components/CodeBlock.astro';
-import {showcaseMolecules, renderOverrides} from '../data/molecules.js';
 const base = import.meta.env.BASE_URL;
 ---
-<Layout title="Home" description="SmilesDrawer documentation and examples for drawing molecules, reactions, and atom highlights directly from SMILES.">
-    <section class="relative py-16 sm:py-20 lg:py-24">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-3xl text-center">
-                <div class="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-white/70 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.24em] text-accent shadow-[0_12px_24px_-20px_rgba(15,23,42,0.22)] dark:bg-gray-950/70">
-                    <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-                    SmilesDrawer 2.2.1
-                </div>
-                <h1 class="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.04em] text-gray-900 dark:text-white">
-                    No server, no images, no templates, just a SMILES.
+<Layout title="Home" description="Draw molecules from SMILES strings. Pure JavaScript, runs in the browser.">
+    <!-- HERO -->
+    <section class="max-w-7xl mx-auto px-6 py-14 sm:py-20">
+        <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] items-start">
+            <div>
+                <div class="eyebrow mb-5">Open source · MIT</div>
+                <h1 class="text-[44px] sm:text-[52px] leading-[0.98] font-extrabold tracking-[-0.03em] text-ink">
+                    Draw molecules from <mark class="bg-mint-tint text-ink px-1.5 rounded-sm">SMILES</mark> strings. In the browser.
                 </h1>
-                <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-                    <a href={`${base}/getting-started`} class="btn-primary justify-center">
-                        Read the docs
-                    </a>
-                    <a href={`${base}/playground`} class="btn-secondary justify-center">
-                        Open the playground
-                    </a>
+                <p class="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-muted">
+                    A pure JavaScript library for rendering chemical structures. No server, no raster assets, no dependencies — just a SMILES string and a <code class="ic">&lt;canvas&gt;</code>.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-2">
+                    <a href={`${base}/getting-started`} class="btn-primary">Read the docs →</a>
+                    <a href={`${base}/playground`} class="btn-secondary">Open playground</a>
+                </div>
+                <div class="mt-8 text-[11px] text-ink-hint tracking-wide">
+                    MAINTAINED BY <strong class="text-ink font-semibold">REYMOND GROUP</strong>
+                    <span class="mx-2 text-ink-faint">·</span>
+                    v2.2.1
+                    <span class="mx-2 text-ink-faint">·</span>
+                    BSD-licensed
                 </div>
             </div>
-            <div class="mt-12 lg:mt-14">
+            <div>
                 <HeroPlayground />
             </div>
         </div>
     </section>
 
-    <section class="border-y border-gray-200/70 py-14 dark:border-gray-800/80 sm:py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-start">
-                <div class="max-w-sm">
-                    <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500">Start</div>
-                    <h2 class="mt-3 text-3xl font-bold tracking-[-0.03em] text-gray-900 dark:text-white">
-                        Pick a starting point.
-                    </h2>
-                    <p class="mt-4 text-gray-600 dark:text-gray-400">
-                        Docs for setup, examples for reference, playground for live input.
-                    </p>
-                </div>
-                <div class="overflow-hidden rounded-[2rem] border border-gray-200/80 bg-white/75 dark:border-gray-800/90 dark:bg-gray-950/[0.45]">
-                    <div class="grid md:grid-cols-3">
-                        <a href={`${base}/getting-started#simple-drawing`} class="group flex min-h-[12rem] flex-col justify-between border-b border-gray-200/80 p-6 transition-colors duration-200 hover:bg-gray-50/80 dark:border-gray-800/90 dark:hover:bg-white/[0.03] md:border-b-0 md:border-r md:p-7">
-                            <div>
-                                <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Docs</div>
-                                <h3 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white">Setup</h3>
-                                <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">Install and render your first molecule.</p>
-                            </div>
-                            <span class="mt-6 text-sm font-medium text-gray-900 dark:text-white">Open docs</span>
-                        </a>
-                        <a href={`${base}/examples`} class="group flex min-h-[12rem] flex-col justify-between border-b border-gray-200/80 p-6 transition-colors duration-200 hover:bg-gray-50/80 dark:border-gray-800/90 dark:hover:bg-white/[0.03] md:border-b-0 md:border-r md:p-7">
-                            <div>
-                                <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Examples</div>
-                                <h3 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white">Reference</h3>
-                                <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">See finished molecules, reactions, and themes.</p>
-                            </div>
-                            <span class="mt-6 text-sm font-medium text-gray-900 dark:text-white">Browse examples</span>
-                        </a>
-                        <a href={`${base}/playground`} class="group flex min-h-[12rem] flex-col justify-between p-6 transition-colors duration-200 hover:bg-gray-50/80 dark:hover:bg-white/[0.03] md:p-7">
-                            <div>
-                                <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Playground</div>
-                                <h3 class="mt-3 text-xl font-semibold text-gray-900 dark:text-white">Try it live</h3>
-                                <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">Paste a SMILES string and adjust the output.</p>
-                            </div>
-                            <span class="mt-6 text-sm font-medium text-gray-900 dark:text-white">Open playground</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+    <!-- LINK STRIP -->
+    <section class="border-y border-ink">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-3 md:divide-x md:divide-rule">
+            <a href={`${base}/getting-started`} class="group block p-8 lg:p-10 border-b md:border-b-0 border-rule transition-colors hover:bg-mint-tint">
+                <div class="num-label">01 / DOCUMENTATION</div>
+                <h3 class="mt-3 text-[24px] font-extrabold tracking-[-0.02em] text-ink">Get started</h3>
+                <p class="mt-2 text-[12px] text-ink-muted max-w-[34ch]">Install, render your first molecule, and learn the API.</p>
+                <div class="mt-4 text-[13px] font-semibold text-mint-deep">Read the docs →</div>
+            </a>
+            <a href={`${base}/playground`} class="group block p-8 lg:p-10 border-b md:border-b-0 border-rule transition-colors hover:bg-mint-tint">
+                <div class="num-label">02 / PLAYGROUND</div>
+                <h3 class="mt-3 text-[24px] font-extrabold tracking-[-0.02em] text-ink">Try it live</h3>
+                <p class="mt-2 text-[12px] text-ink-muted max-w-[34ch]">Tweak every option. Batch render. Export for publication.</p>
+                <div class="mt-4 text-[13px] font-semibold text-mint-deep">Open playground →</div>
+            </a>
+            <a href={`${base}/examples`} class="group block p-8 lg:p-10 transition-colors hover:bg-mint-tint">
+                <div class="num-label">03 / EXAMPLES</div>
+                <h3 class="mt-3 text-[24px] font-extrabold tracking-[-0.02em] text-ink">Reference renders</h3>
+                <p class="mt-2 text-[12px] text-ink-muted max-w-[34ch]">Molecules, reactions, atom highlights, themes.</p>
+                <div class="mt-4 text-[13px] font-semibold text-mint-deep">Browse examples →</div>
+            </a>
         </div>
     </section>
 
-    <section class="py-16 sm:py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="rounded-[2rem] border border-gray-200/80 bg-white/[0.72] p-6 dark:border-gray-800/90 dark:bg-gray-950/[0.45] sm:p-8 lg:p-10">
-                <div class="grid gap-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:items-start">
-                    <div>
-                        <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500">Quick Start</div>
-                        <h2 class="mt-3 max-w-3xl text-3xl font-bold tracking-[-0.03em] text-gray-900 dark:text-white">
-                            Start with the default setup.
-                        </h2>
-                        <p class="mt-4 max-w-2xl text-gray-600 dark:text-gray-400">
-                            For most pages, the CDN script and <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">SmilesDrawer.apply()</code> are enough.
-                        </p>
-                        <div class="mt-8 max-w-2xl">
-                            <CodeBlock
-                                lang="html"
-                                filename="index.html"
-                                code={`<script src="https://unpkg.com/smiles-drawer@2/dist/smiles-drawer.min.js"><\/script>
-<canvas data-smiles="Cn1cnc2c1C(=O)N(C(=O)N2C)C"></canvas>
-<script>
-    SmilesDrawer.apply();
-<\/script>`}
-                            />
-                        </div>
-                    </div>
-                    <div class="border-t border-gray-200/80 pt-6 dark:border-gray-800/90 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
-                        <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500">API</div>
-                        <div class="mt-5 space-y-6">
-                            <div class="border-b border-gray-200/80 pb-6 dark:border-gray-800/90">
-                                <div class="flex flex-wrap items-center justify-between gap-3">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Static pages</h3>
-                                    <code class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 text-xs text-gray-600 dark:border-gray-700/80 dark:bg-gray-900 dark:text-gray-300">SmilesDrawer.apply()</code>
-                                </div>
-                                <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
-                                    Renders every <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">&lt;canvas&gt;</code> with a <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">data-smiles</code> attribute. Optional arguments: options, selector, theme, and error callback.
-                                </p>
-                            </div>
-                            <div class="border-b border-gray-200/80 pb-6 dark:border-gray-800/90">
-                                <div class="flex flex-wrap items-center justify-between gap-3">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Interactive pages</h3>
-                                    <code class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 text-xs text-gray-600 dark:border-gray-700/80 dark:bg-gray-900 dark:text-gray-300">new SmilesDrawer.SmiDrawer(...).draw()</code>
-                                </div>
-                                <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
-                                    Pass molecule options to the constructor, then call <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">.draw(smiles, target, theme)</code>. <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">target</code> can be a CSS selector, an <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">&lt;svg&gt;</code>/<code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">&lt;canvas&gt;</code>/<code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">&lt;img&gt;</code> element, or one of those tag names to return a fresh element. <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">theme</code> is <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">'light'</code> or <code class="text-[0.95em] font-mono text-gray-700 dark:text-gray-300">'dark'</code>.
-                                </p>
-                            </div>
-                            <div>
-                                <div class="text-[11px] uppercase tracking-[0.22em] text-gray-400 dark:text-gray-500">Defaults</div>
-                                <div class="mt-4 flex flex-wrap gap-2 text-xs font-mono text-gray-600 dark:text-gray-300">
-                                    <span class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 dark:border-gray-700/80 dark:bg-gray-900">500 x 500 canvas</span>
-                                    <span class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 dark:border-gray-700/80 dark:bg-gray-900">fontSizeLarge 11</span>
-                                    <span class="rounded-full border border-gray-200/80 bg-gray-50 px-3 py-1 dark:border-gray-700/80 dark:bg-gray-900">bondLength 30</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
-                <div>
-                    <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500">Examples</div>
-                    <h2 class="mt-2 text-3xl font-bold tracking-[-0.03em] text-gray-900 dark:text-white">Reference renders</h2>
-                </div>
-                <a href={`${base}/examples`} class="self-start text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white sm:self-auto">Browse all examples</a>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {showcaseMolecules.map(mol => (
-                    <MoleculeCard
-                        clickable={true}
-                        name={mol.name}
-                        render={renderOverrides[mol.smiles]}
-                        smiles={mol.smiles}
-                        wide={mol.wide}
-                    />
-                ))}
-            </div>
-        </div>
-    </section>
-
-    <section class="pb-20 pt-8 sm:pb-24 sm:pt-12">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="border-t border-gray-200/80 pt-10 dark:border-gray-800/90">
-                <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                    <div>
-                        <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500">Continue</div>
-                        <p class="mt-3 text-lg font-medium text-gray-900 dark:text-white">Docs, examples, or the playground.</p>
-                    </div>
-                    <div class="flex flex-wrap gap-3">
-                        <a href={`${base}/getting-started`} class="inline-flex items-center justify-center rounded-full border border-gray-200/90 bg-white/80 px-5 py-2.5 text-sm font-medium text-gray-700 shadow-[0_16px_34px_-26px_rgba(15,23,42,0.34)] transition-all duration-200 hover:border-accent/40 hover:bg-white hover:text-gray-900 dark:border-gray-700/80 dark:bg-gray-900/70 dark:text-gray-300 dark:hover:border-accent/40 dark:hover:bg-gray-900 dark:hover:text-white">Docs</a>
-                        <a href={`${base}/examples`} class="inline-flex items-center justify-center rounded-full border border-gray-200/90 bg-white/80 px-5 py-2.5 text-sm font-medium text-gray-700 shadow-[0_16px_34px_-26px_rgba(15,23,42,0.34)] transition-all duration-200 hover:border-accent/40 hover:bg-white hover:text-gray-900 dark:border-gray-700/80 dark:bg-gray-900/70 dark:text-gray-300 dark:hover:border-accent/40 dark:hover:bg-gray-900 dark:hover:text-white">Examples</a>
-                        <a href={`${base}/playground`} class="inline-flex items-center justify-center rounded-full border border-gray-200/90 bg-white/80 px-5 py-2.5 text-sm font-medium text-gray-700 shadow-[0_16px_34px_-26px_rgba(15,23,42,0.34)] transition-all duration-200 hover:border-accent/40 hover:bg-white hover:text-gray-900 dark:border-gray-700/80 dark:bg-gray-900/70 dark:text-gray-300 dark:hover:border-accent/40 dark:hover:bg-gray-900 dark:hover:text-white">Playground</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- QUIET BOTTOM -->
+    <section class="max-w-7xl mx-auto px-6 py-16 text-center">
+        <div class="num-label">CONTINUE</div>
+        <p class="mt-2 text-[15px] text-ink-muted">Read the docs, open the playground, or browse examples.</p>
     </section>
 </Layout>
-
-<script is:inline>
-document.addEventListener('DOMContentLoaded', function() {
-    var site = window.SmilesWebsite;
-
-    function renderCards() {
-        var theme = site.getPageTheme();
-
-        document.querySelectorAll('.molecule-svg').forEach(function(svg) {
-            var smiles = svg.getAttribute('data-smiles');
-            var surface = svg.closest('[data-theme-surface]');
-            var defaults = site.getDefaultRenderOptions();
-
-            if (!smiles) return;
-
-            svg = site.renderSmiles({
-                adaptive: true,
-                baseOptions: {
-                    width: defaults.width,
-                    height: defaults.height,
-                    explicitHydrogens: false,
-                    padding: defaults.padding,
-                    bondLength: defaults.bondLength,
-                    bondThickness: defaults.bondThickness,
-                    shortBondLength: defaults.shortBondLength,
-                    bondSpacing: defaults.bondSpacing,
-                    fontSizeLarge: defaults.fontSizeLarge,
-                    scale: defaults.scale
-                },
-                layout: {
-                    containerWidth: surface && surface.clientWidth ? surface.clientWidth : 0,
-                    minHeight: site.isReaction(smiles) ? 150 : 0
-                },
-                onError: function() {},
-                renderConfig: site.getRenderConfig(svg),
-                smiles: smiles,
-                svg: svg,
-                themeName: theme
-            }).svg;
-        });
-    }
-
-    site.waitForFonts(renderCards);
-
-    new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.attributeName === 'class') renderCards();
-        });
-    }).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
-
-    var resizeTimer;
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(renderCards, 120);
-    });
-
-    document.querySelectorAll('[data-molecule-card]').forEach(function(card) {
-        card.addEventListener('click', function() {
-            var smiles = this.getAttribute('data-smiles');
-            var input = document.getElementById('hero-smiles-input');
-
-            if (input && smiles) {
-                input.value = smiles;
-                input.dispatchEvent(new Event('input'));
-                var panel = document.getElementById('hero-preview-panel');
-                if (panel) {
-                    panel.scrollIntoView({behavior: 'smooth', block: 'center'});
-                }
-            }
-        });
-    });
-});
-</script>

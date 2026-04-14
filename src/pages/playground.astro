@@ -3,611 +3,501 @@ import Layout from '../layouts/Layout.astro';
 import {playgroundPresets, renderOverrides} from '../data/molecules.js';
 import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 ---
-<Layout title="Playground" description="Interactive SMILES molecule drawing playground. Paste a SMILES string and get an instant molecular structure depiction.">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Playground</h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Render molecules or reactions, switch theme presets, and tune the exported drawing settings directly.</p>
+<Layout title="Playground" description="Interactive SMILES molecule drawing playground with single and batch publication export modes.">
+    <!-- Title strip with mode switch -->
+    <section class="border-b border-ink bg-paper">
+        <div class="max-w-7xl mx-auto px-6 py-8 flex flex-wrap items-end justify-between gap-6">
+            <div>
+                <div class="eyebrow mb-2">02 / PLAYGROUND</div>
+                <h1 class="text-[34px] sm:text-[40px] font-extrabold tracking-[-0.025em] text-ink">Render, tweak, export.</h1>
+            </div>
+            <div class="flex border border-ink rounded-md overflow-hidden">
+                <button id="tab-single" type="button" class="mode-tab px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.06em] text-ink border-r border-ink data-[active=true]:bg-mint" data-active="true">Single</button>
+                <button id="tab-batch" type="button" class="mode-tab px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.06em] text-ink data-[active=true]:bg-mint">Batch</button>
+            </div>
         </div>
+    </section>
 
-        <!-- Tab bar -->
-        <div class="flex gap-1 mb-6 border-b border-gray-200 dark:border-gray-700">
-            <button id="tab-single" class="px-4 py-2 text-sm font-medium border-b-2 border-accent text-accent transition-colors">Single</button>
-            <button id="tab-batch" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Batch Export</button>
-        </div>
+    <div class="max-w-7xl mx-auto">
 
-        <!-- Single mode panel -->
-        <div id="panel-single">
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-                <!-- Main area -->
-                <div class="space-y-4">
-                    <!-- SMILES input -->
-                    <div class="flex gap-3">
-                        <input
-                            id="pg-input"
-                            type="text"
-                            value="CC1C(=O)NCCN1C(=O)C1(CNC(=O)[C@@H]2[C@H]3CCOC[C@H]32)CC=CC1"
-                            placeholder="Enter a SMILES string..."
-                            class="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-lg font-mono focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
-                            spellcheck="false"
-                            autocomplete="off"
-                        />
-                        <button id="pg-draw-btn" class="btn-primary">Draw</button>
+        <!-- =========================================== -->
+        <!-- SINGLE MODE                                  -->
+        <!-- =========================================== -->
+        <div id="panel-single" class="grid lg:grid-cols-[300px_minmax(0,1fr)] min-h-[640px]">
+            <aside class="border-r border-rule bg-white">
+                <!-- Preset molecules kept as hidden offscreen elements so the
+                     preserved script's `.preset-btn` click handlers still find
+                     targets. Not shown in the sidebar — users click Import file
+                     (batch) or type their own SMILES. -->
+                <div class="hidden">
+                    {Object.entries(playgroundPresets).map(([category, mols]) => (
+                        <div>
+                            {mols.map(mol => (
+                                <button type="button" class="preset-btn" data-smiles={mol.smiles}>{mol.name}</button>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+
+                <details id="pg-theme" class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">001</span>
+                        <span class="acc-title">THEME</span>
+                        <span class="acc-hint">Render palette</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body">
+                        <select id="opt-theme" class="w-full text-[12px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
+                            {themeOptions.map(o => <option value={o.value}>{o.label}</option>)}
+                        </select>
                     </div>
+                </details>
 
-                    <!-- Error display -->
-                    <div id="pg-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div>
-
-                    <!-- Molecule rendering area -->
-                    <div id="pg-preview-surface" class="card p-4 sm:p-8">
-                        <div id="pg-svg-wrap" class="flex items-center justify-center" style="min-height: 400px;">
-                            <svg id="pg-svg" class="w-full" style="max-width: 550px; max-height: 450px;"></svg>
+                <details id="pg-sizing" class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">002</span>
+                        <span class="acc-title">SIZING</span>
+                        <span class="acc-hint">Bond · font size</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body space-y-3">
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond length</span><span id="opt-bondLength-val" class="readout">19</span></label>
+                            <input id="opt-bondLength" type="range" class="rail" min="5" max="30" value="19" step="1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond thickness</span><span id="opt-bondThickness-val" class="readout">1.1</span></label>
+                            <input id="opt-bondThickness" type="range" class="rail" min="0.1" max="5" value="1.1" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Font size</span><span id="opt-fontSizeLarge-val" class="readout">6.3</span></label>
+                            <input id="opt-fontSizeLarge" type="range" class="rail" min="1" max="20" value="6.3" step="0.1" />
                         </div>
                     </div>
+                </details>
 
-                    <!-- Action buttons -->
-                    <div class="flex flex-wrap gap-3">
-                        <button id="pg-download-svg" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Download SVG
-                        </button>
-                        <button id="pg-download-png" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Download PNG
-                        </button>
-                        <button id="pg-copy-svg" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            Copy SVG
-                        </button>
-                        <button id="pg-copy-smiles" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            Copy SMILES
-                        </button>
-                        <button id="pg-share" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                            </svg>
-                            Share Link
-                        </button>
+                <details id="pg-canvas" class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">003</span>
+                        <span class="acc-title">CANVAS</span>
+                        <span class="acc-hint">Width · height · spacing</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body space-y-3">
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Width</span><span id="opt-width-val" class="readout">550</span></label>
+                            <input id="opt-width" type="range" class="rail" min="100" max="1000" value="550" step="50" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Height</span><span id="opt-height-val" class="readout">450</span></label>
+                            <input id="opt-height" type="range" class="rail" min="100" max="1000" value="450" step="50" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Short bond length</span><span id="opt-shortBondLength-val" class="readout">0.6</span></label>
+                            <input id="opt-shortBondLength" type="range" class="rail" min="0.1" max="1" value="0.6" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond spacing</span><span id="opt-bondSpacing-val" class="readout">3.2</span></label>
+                            <input id="opt-bondSpacing" type="range" class="rail" min="0" max="10" value="3.2" step="0.1" />
+                        </div>
                     </div>
+                </details>
 
-                    <!-- Molecular formula (if computed) -->
-                    <div id="pg-formula" class="text-sm text-gray-500 dark:text-gray-400 hidden">
-                        Formula: <span id="pg-formula-text" class="font-mono"></span>
+                <details id="pg-display" class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">004</span>
+                        <span class="acc-title">DISPLAY</span>
+                        <span class="acc-hint">Atoms · hydrogens · debug</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body space-y-2">
+                        <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                            <span>Terminal carbons</span>
+                            <span class="relative inline-flex"><input id="opt-terminalCarbons" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                        </label>
+                        <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                            <span>Explicit hydrogens</span>
+                            <span class="relative inline-flex"><input id="opt-explicitHydrogens" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                        </label>
+                        <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                            <span>Compact drawing</span>
+                            <span class="relative inline-flex"><input id="opt-compactDrawing" type="checkbox" checked class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                        </label>
+                        <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                            <span>Debug mode</span>
+                            <span class="relative inline-flex"><input id="opt-debug" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                        </label>
+                    </div>
+                </details>
+
+                <details id="pg-atoms" class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">005</span>
+                        <span class="acc-title">ATOMS</span>
+                        <span class="acc-hint">Atom style</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body">
+                        <label class="block text-[11px] font-medium text-ink-muted mb-1">Atom style</label>
+                        <select id="opt-atomVisualization" class="w-full text-[12px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
+                            <option value="default">Default</option>
+                            <option value="balls">Balls</option>
+                            <option value="allballs">All balls</option>
+                        </select>
+                    </div>
+                </details>
+
+                <details id="pg-reaction" class="acc-group">
+                    <summary class="acc-row">
+                        <span class="acc-num">006</span>
+                        <span class="acc-title">REACTION</span>
+                        <span class="acc-hint">Reaction SMILES options</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body space-y-3">
+                        <p class="text-[10px] text-ink-hint">Used when the input is a reaction SMILES string.</p>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Scale</span><span id="opt-scale-val" class="readout">0</span></label>
+                            <input id="opt-scale" type="range" class="rail" min="0" max="2" value="0" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Spacing</span><span id="opt-rxnSpacing-val" class="readout">10</span></label>
+                            <input id="opt-rxnSpacing" type="range" class="rail" min="0" max="20" value="10" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Font size</span><span id="opt-rxnFontSize-val" class="readout">9</span></label>
+                            <input id="opt-rxnFontSize" type="range" class="rail" min="0" max="20" value="9" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Plus size</span><span id="opt-rxnPlusSize-val" class="readout">9</span></label>
+                            <input id="opt-rxnPlusSize" type="range" class="rail" min="0" max="20" value="9" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Plus thickness</span><span id="opt-rxnPlusThickness-val" class="readout">1</span></label>
+                            <input id="opt-rxnPlusThickness" type="range" class="rail" min="0" max="5" value="1" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Arrow length</span><span id="opt-rxnArrowLength-val" class="readout">120</span></label>
+                            <input id="opt-rxnArrowLength" type="range" class="rail" min="0" max="500" value="120" step="1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Arrow thickness</span><span id="opt-rxnArrowThickness-val" class="readout">1</span></label>
+                            <input id="opt-rxnArrowThickness" type="range" class="rail" min="0.1" max="10" value="1" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Arrow head size</span><span id="opt-rxnArrowHeadSize-val" class="readout">6</span></label>
+                            <input id="opt-rxnArrowHeadSize" type="range" class="rail" min="1" max="10" value="6" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Arrow margin</span><span id="opt-rxnArrowMargin-val" class="readout">3</span></label>
+                            <input id="opt-rxnArrowMargin" type="range" class="rail" min="0" max="10" value="3" step="0.1" />
+                        </div>
+                    </div>
+                </details>
+            </aside>
+
+            <!-- SINGLE MAIN PANE -->
+            <div class="flex flex-col bg-white">
+                <div class="flex items-stretch border-b border-rule">
+                    <span class="flex items-center px-4 border-r border-rule text-[10px] font-bold uppercase tracking-[0.14em] text-ink">SMILES</span>
+                    <input
+                        id="pg-input"
+                        type="text"
+                        value="Cn1cnc2c1C(=O)N(C(=O)N2C)C"
+                        spellcheck="false"
+                        class="flex-1 px-4 py-3 font-mono text-[13px] text-ink bg-transparent outline-none" />
+                    <button id="pg-draw-btn" type="button" class="px-5 py-3 bg-mint text-ink text-[11px] font-bold uppercase tracking-[0.06em] border-l border-ink hover:bg-mint-deep hover:text-white">DRAW</button>
+                </div>
+
+                <div id="pg-error" class="hidden px-4 py-2 text-[11px] text-red-600 bg-red-50 border-b border-red-200"></div>
+
+                <div class="flex items-center border-b border-rule bg-paper">
+                    <div class="ml-auto flex">
+                        <button id="pg-copy-smiles" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Copy SMILES</button>
+                        <button id="pg-copy-svg" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Copy SVG</button>
+                        <button id="pg-download-svg" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Download SVG</button>
+                        <button id="pg-download-png" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Download PNG</button>
+                        <button id="pg-share" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Share</button>
                     </div>
                 </div>
 
-                <!-- Sidebar -->
-                <div class="space-y-4">
-                    <!-- Options Panel -->
-                    <details class="card" open>
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Drawing Options
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <div>
-                                <label for="opt-theme" class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Theme preset</label>
-                                <select id="opt-theme" class="w-full text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5">
-                                    {themeOptions.map(option => (
-                                        <option value={option.value}>{option.label}</option>
-                                    ))}
-                                </select>
-                                <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Changes atom colors and the preview surface background.</p>
-                            </div>
-                            <div>
-                                <label for="opt-atomVisualization" class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Atom style</label>
-                                <select id="opt-atomVisualization" class="w-full text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5">
-                                    <option value="default">Default</option>
-                                    <option value="balls">Balls</option>
-                                    <option value="allballs">All balls</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond length</span>
-                                    <span id="opt-bondLength-val" class="font-mono">19</span>
-                                </label>
-                                <input id="opt-bondLength" type="range" min="5" max="30" value="19" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond thickness</span>
-                                    <span id="opt-bondThickness-val" class="font-mono">1.1</span>
-                                </label>
-                                <input id="opt-bondThickness" type="range" min="0.1" max="5" value="1.1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Short bond length</span>
-                                    <span id="opt-shortBondLength-val" class="font-mono">0.6</span>
-                                </label>
-                                <input id="opt-shortBondLength" type="range" min="0.1" max="1" value="0.6" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond spacing</span>
-                                    <span id="opt-bondSpacing-val" class="font-mono">3.2</span>
-                                </label>
-                                <input id="opt-bondSpacing" type="range" min="0" max="10" value="3.2" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Font size</span>
-                                    <span id="opt-fontSizeLarge-val" class="font-mono">6.3</span>
-                                </label>
-                                <input id="opt-fontSizeLarge" type="range" min="1" max="20" value="6.3" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Canvas width</span>
-                                    <span id="opt-width-val" class="font-mono">550</span>
-                                </label>
-                                <input id="opt-width" type="range" min="100" max="1000" value="550" step="50" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Canvas height</span>
-                                    <span id="opt-height-val" class="font-mono">450</span>
-                                </label>
-                                <input id="opt-height" type="range" min="100" max="1000" value="450" step="50" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Terminal carbons</span>
-                                <input id="opt-terminalCarbons" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Explicit hydrogens</span>
-                                <input id="opt-explicitHydrogens" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Compact drawing</span>
-                                <input id="opt-compactDrawing" type="checkbox" checked class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Debug mode</span>
-                                <input id="opt-debug" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                        </div>
-                    </details>
+                <div id="pg-preview-surface" class="grid-paper flex-1 flex items-center justify-center p-6 min-h-[480px]" data-theme-surface="true">
+                    <div id="pg-svg-wrap" class="flex items-center justify-center w-full">
+                        <svg id="pg-svg" class="w-full" style="max-width: 600px; max-height: 460px;"></svg>
+                    </div>
+                </div>
 
-                    <details class="card">
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Reaction Options
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <p class="text-xs text-gray-500 dark:text-gray-400">Used when the input is a reaction SMILES string (`reactants&gt;reagents&gt;products`).</p>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Scale</span>
-                                    <span id="opt-scale-val" class="font-mono">0</span>
-                                </label>
-                                <input id="opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent">
-                                <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">0 = auto-fit. Scales the rendered reaction.</p>
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Spacing</span>
-                                    <span id="opt-rxnSpacing-val" class="font-mono">10</span>
-                                </label>
-                                <input id="opt-rxnSpacing" type="range" min="0" max="20" value="10" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Font size</span>
-                                    <span id="opt-rxnFontSize-val" class="font-mono">9</span>
-                                </label>
-                                <input id="opt-rxnFontSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Plus size</span>
-                                    <span id="opt-rxnPlusSize-val" class="font-mono">9</span>
-                                </label>
-                                <input id="opt-rxnPlusSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Plus thickness</span>
-                                    <span id="opt-rxnPlusThickness-val" class="font-mono">1</span>
-                                </label>
-                                <input id="opt-rxnPlusThickness" type="range" min="0" max="5" value="1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow length</span>
-                                    <span id="opt-rxnArrowLength-val" class="font-mono">120</span>
-                                </label>
-                                <input id="opt-rxnArrowLength" type="range" min="0" max="500" value="120" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow thickness</span>
-                                    <span id="opt-rxnArrowThickness-val" class="font-mono">1</span>
-                                </label>
-                                <input id="opt-rxnArrowThickness" type="range" min="0.1" max="10" value="1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow head size</span>
-                                    <span id="opt-rxnArrowHeadSize-val" class="font-mono">6</span>
-                                </label>
-                                <input id="opt-rxnArrowHeadSize" type="range" min="1" max="10" value="6" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow margin</span>
-                                    <span id="opt-rxnArrowMargin-val" class="font-mono">3</span>
-                                </label>
-                                <input id="opt-rxnArrowMargin" type="range" min="0" max="10" value="3" step="0.1" class="w-full accent-accent">
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- Presets Panel -->
-                    <details class="card">
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Preset Molecules
-                        </summary>
-                        <div class="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            {Object.entries(playgroundPresets).map(([category, mols]) => (
-                                <div>
-                                    <div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">{category}</div>
-                                    <div class="flex flex-wrap gap-1.5">
-                                        {mols.map(mol => (
-                                            <button
-                                                class="preset-btn text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors"
-                                                data-smiles={mol.smiles}
-                                            >
-                                                {mol.name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </details>
+                <div id="pg-formula" class="hidden border-t border-rule px-4 py-2 text-[12px] text-ink bg-paper">
+                    <span class="font-semibold text-ink">Formula:</span> <span id="pg-formula-text" class="font-mono text-ink"></span>
                 </div>
             </div>
         </div>
 
-        <!-- Batch export panel -->
-        <div id="panel-batch" class="hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-                <!-- Main area -->
-                <div class="space-y-4">
-                    <!-- SMILES textarea input -->
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <label for="batch-input" class="text-sm font-medium text-gray-700 dark:text-gray-300">SMILES (one per line)</label>
-                            <div class="flex items-center gap-2">
-                                <span id="batch-count" class="text-xs text-gray-500 dark:text-gray-400">0 molecules</span>
-                                <input type="file" id="batch-file-input" accept=".smi,.txt" class="hidden">
-                                <button id="batch-import-btn" class="text-xs px-2 py-0.5 rounded border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Import File</button>
+        <!-- =========================================== -->
+        <!-- BATCH MODE                                   -->
+        <!-- =========================================== -->
+        <div id="panel-batch" class="hidden grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] min-h-[840px]">
+            <aside class="border-r border-rule bg-white">
+
+                <details class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">001</span>
+                        <span class="acc-title">GRID</span>
+                        <span class="acc-hint">Columns · rows · cell size</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body space-y-3">
+                        <div class="flex flex-wrap gap-1.5">
+                            <button type="button" class="batch-grid-preset text-[10px] font-semibold px-2 py-1 border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-cols="2" data-rows="2">2×2</button>
+                            <button type="button" class="batch-grid-preset text-[10px] font-semibold px-2 py-1 border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-cols="3" data-rows="3">3×3</button>
+                            <button type="button" class="batch-grid-preset text-[10px] font-semibold px-2 py-1 border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-cols="3" data-rows="4">3×4</button>
+                            <button type="button" class="batch-grid-preset text-[10px] font-semibold px-2 py-1 border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-cols="4" data-rows="4">4×4</button>
+                            <button type="button" class="batch-grid-preset text-[10px] font-semibold px-2 py-1 border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-cols="5" data-rows="5">5×5</button>
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Columns</span><span id="batch-opt-cols-val" class="readout">3</span></label>
+                            <input id="batch-opt-cols" type="range" class="rail" min="1" max="8" value="3" step="1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Rows</span><span id="batch-opt-rows-val" class="readout">3</span></label>
+                            <input id="batch-opt-rows" type="range" class="rail" min="1" max="10" value="3" step="1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Cell size</span><span id="batch-opt-cellSize-val" class="readout">250</span></label>
+                            <input id="batch-opt-cellSize" type="range" class="rail" min="100" max="500" value="250" step="10" />
+                        </div>
+                    </div>
+                </details>
+
+                <details class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">002</span>
+                        <span class="acc-title">DISPLAY</span>
+                        <span class="acc-hint">Labels · formula · MW</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body space-y-2">
+                        <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                            <span>Show labels</span>
+                            <span class="relative inline-flex"><input id="batch-opt-showLabels" type="checkbox" checked class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                        </label>
+                        <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                            <span>Show formula</span>
+                            <span class="relative inline-flex"><input id="batch-opt-showFormula" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                        </label>
+                        <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                            <span>Show molecular weight</span>
+                            <span class="relative inline-flex"><input id="batch-opt-showMW" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                        </label>
+                    </div>
+                </details>
+
+                <details class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">003</span>
+                        <span class="acc-title">THEME</span>
+                        <span class="acc-hint">Render palette</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body">
+                        <select id="batch-opt-theme" class="w-full text-[12px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
+                            {themeOptions.map(o => <option value={o.value}>{o.label}</option>)}
+                        </select>
+                    </div>
+                </details>
+
+                <!-- PUBLICATION EXPORT — same visual treatment as the other accordions -->
+                <details class="acc-group border-b border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">004</span>
+                        <span class="acc-title">PUBLICATION EXPORT</span>
+                        <span class="acc-hint">Uniform · B&W · DPI · figure title</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body">
+                        <label class="flex items-start justify-between gap-3 mb-3">
+                            <div>
+                                <div class="text-[11px] font-semibold text-ink">Publication style</div>
+                                <div class="text-[9px] text-ink-subtle mt-0.5">Uniform bond lengths, black atoms/bonds</div>
+                            </div>
+                            <span class="relative inline-flex mt-0.5"><input id="batch-opt-pubStyle" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                        </label>
+
+                        <div class="mb-3">
+                            <label class="block text-[11px] font-medium text-ink-muted mb-1">DPI / Resolution</label>
+                            <div class="grid grid-cols-4 gap-1">
+                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-white border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-scale="1">72</button>
+                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-white border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-scale="2">144</button>
+                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-mint border-mint border rounded-sm" data-scale="4.1667">300</button>
+                                <button type="button" class="batch-scale-preset text-[10px] font-mono font-semibold py-1.5 bg-white border border-rule rounded-sm hover:border-mint hover:bg-mint-tint" data-scale="8.3333">600</button>
                             </div>
                         </div>
-                        <textarea
-                            id="batch-input"
-                            rows="6"
-                            placeholder="c1ccccc1&#10;CC(=O)Oc1ccccc1C(=O)O&#10;Cn1cnc2c1C(=O)N(C(=O)N2C)C"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all resize-y"
-                            spellcheck="false"
-                        ></textarea>
-                    </div>
 
-                    <!-- Batch error display -->
-                    <div id="batch-error" class="text-sm text-red-500 dark:text-red-400 hidden"></div>
-
-                    <!-- Action buttons -->
-                    <div class="flex flex-wrap gap-3">
-                        <button id="batch-render-btn" class="btn-primary">Render All</button>
-                        <button id="batch-export-png" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Export PNG
-                        </button>
-                        <button id="batch-export-svg" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Export SVG
-                        </button>
-                    </div>
-
-                    <!-- Pagination bar -->
-                    <div id="batch-pagination" class="flex items-center justify-center gap-3 hidden">
-                        <button id="batch-page-prev" class="btn-secondary text-xs px-3 py-1" disabled>&laquo; Prev</button>
-                        <span id="batch-page-info" class="text-sm text-gray-600 dark:text-gray-400">Page 1 of 1</span>
-                        <button id="batch-page-next" class="btn-secondary text-xs px-3 py-1" disabled>Next &raquo;</button>
-                    </div>
-
-                    <!-- Selection action bar -->
-                    <div id="batch-selection-bar" class="flex items-center gap-3 px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 hidden">
-                        <span id="batch-selection-count" class="text-sm font-medium text-accent">0 selected</span>
-                        <button id="batch-select-all" class="text-xs px-2 py-0.5 rounded border border-accent/30 text-accent hover:bg-accent/10 transition-colors">Select All</button>
-                        <button id="batch-deselect-all" class="text-xs px-2 py-0.5 rounded border border-accent/30 text-accent hover:bg-accent/10 transition-colors">Deselect All</button>
-                        <button id="batch-delete-selected" class="text-xs px-2 py-0.5 rounded border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Delete Selected</button>
-                    </div>
-
-                    <!-- Grid preview area -->
-                    <div id="batch-preview-surface" class="card p-4 sm:p-6">
-                        <div id="batch-grid" class="grid gap-2" style="grid-template-columns: repeat(3, 1fr);">
-                            <div class="flex items-center justify-center text-sm text-gray-400 dark:text-gray-500 col-span-full py-16">
-                                Enter SMILES above and click "Render All"
+                        <div class="mb-3">
+                            <label class="block text-[10px] font-medium text-ink-muted mb-1">Background</label>
+                            <div class="flex gap-3 text-[10px]">
+                                <label class="flex items-center gap-1"><input name="batch-opt-bg" id="batch-opt-bg-theme" type="radio" value="theme" checked /> Theme</label>
+                                <label class="flex items-center gap-1"><input name="batch-opt-bg" id="batch-opt-bg-white" type="radio" value="white" /> White</label>
+                                <label class="flex items-center gap-1"><input name="batch-opt-bg" id="batch-opt-bg-transparent" type="radio" value="transparent" /> Transparent</label>
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="block text-[10px] font-medium text-ink-muted mb-1">Figure title</label>
+                            <input id="batch-opt-title" type="text" placeholder="e.g. Figure 1" class="w-full text-[11px] border border-rule rounded-sm px-2 py-1.5 bg-white" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="block text-[10px] font-medium text-ink-muted mb-1">Atom style</label>
+                            <select id="batch-opt-atomVisualization" class="w-full text-[11px] font-mono border border-rule rounded-sm px-2 py-1.5 bg-white">
+                                <option value="default">Default</option>
+                                <option value="balls">Balls</option>
+                                <option value="allballs">All balls</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2 mb-3">
+                            <div>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond length</span><span id="batch-opt-bondLength-val" class="readout">19</span></label>
+                                <input id="batch-opt-bondLength" type="range" class="rail" min="5" max="30" value="19" step="1" />
+                            </div>
+                            <div>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond thickness</span><span id="batch-opt-bondThickness-val" class="readout">1.1</span></label>
+                                <input id="batch-opt-bondThickness" type="range" class="rail" min="0.1" max="5" value="1.1" step="0.1" />
+                            </div>
+                            <div>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Short bond length</span><span id="batch-opt-shortBondLength-val" class="readout">0.6</span></label>
+                                <input id="batch-opt-shortBondLength" type="range" class="rail" min="0.1" max="1" value="0.6" step="0.1" />
+                            </div>
+                            <div>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Bond spacing</span><span id="batch-opt-bondSpacing-val" class="readout">3.2</span></label>
+                                <input id="batch-opt-bondSpacing" type="range" class="rail" min="0" max="10" value="3.2" step="0.1" />
+                            </div>
+                            <div>
+                                <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Font size</span><span id="batch-opt-fontSizeLarge-val" class="readout">6.3</span></label>
+                                <input id="batch-opt-fontSizeLarge" type="range" class="rail" min="1" max="20" value="6.3" step="0.1" />
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5 mb-3">
+                            <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                                <span>Compact drawing</span>
+                                <span class="relative inline-flex"><input id="batch-opt-compactDrawing" type="checkbox" checked class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                            </label>
+                            <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                                <span>Terminal carbons</span>
+                                <span class="relative inline-flex"><input id="batch-opt-terminalCarbons" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                            </label>
+                            <label class="flex items-center justify-between text-[11px] text-ink-muted">
+                                <span>Explicit hydrogens</span>
+                                <span class="relative inline-flex"><input id="batch-opt-explicitHydrogens" type="checkbox" class="sr-only peer" /><span class="toggle-pill peer-checked:bg-mint"></span></span>
+                            </label>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-rule">
+                            <button id="batch-export-svg" type="button" class="text-[10px] font-bold uppercase tracking-[0.05em] py-2 bg-white border border-ink text-ink rounded-sm hover:bg-paper">Export SVG</button>
+                            <button id="batch-export-png" type="button" class="text-[10px] font-bold uppercase tracking-[0.05em] py-2 bg-mint border border-mint text-ink rounded-sm hover:bg-mint-deep hover:text-white hover:border-mint-deep">Export PNG</button>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="acc-group border-t border-rule">
+                    <summary class="acc-row">
+                        <span class="acc-num">005</span>
+                        <span class="acc-title">REACTION</span>
+                        <span class="acc-hint">rxn overrides</span>
+                        <span class="acc-chev">›</span>
+                    </summary>
+                    <div class="acc-body space-y-3">
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Scale</span><span id="batch-opt-scale-val" class="readout">0</span></label>
+                            <input id="batch-opt-scale" type="range" class="rail" min="0" max="2" value="0" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Spacing</span><span id="batch-opt-rxnSpacing-val" class="readout">10</span></label>
+                            <input id="batch-opt-rxnSpacing" type="range" class="rail" min="0" max="20" value="10" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Font size</span><span id="batch-opt-rxnFontSize-val" class="readout">9</span></label>
+                            <input id="batch-opt-rxnFontSize" type="range" class="rail" min="0" max="20" value="9" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Plus size</span><span id="batch-opt-rxnPlusSize-val" class="readout">9</span></label>
+                            <input id="batch-opt-rxnPlusSize" type="range" class="rail" min="0" max="20" value="9" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Plus thickness</span><span id="batch-opt-rxnPlusThickness-val" class="readout">1</span></label>
+                            <input id="batch-opt-rxnPlusThickness" type="range" class="rail" min="0" max="5" value="1" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Arrow length</span><span id="batch-opt-rxnArrowLength-val" class="readout">120</span></label>
+                            <input id="batch-opt-rxnArrowLength" type="range" class="rail" min="0" max="500" value="120" step="1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Arrow thickness</span><span id="batch-opt-rxnArrowThickness-val" class="readout">1</span></label>
+                            <input id="batch-opt-rxnArrowThickness" type="range" class="rail" min="0.1" max="10" value="1" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Arrow head size</span><span id="batch-opt-rxnArrowHeadSize-val" class="readout">6</span></label>
+                            <input id="batch-opt-rxnArrowHeadSize" type="range" class="rail" min="1" max="10" value="6" step="0.1" />
+                        </div>
+                        <div>
+                            <label class="flex justify-between text-[10px] font-medium text-ink-muted mb-1"><span>Arrow margin</span><span id="batch-opt-rxnArrowMargin-val" class="readout">3</span></label>
+                            <input id="batch-opt-rxnArrowMargin" type="range" class="rail" min="0" max="10" value="3" step="0.1" />
+                        </div>
+                    </div>
+                </details>
+            </aside>
+
+            <!-- BATCH MAIN PANE -->
+            <div class="flex flex-col bg-white">
+                <div class="border-b border-rule">
+                    <div class="flex items-center justify-between px-4 py-2 border-b border-rule bg-paper">
+                        <span class="text-[10px] font-bold uppercase tracking-[0.14em] text-ink">SMILES · ONE PER LINE</span>
+                        <div class="flex items-center gap-3">
+                            <span id="batch-count" class="text-[10px] text-ink-hint">0 molecules</span>
+                            <input type="file" id="batch-file-input" accept=".smi,.txt" class="hidden" />
+                            <button id="batch-import-btn" type="button" class="text-[10px] font-semibold px-3 py-1 border border-mint-deep text-mint-deep rounded-sm hover:bg-mint-tint">Import file</button>
+                        </div>
+                    </div>
+                    <textarea
+                        id="batch-input"
+                        rows="6"
+                        spellcheck="false"
+                        class="w-full px-4 py-3 font-mono text-[12px] text-ink bg-transparent outline-none resize-y"
+                    >Cn1cnc2c1C(=O)N(C(=O)N2C)C
+CC(=O)Oc1ccccc1C(=O)O
+c1ccc2[nH]ccc2c1</textarea>
+                    <div id="batch-error" class="hidden px-4 py-2 text-[11px] text-red-600 bg-red-50 border-t border-red-200"></div>
+                    <div class="flex items-center justify-end px-4 py-2 border-t border-rule bg-paper">
+                        <button id="batch-render-btn" type="button" class="btn-primary">Render All →</button>
+                    </div>
+                </div>
+
+                <div id="batch-selection-bar" class="hidden items-center gap-3 px-4 py-2 border-b border-rule bg-mint-tint">
+                    <span id="batch-selection-count" class="text-[11px] font-semibold text-mint-deep">0 selected</span>
+                    <button id="batch-select-all" type="button" class="text-[10px] font-semibold px-2 py-0.5 border border-mint-deep text-mint-deep rounded-sm hover:bg-mint">Select all</button>
+                    <button id="batch-deselect-all" type="button" class="text-[10px] font-semibold px-2 py-0.5 border border-mint-deep text-mint-deep rounded-sm hover:bg-mint">Deselect all</button>
+                    <button id="batch-delete-selected" type="button" class="text-[10px] font-semibold px-2 py-0.5 border border-red-500 text-red-600 rounded-sm hover:bg-red-50">Delete selected</button>
+                </div>
+
+                <div id="batch-preview-surface" class="grid-paper flex-1 p-6 min-h-[480px]" data-theme-surface="true">
+                    <div id="batch-grid" class="grid gap-2" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="col-span-full py-16 text-center text-[12px] text-ink-hint">
+                            Enter SMILES above and click Render All.
                         </div>
                     </div>
                 </div>
 
-                <!-- Sidebar -->
-                <div class="space-y-4">
-                    <!-- Grid Layout Panel -->
-                    <details class="card" open>
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Grid Layout
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <!-- Grid presets -->
-                            <div>
-                                <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Presets</div>
-                                <div class="flex flex-wrap gap-1.5">
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="2" data-rows="2">2x2</button>
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="3" data-rows="3">3x3</button>
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="3" data-rows="4">3x4</button>
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="4" data-rows="4">4x4</button>
-                                    <button class="batch-grid-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-cols="5" data-rows="5">5x5</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Columns</span>
-                                    <span id="batch-opt-cols-val" class="font-mono">3</span>
-                                </label>
-                                <input id="batch-opt-cols" type="range" min="1" max="8" value="3" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Rows</span>
-                                    <span id="batch-opt-rows-val" class="font-mono">3</span>
-                                </label>
-                                <input id="batch-opt-rows" type="range" min="1" max="10" value="3" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Cell size (px)</span>
-                                    <span id="batch-opt-cellSize-val" class="font-mono">250</span>
-                                </label>
-                                <input id="batch-opt-cellSize" type="range" min="100" max="500" value="250" step="10" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Show labels</span>
-                                <input id="batch-opt-showLabels" type="checkbox" checked class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Show formula</span>
-                                <input id="batch-opt-showFormula" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Show mol. weight</span>
-                                <input id="batch-opt-showMW" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Theme</span>
-                                <select id="batch-opt-theme" class="text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1">
-                                    {themeOptions.map(option => (
-                                        <option value={option.value}>{option.label}</option>
-                                    ))}
-                                </select>
-                            </label>
-                        </div>
-                    </details>
-
-                    <!-- Publication Export Panel -->
-                    <details class="card">
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Publication Export
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <label class="flex items-center justify-between text-xs gap-3">
-                                <div>
-                                    <span class="text-gray-600 dark:text-gray-400 font-medium">Publication style</span>
-                                    <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 leading-tight">Uniform bond lengths, black atoms/bonds</p>
-                                </div>
-                                <input id="batch-opt-pubStyle" type="checkbox" class="accent-accent w-4 h-4 flex-shrink-0">
-                            </label>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">PNG export DPI</div>
-                                <div class="flex flex-wrap gap-1.5">
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="1">72 DPI</button>
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="2">144 DPI</button>
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-accent text-accent ring-2 ring-accent/30" data-scale="4.1667">300 DPI</button>
-                                    <button class="batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors" data-scale="8.3333">600 DPI</button>
-                                </div>
-                                <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-2 leading-tight">For print, 300 DPI or higher is recommended. Export SVG instead for lossless scaling.</p>
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">Background</div>
-                                <div class="space-y-1.5">
-                                    <label class="flex items-center gap-2 text-xs">
-                                        <input name="batch-opt-bg" id="batch-opt-bg-theme" type="radio" value="theme" checked class="accent-accent">
-                                        <span class="text-gray-600 dark:text-gray-400">Theme color</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 text-xs">
-                                        <input name="batch-opt-bg" id="batch-opt-bg-white" type="radio" value="white" class="accent-accent">
-                                        <span class="text-gray-600 dark:text-gray-400">White</span>
-                                    </label>
-                                    <label class="flex items-center gap-2 text-xs">
-                                        <input name="batch-opt-bg" id="batch-opt-bg-transparent" type="radio" value="transparent" class="accent-accent">
-                                        <span class="text-gray-600 dark:text-gray-400">Transparent</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Grid title</label>
-                                <input id="batch-opt-title" type="text" placeholder="e.g. Figure 1 — Drug candidates" class="w-full text-xs px-2 py-1.5 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-accent/50">
-                            </div>
-                        </div>
-                    </details>
-
-                    <!-- Drawing Options Panel -->
-                    <details class="card">
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Drawing Options
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <div>
-                                <label for="batch-opt-atomVisualization" class="text-xs text-gray-600 dark:text-gray-400 mb-1 block">Atom style</label>
-                                <select id="batch-opt-atomVisualization" class="w-full text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5">
-                                    <option value="default">Default</option>
-                                    <option value="balls">Balls</option>
-                                    <option value="allballs">All balls</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond length</span>
-                                    <span id="batch-opt-bondLength-val" class="font-mono">19</span>
-                                </label>
-                                <input id="batch-opt-bondLength" type="range" min="5" max="30" value="19" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond thickness</span>
-                                    <span id="batch-opt-bondThickness-val" class="font-mono">1.1</span>
-                                </label>
-                                <input id="batch-opt-bondThickness" type="range" min="0.1" max="5" value="1.1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Short bond length</span>
-                                    <span id="batch-opt-shortBondLength-val" class="font-mono">0.6</span>
-                                </label>
-                                <input id="batch-opt-shortBondLength" type="range" min="0.1" max="1" value="0.6" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Bond spacing</span>
-                                    <span id="batch-opt-bondSpacing-val" class="font-mono">3.2</span>
-                                </label>
-                                <input id="batch-opt-bondSpacing" type="range" min="0" max="10" value="3.2" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Font size</span>
-                                    <span id="batch-opt-fontSizeLarge-val" class="font-mono">6.3</span>
-                                </label>
-                                <input id="batch-opt-fontSizeLarge" type="range" min="1" max="20" value="6.3" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Compact drawing</span>
-                                <input id="batch-opt-compactDrawing" type="checkbox" checked class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Terminal carbons</span>
-                                <input id="batch-opt-terminalCarbons" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                            <label class="flex items-center justify-between text-xs">
-                                <span class="text-gray-600 dark:text-gray-400">Explicit hydrogens</span>
-                                <input id="batch-opt-explicitHydrogens" type="checkbox" class="accent-accent w-4 h-4">
-                            </label>
-                        </div>
-                    </details>
-
-                    <details class="card">
-                        <summary class="px-4 py-3 cursor-pointer text-sm font-medium text-gray-900 dark:text-white select-none hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-xl">
-                            Reaction Options
-                        </summary>
-                        <div class="px-4 pb-4 space-y-4 border-t border-gray-100 dark:border-gray-800 pt-4">
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Scale</span>
-                                    <span id="batch-opt-scale-val" class="font-mono">0</span>
-                                </label>
-                                <input id="batch-opt-scale" type="range" min="0" max="2" value="0" step="0.1" class="w-full accent-accent">
-                                <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">0 = auto-fit. Scales the rendered reaction.</p>
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Spacing</span>
-                                    <span id="batch-opt-rxnSpacing-val" class="font-mono">10</span>
-                                </label>
-                                <input id="batch-opt-rxnSpacing" type="range" min="0" max="20" value="10" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Font size</span>
-                                    <span id="batch-opt-rxnFontSize-val" class="font-mono">9</span>
-                                </label>
-                                <input id="batch-opt-rxnFontSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Plus size</span>
-                                    <span id="batch-opt-rxnPlusSize-val" class="font-mono">9</span>
-                                </label>
-                                <input id="batch-opt-rxnPlusSize" type="range" min="0" max="20" value="9" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Plus thickness</span>
-                                    <span id="batch-opt-rxnPlusThickness-val" class="font-mono">1</span>
-                                </label>
-                                <input id="batch-opt-rxnPlusThickness" type="range" min="0" max="5" value="1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <hr class="border-gray-100 dark:border-gray-800" />
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow length</span>
-                                    <span id="batch-opt-rxnArrowLength-val" class="font-mono">120</span>
-                                </label>
-                                <input id="batch-opt-rxnArrowLength" type="range" min="0" max="500" value="120" step="1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow thickness</span>
-                                    <span id="batch-opt-rxnArrowThickness-val" class="font-mono">1</span>
-                                </label>
-                                <input id="batch-opt-rxnArrowThickness" type="range" min="0.1" max="10" value="1" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow head size</span>
-                                    <span id="batch-opt-rxnArrowHeadSize-val" class="font-mono">6</span>
-                                </label>
-                                <input id="batch-opt-rxnArrowHeadSize" type="range" min="1" max="10" value="6" step="0.1" class="w-full accent-accent">
-                            </div>
-                            <div>
-                                <label class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>Arrow margin</span>
-                                    <span id="batch-opt-rxnArrowMargin-val" class="font-mono">3</span>
-                                </label>
-                                <input id="batch-opt-rxnArrowMargin" type="range" min="0" max="10" value="3" step="0.1" class="w-full accent-accent">
-                            </div>
-                        </div>
-                    </details>
+                <div id="batch-pagination" class="hidden items-center justify-center gap-3 border-t border-rule py-3 bg-paper">
+                    <button id="batch-page-prev" type="button" class="text-[11px] font-semibold px-3 py-1 border border-rule rounded-sm hover:bg-white disabled:opacity-40" disabled>‹ Prev</button>
+                    <span id="batch-page-info" class="text-[11px] text-ink-muted">Page 1 of 1</span>
+                    <button id="batch-page-next" type="button" class="text-[11px] font-semibold px-3 py-1 border border-rule rounded-sm hover:bg-white disabled:opacity-40" disabled>Next ›</button>
                 </div>
             </div>
         </div>
     </div>
 </Layout>
-
 <script is:inline define:vars={{themePresets, themeSurfaceModes, renderOverrides}}>
 (function() {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1838,15 +1728,28 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             // stop-colors come from the theme. We have to clobber those stops
             // for publication B&W to take effect — simply rewriting stroke/fill
             // on drawn elements leaves the gradient-referenced bonds untouched.
+            //
+            // SmilesDrawer emits stops with `style="stop-color:..."` rather than
+            // the `stop-color` attribute, and sometimes with stop-opacity:0, so
+            // we unconditionally rewrite BOTH forms to ensure the gradient
+            // actually ends up black and opaque.
             var stops = svgEl.querySelectorAll('stop');
             for (var s = 0; s < stops.length; s++) {
-                if (stops[s].getAttribute('stop-color')) {
-                    stops[s].setAttribute('stop-color', '#000000');
+                stops[s].setAttribute('stop-color', '#000000');
+                stops[s].setAttribute('stop-opacity', '1');
+                if (stops[s].style) {
+                    stops[s].style.stopColor = '#000000';
+                    stops[s].style.stopOpacity = '1';
                 }
             }
             var elements = svgEl.querySelectorAll('line, text, tspan, circle, path, polygon, polyline, rect');
             for (var i = 0; i < elements.length; i++) {
                 var el = elements[i];
+                // Skip anything inside a <mask>: masks use white rects/text to
+                // define visible cutouts (e.g. holes around atom labels so bonds
+                // don't overprint text). Rewriting white → black flips the mask
+                // and hides everything the mask-group contains.
+                if (el.closest && el.closest('mask')) continue;
                 var stroke = el.getAttribute('stroke');
                 if (stroke && stroke !== 'none' && stroke !== 'transparent' && stroke.indexOf('url(') !== 0) {
                     el.setAttribute('stroke', '#000000');
@@ -2199,4 +2102,38 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
         }
     });
 })();
+</script>
+
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function() {
+    // Density presets — open/close the 7 single-mode accordion groups
+    var densityBtns = document.querySelectorAll('.density-btn');
+    var pgGroupIds = ['pg-preset','pg-theme','pg-sizing','pg-canvas','pg-display','pg-atoms','pg-reaction'];
+    densityBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var groups = (btn.getAttribute('data-groups') || '').split(',');
+            densityBtns.forEach(function(b) {
+                b.setAttribute('data-active', b === btn ? 'true' : 'false');
+            });
+            pgGroupIds.forEach(function(gid) {
+                var g = document.getElementById(gid);
+                if (g) g.open = groups.indexOf(gid) !== -1;
+            });
+        });
+    });
+
+    // Mode tab visual state — the preserved script already toggles #panel-* hidden,
+    // but its classList cosmetic calls reference the old accent color. We mirror
+    // active-tab styling via data-active, which our Tailwind `data-[active=true]:bg-mint`
+    // picks up.
+    var tabSingle = document.getElementById('tab-single');
+    var tabBatch = document.getElementById('tab-batch');
+    function markActive(which) {
+        if (!tabSingle || !tabBatch) return;
+        tabSingle.setAttribute('data-active', which === 'single' ? 'true' : 'false');
+        tabBatch.setAttribute('data-active', which === 'batch' ? 'true' : 'false');
+    }
+    if (tabSingle) tabSingle.addEventListener('click', function() { markActive('single'); });
+    if (tabBatch) tabBatch.addEventListener('click', function() { markActive('batch'); });
+});
 </script>
