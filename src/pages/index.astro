@@ -14,22 +14,15 @@ const base = import.meta.env.BASE_URL;
                     Draw molecules from <mark class="bg-mint-tint text-ink px-1.5 rounded-sm">SMILES</mark> strings. In the browser.
                 </h1>
                 <p class="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-muted">
-                    A pure JavaScript library for rendering chemical structures. No server, no raster assets, no dependencies — just a SMILES string and a <code class="ic">&lt;canvas&gt;</code>.
+                    A pure JavaScript library for rendering chemical structures. No server, no images, no dependencies. Just SMILES.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-2">
                     <a href={`${base}/getting-started`} class="btn-primary">Read the docs →</a>
                     <a href={`${base}/playground`} class="btn-secondary">Open playground</a>
                 </div>
-                <div class="mt-8 text-[11px] text-ink-hint tracking-wide">
-                    MAINTAINED BY <strong class="text-ink font-semibold">REYMOND GROUP</strong>
-                    <span class="mx-2 text-ink-faint">·</span>
-                    v2.2.1
-                    <span class="mx-2 text-ink-faint">·</span>
-                    BSD-licensed
-                </div>
 
                 <div class="mt-10 pt-8 border-t border-rule">
-                    <div class="text-[9px] font-bold uppercase tracking-[0.12em] text-ink-faint mb-3">Presets · try one</div>
+                    <div class="text-[11px] font-bold uppercase tracking-[0.14em] text-ink-faint mb-4">Presets · try one</div>
                     <div class="flex flex-wrap gap-1.5">
                         {heroExamples.map((ex) => (
                             <button
@@ -56,19 +49,19 @@ const base = import.meta.env.BASE_URL;
             <a href={`${base}/getting-started`} class="group block p-8 lg:p-10 border-b md:border-b-0 border-rule transition-colors hover:bg-mint-tint">
                 <div class="num-label">01 / DOCUMENTATION</div>
                 <h3 class="mt-3 text-[24px] font-extrabold tracking-[-0.02em] text-ink">Get started</h3>
-                <p class="mt-2 text-[12px] text-ink-muted max-w-[34ch]">Install, render your first molecule, and learn the API.</p>
+                <p class="mt-2 text-[14px] leading-relaxed text-ink-muted max-w-[38ch]">Install, render your first molecule, and learn the API.</p>
                 <div class="mt-4 text-[13px] font-semibold text-mint-deep">Read the docs →</div>
             </a>
             <a href={`${base}/playground`} class="group block p-8 lg:p-10 border-b md:border-b-0 border-rule transition-colors hover:bg-mint-tint">
                 <div class="num-label">02 / PLAYGROUND</div>
                 <h3 class="mt-3 text-[24px] font-extrabold tracking-[-0.02em] text-ink">Try it live</h3>
-                <p class="mt-2 text-[12px] text-ink-muted max-w-[34ch]">Tweak every option. Batch render. Export for publication.</p>
+                <p class="mt-2 text-[14px] leading-relaxed text-ink-muted max-w-[38ch]">Tweak every option. Batch render. Export for publication.</p>
                 <div class="mt-4 text-[13px] font-semibold text-mint-deep">Open playground →</div>
             </a>
             <a href={`${base}/examples`} class="group block p-8 lg:p-10 transition-colors hover:bg-mint-tint">
                 <div class="num-label">03 / EXAMPLES</div>
                 <h3 class="mt-3 text-[24px] font-extrabold tracking-[-0.02em] text-ink">Reference renders</h3>
-                <p class="mt-2 text-[12px] text-ink-muted max-w-[34ch]">Molecules, reactions, atom highlights, themes.</p>
+                <p class="mt-2 text-[14px] leading-relaxed text-ink-muted max-w-[38ch]">Molecules, reactions, atom highlights, themes.</p>
                 <div class="mt-4 text-[13px] font-semibold text-mint-deep">Browse examples →</div>
             </a>
         </div>
