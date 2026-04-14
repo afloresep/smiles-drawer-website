@@ -1728,10 +1728,18 @@ c1ccc2[nH]ccc2c1</textarea>
             // stop-colors come from the theme. We have to clobber those stops
             // for publication B&W to take effect — simply rewriting stroke/fill
             // on drawn elements leaves the gradient-referenced bonds untouched.
+            //
+            // SmilesDrawer emits stops with `style="stop-color:..."` rather than
+            // the `stop-color` attribute, and sometimes with stop-opacity:0, so
+            // we unconditionally rewrite BOTH forms to ensure the gradient
+            // actually ends up black and opaque.
             var stops = svgEl.querySelectorAll('stop');
             for (var s = 0; s < stops.length; s++) {
-                if (stops[s].getAttribute('stop-color')) {
-                    stops[s].setAttribute('stop-color', '#000000');
+                stops[s].setAttribute('stop-color', '#000000');
+                stops[s].setAttribute('stop-opacity', '1');
+                if (stops[s].style) {
+                    stops[s].style.stopColor = '#000000';
+                    stops[s].style.stopOpacity = '1';
                 }
             }
             var elements = svgEl.querySelectorAll('line, text, tspan, circle, path, polygon, polyline, rect');
