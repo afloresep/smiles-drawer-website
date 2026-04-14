@@ -5,26 +5,35 @@ import MoleculeCard from '../components/MoleculeCard.astro';
 const base = import.meta.env.BASE_URL;
 ---
 <Layout title="Getting Started" description="SmilesDrawer docs covering installation, basic drawing, reactions, weights, themes, and framework integration.">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <section class="mb-10 sm:mb-12">
-            <div class="text-[11px] font-medium uppercase tracking-[0.24em] text-gray-400 dark:text-gray-500">SmilesDrawer 2.2.1</div>
-            <h1 class="mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[-0.04em] text-gray-900 dark:text-white">No server, no images, no templates. Just SMILES.</h1>
-            <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-3xl">
+    <section class="border-b border-ink bg-paper">
+        <div class="max-w-7xl mx-auto px-6 py-10">
+            <div class="eyebrow mb-2">01 / DOCUMENTATION</div>
+            <h1 class="text-[34px] sm:text-[40px] font-extrabold tracking-[-0.025em] text-ink">Get started.</h1>
+            <p class="mt-3 max-w-2xl text-[14px] text-ink-muted">
                 Start with the smallest working setup, then use the examples and playground when you need reactions, highlighting, or rendering tweaks for denser structures.
             </p>
-        </section>
-
-        <div class="flex flex-wrap gap-2 mb-10">
-            <a href="#installation" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Installation</a>
-            <a href="#simple-drawing" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Basic Drawing</a>
-            <a href="#reactions" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Reactions</a>
-            <a href="#weights" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Weights</a>
-            <a href="#reaction-weights" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Reaction Weights</a>
-            <a href="#atom-highlighting" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Atom Highlighting</a>
-            <a href="#customization" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Customization</a>
-            <a href="#frameworks" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">Frameworks</a>
-            <a href="#api-reference" class="text-sm px-3 py-1.5 rounded-full border border-gray-200/90 dark:border-gray-700/80 bg-white/70 dark:bg-gray-950/60 text-gray-600 dark:text-gray-400 hover:border-accent hover:text-accent transition-colors">API Reference</a>
         </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-6 py-12 grid gap-10 lg:grid-cols-[220px_minmax(0,1fr)]">
+        <aside class="hidden lg:block">
+            <nav class="sticky top-24 border-l border-rule pl-4">
+                <div class="num-label mb-3">CONTENTS</div>
+                <ul class="space-y-2">
+                    <li><a href="#installation" class="flex items-baseline gap-2 text-[12px] text-ink-muted hover:text-mint-deep"><span class="text-[9px] text-ink-faint font-semibold">01</span>Installation</a></li>
+                    <li><a href="#simple-drawing" class="flex items-baseline gap-2 text-[12px] text-ink-muted hover:text-mint-deep"><span class="text-[9px] text-ink-faint font-semibold">02</span>Basic drawing</a></li>
+                    <li><a href="#reactions" class="flex items-baseline gap-2 text-[12px] text-ink-muted hover:text-mint-deep"><span class="text-[9px] text-ink-faint font-semibold">03</span>Reactions</a></li>
+                    <li><a href="#weights" class="flex items-baseline gap-2 text-[12px] text-ink-muted hover:text-mint-deep"><span class="text-[9px] text-ink-faint font-semibold">04</span>Weights</a></li>
+                    <li><a href="#reaction-weights" class="flex items-baseline gap-2 text-[12px] text-ink-muted hover:text-mint-deep"><span class="text-[9px] text-ink-faint font-semibold">05</span>Reaction weights</a></li>
+                    <li><a href="#atom-highlighting" class="flex items-baseline gap-2 text-[12px] text-ink-muted hover:text-mint-deep"><span class="text-[9px] text-ink-faint font-semibold">06</span>Atom highlighting</a></li>
+                    <li><a href="#customization" class="flex items-baseline gap-2 text-[12px] text-ink-muted hover:text-mint-deep"><span class="text-[9px] text-ink-faint font-semibold">07</span>Customization</a></li>
+                    <li><a href="#frameworks" class="flex items-baseline gap-2 text-[12px] text-ink-muted hover:text-mint-deep"><span class="text-[9px] text-ink-faint font-semibold">08</span>Frameworks</a></li>
+                    <li><a href="#api-reference" class="flex items-baseline gap-2 text-[12px] text-ink-muted hover:text-mint-deep"><span class="text-[9px] text-ink-faint font-semibold">09</span>API reference</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="min-w-0">
 
         <section id="installation" class="scroll-mt-24 mb-14">
             <div class="grid gap-4 md:grid-cols-3">
@@ -785,4 +794,5 @@ customElements.define('smiles-drawer', SmilesDrawerElement);`}
             });
         })();
     </script>
+    </div>
 </Layout>

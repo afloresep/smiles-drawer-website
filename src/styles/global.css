@@ -173,6 +173,11 @@
         @apply font-mono text-[10px] text-mint-deep bg-mint-tint px-[6px] py-[1px] rounded-sm;
     }
 
+    /* Swiss card used across docs sections */
+    .card {
+        @apply border border-ink rounded-md bg-white overflow-hidden;
+    }
+
     .ic {
         @apply font-mono text-[0.9em] bg-paper text-ink-muted px-[6px] py-[2px] rounded-sm border border-rule;
     }
