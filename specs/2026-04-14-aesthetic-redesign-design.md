@@ -103,8 +103,8 @@ Everything on the home page is static HTML + existing inline `<script is:inline>
 ### `playground.astro` — Playground (single mode)
 
 - **Header** and **title strip** as above. Title strip contains the eyebrow (`02 / PLAYGROUND`), an H1 (`Render, tweak, export.`), and a mode switch at the right (`● Single` / `Batch`) inside a bordered 6px pill.
-- **Main grid:** 280px sidebar on the left, 1fr main pane on the right.
-- **Sidebar** (seven numbered accordion groups, vertically scrollable inside a max-height container):
+- **Main grid:** 300px sidebar on the left, 1fr main pane on the right (300px is used for both single and batch mode so the shell is identical across modes).
+- **Sidebar** (seven numbered accordion groups, vertically scrollable — the sidebar is `position: sticky; top: 0; max-height: calc(100vh - header-height); overflow-y: auto`):
   1. `001 PRESET` — preset molecule combobox (categorized list from `playgroundPresets`)
   2. `002 THEME` — 4-swatch grid for molecule render theme (light, dark, matrix, solarized, plus any additional themes from `themePresets`)
   3. `003 SIZING` — bond length, bond thickness, font size sliders (the most commonly touched values)
@@ -142,7 +142,7 @@ Same shell. Mode switch flipped to `● Batch`. Sidebar reorganized to four grou
 - Bottom: pagination strip (`‹ Prev` / `Page 1 of N · N molecules` / `Next ›`)
 - Selection bar appears when cells are selected (Select All / Deselect All / Delete Selected)
 
-**Preserved behaviors:** all pagination, selection, file import, DPI-scaled PNG export, uniform viewBox computation, B&W stop-color rewriting, publication-mode theme forcing to light (lines 1544–1545 of current `playground.astro`), figure title rendering into exported PNG, grid preset application, and the `?smiles=` URL sharing. None of the JS that implements these is touched — the shell just wraps it with new markup, and every DOM id the script queries is preserved.
+**Preserved behaviors:** all pagination, selection, file import, DPI-scaled PNG export, uniform viewBox computation, B&W stop-color rewriting, publication-mode theme forcing to light, figure title rendering into exported PNG, grid preset application, and the `?smiles=` URL sharing. None of the JS that implements these is touched — the shell just wraps it with new markup, and every DOM id the script queries is preserved.
 
 ### `getting-started.astro` — Docs
 
@@ -221,7 +221,7 @@ During the implementation, the first step after the new shell is scaffolded is t
 1. **Preserved id contract silently breaks.** The playground script calls `getElementById` for many ids. A typo in the new markup means a control silently stops working.
    *Mitigation:* compile the id list from the existing script as the first implementation step, grep the new markup for each, include as an explicit checklist item in the implementation plan, and smoke-test by changing each control in the browser after the rewrite.
 
-2. **Publication export breaks from theme forcing.** The current code forces `theme = 'light'` when publication mode is on (line 1545). The new light-only site removes the page theme toggle but the playground still has molecule render theme options. This must continue to work.
+2. **Publication export breaks from theme forcing.** The current playground JS forces the molecule render theme to `light` whenever publication mode is on. The new light-only site removes the page theme toggle but the playground still has molecule render theme options, and publication mode must keep overriding them.
    *Mitigation:* the molecule render theme options are unrelated to the (removed) page-level dark mode. The publication-mode theme forcing in the JS is untouched. The only change is that the page chrome around it is always light.
 
 3. **Font loading FOUT.** Inter Tight is a new font. Until it loads, text renders in system fallback.
