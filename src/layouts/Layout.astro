@@ -20,21 +20,13 @@ const base = import.meta.env.BASE_URL;
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <title>{title} | SmilesDrawer</title>
-    <!-- Apply dark mode before paint to avoid flash -->
-    <script is:inline>
-        (function() {
-            var theme = localStorage.getItem('theme');
-            if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            if (theme === 'dark') document.documentElement.classList.add('dark');
-        })();
-    </script>
-    <!-- SmilesDrawer (built from reymond-group/smilesDrawer master, v2.2.1) -->
+    <!-- SmilesDrawer library + shared rendering helpers -->
     <script is:inline src={`${base}/js/smiles-drawer.min.js`}></script>
     <script is:inline src={`${base}/js/smiles-website.js`}></script>
 </head>
-<body class="min-h-screen flex flex-col font-sans antialiased">
+<body class="min-h-screen flex flex-col">
     <Header />
     <main class="flex-1">
         <slot />
