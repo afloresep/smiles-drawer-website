@@ -27,7 +27,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
             <aside class="border-r border-rule bg-white">
                 <!-- Preset molecules kept as hidden offscreen elements so the
                      preserved script's `.preset-btn` click handlers still find
-                     targets. Not shown in the sidebar — users click Import file
+                     targets. Not shown in the sidebar; users click Import file
                      (batch) or type their own SMILES. -->
                 <div class="hidden">
                     {Object.entries(playgroundPresets).map(([category, mols]) => (
@@ -306,7 +306,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                     </div>
                 </details>
 
-                <!-- PUBLICATION EXPORT — same visual treatment as the other accordions -->
+                <!-- PUBLICATION EXPORT: same visual treatment as the other accordions -->
                 <details class="acc-group border-b border-rule">
                     <summary class="acc-row">
                         <span class="acc-num">004</span>
@@ -453,7 +453,7 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
                         <div class="flex items-center gap-3">
                             <span id="batch-count" class="text-[10px] text-ink-hint">0 molecules</span>
                             <input type="file" id="batch-file-input" accept=".smi,.txt,.csv,.tsv" class="hidden" />
-                            <button id="batch-import-btn" type="button" class="text-[10px] font-semibold px-3 py-1 border border-mint-deep text-mint-deep rounded-sm hover:bg-mint-tint" title="Accepts .smi, .txt, .csv, .tsv — one molecule per row">Import file</button>
+                            <button id="batch-import-btn" type="button" class="text-[10px] font-semibold px-3 py-1 border border-mint-deep text-mint-deep rounded-sm hover:bg-mint-tint" title="Accepts .smi, .txt, .csv, .tsv, one molecule per row">Import file</button>
                         </div>
                     </div>
                     <div class="px-4 py-1.5 border-b border-rule bg-paper text-[10px] text-ink-hint tracking-wide">
@@ -525,7 +525,7 @@ c1ccc2[nH]ccc2c1</textarea>
         var sliders = ['bondLength', 'bondThickness', 'shortBondLength', 'bondSpacing', 'fontSizeLarge', 'width', 'height'];
         var checkboxes = ['terminalCarbons', 'explicitHydrogens', 'compactDrawing', 'debug'];
         var selects = ['atomVisualization'];
-        // 'scale' lives with reaction sliders — it only behaves as expected when rendering reactions.
+        // 'scale' lives with reaction sliders; it only behaves as expected when rendering reactions.
         var reactionSliders = ['scale', 'rxnSpacing', 'rxnFontSize', 'rxnPlusSize', 'rxnPlusThickness', 'rxnArrowLength', 'rxnArrowThickness', 'rxnArrowHeadSize', 'rxnArrowMargin'];
 
         function getDefaultTheme() {
@@ -886,7 +886,7 @@ c1ccc2[nH]ccc2c1</textarea>
             });
         }
 
-        // Share link — includes full option state so the recipient sees the same render
+        // Share link: includes full option state so the recipient sees the same render
         document.getElementById('pg-share').addEventListener('click', function() {
             var url = new URL(window.location);
             url.searchParams.set('smiles', input.value);
@@ -1021,7 +1021,7 @@ c1ccc2[nH]ccc2c1</textarea>
         var batchSliders = ['bondLength', 'bondThickness', 'shortBondLength', 'bondSpacing', 'fontSizeLarge'];
         var batchCheckboxes = ['compactDrawing', 'terminalCarbons', 'explicitHydrogens'];
         var batchSelects = ['atomVisualization'];
-        // 'scale' lives with reaction sliders — it only behaves as expected when rendering reactions.
+        // 'scale' lives with reaction sliders; it only behaves as expected when rendering reactions.
         var batchReactionSliders = ['scale', 'rxnSpacing', 'rxnFontSize', 'rxnPlusSize', 'rxnPlusThickness', 'rxnArrowLength', 'rxnArrowThickness', 'rxnArrowHeadSize', 'rxnArrowMargin'];
 
         // ─── Data model ───────────────────────────────────────────────
@@ -1806,7 +1806,7 @@ c1ccc2[nH]ccc2c1</textarea>
             });
         }
 
-        // Background radio — no cross-exclusion logic needed; radios handle it.
+        // Background radio: no cross-exclusion logic needed; radios handle it.
 
         // ─── Export helpers ───────────────────────────────────────────
         function getExportLabelHeight() {
@@ -1853,8 +1853,8 @@ c1ccc2[nH]ccc2c1</textarea>
         function makePublicationColors(svgEl) {
             // Default mode bonds stroke with a gradient (url('#...')) whose
             // stop-colors come from the theme. We have to clobber those stops
-            // for publication B&W to take effect — simply rewriting stroke/fill
-            // on drawn elements leaves the gradient-referenced bonds untouched.
+            // for publication B&W to take effect; rewriting stroke/fill on
+            // drawn elements leaves the gradient-referenced bonds untouched.
             //
             // SmilesDrawer emits stops with `style="stop-color:..."` rather than
             // the `stop-color` attribute, and sometimes with stop-opacity:0, so
@@ -2272,7 +2272,7 @@ c1ccc2[nH]ccc2c1</textarea>
 
 <script is:inline>
 document.addEventListener('DOMContentLoaded', function() {
-    // Density presets — open/close the 7 single-mode accordion groups
+    // Density presets: open/close the 7 single-mode accordion groups
     var densityBtns = document.querySelectorAll('.density-btn');
     var pgGroupIds = ['pg-preset','pg-theme','pg-sizing','pg-canvas','pg-display','pg-atoms','pg-reaction'];
     densityBtns.forEach(function(btn) {
@@ -2288,7 +2288,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Mode tab visual state — the preserved script already toggles #panel-* hidden,
+    // Mode tab visual state: the preserved script already toggles #panel-* hidden,
     // but its classList cosmetic calls reference the old accent color. We mirror
     // active-tab styling via data-active, which our Tailwind `data-[active=true]:bg-mint`
     // picks up.
