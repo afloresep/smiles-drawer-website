@@ -20,17 +20,20 @@ const base = import.meta.env.BASE_URL;
 
     <div id="hero-error" class="hidden px-4 py-2 text-[11px] text-red-600 bg-red-50 border-t border-red-200"></div>
 
-    <div class="flex items-stretch border-t border-rule">
-        <span class="flex items-center px-4 border-r border-rule text-[9px] font-bold uppercase tracking-[0.14em] text-ink-hint">SMILES</span>
+    <label class="group flex items-stretch border-t border-rule cursor-text focus-within:ring-2 focus-within:ring-mint focus-within:ring-inset">
+        <span class="flex items-center px-4 border-r border-rule bg-paper text-[9px] font-bold uppercase tracking-[0.14em] text-ink-hint">SMILES</span>
         <input
             id="hero-smiles-input"
             type="text"
             value={defaultExample.smiles}
-            placeholder="Enter a SMILES string…"
-            class="flex-1 px-4 py-3 font-mono text-[13px] text-ink bg-transparent outline-none"
+            placeholder="Type a SMILES string…"
+            class="flex-1 min-w-0 px-4 py-3 font-mono text-[13px] text-ink bg-white outline-none placeholder:text-ink-hint group-hover:bg-mint-tint/40 focus:bg-white transition-colors"
             spellcheck="false"
             autocomplete="off" />
-    </div>
+        <span class="flex items-center pr-4 text-ink-hint group-hover:text-mint-deep transition-colors pointer-events-none" aria-hidden="true">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+        </span>
+    </label>
 
     <div class="flex border-t border-rule">
         <button id="hero-copy-smiles" type="button" class="flex-1 py-3 text-[11px] font-semibold text-ink border-r border-rule hover:bg-paper">

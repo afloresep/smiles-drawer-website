@@ -198,27 +198,31 @@ import {themeOptions, themePresets, themeSurfaceModes} from '../data/themes.js';
 
             <!-- SINGLE MAIN PANE -->
             <div class="flex flex-col bg-white">
-                <div class="flex items-stretch border-b border-rule">
-                    <span class="flex items-center px-4 border-r border-rule text-[10px] font-bold uppercase tracking-[0.14em] text-ink">SMILES</span>
+                <div class="group flex items-stretch border-b border-rule focus-within:ring-2 focus-within:ring-mint focus-within:ring-inset">
+                    <span class="flex items-center px-4 border-r border-rule bg-paper text-[10px] font-bold uppercase tracking-[0.14em] text-ink">SMILES</span>
                     <input
                         id="pg-input"
                         type="text"
                         value="CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
+                        placeholder="Type a SMILES string…"
                         spellcheck="false"
-                        class="flex-1 px-4 py-3 font-mono text-[13px] text-ink bg-transparent outline-none" />
+                        class="flex-1 min-w-0 px-4 py-3 font-mono text-[13px] text-ink bg-white outline-none placeholder:text-ink-hint group-hover:bg-mint-tint/40 focus:bg-white transition-colors" />
+                    <span class="flex items-center px-3 text-ink-hint group-hover:text-mint-deep transition-colors pointer-events-none" aria-hidden="true">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+                    </span>
                     <button id="pg-draw-btn" type="button" class="px-5 py-3 bg-mint text-ink text-[11px] font-bold uppercase tracking-[0.06em] border-l border-ink hover:bg-mint-deep hover:text-white">DRAW</button>
                 </div>
 
                 <div id="pg-error" class="hidden px-4 py-2 text-[11px] text-red-600 bg-red-50 border-b border-red-200"></div>
 
-                <div class="flex items-center border-b border-rule bg-paper">
-                    <div class="ml-auto flex">
-                        <button id="pg-copy-smiles" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Copy SMILES</button>
-                        <button id="pg-copy-svg" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Copy SVG</button>
-                        <button id="pg-download-svg" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Download SVG</button>
-                        <button id="pg-download-png" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Download PNG</button>
-                        <button id="pg-share" type="button" class="px-4 py-3 text-[11px] font-semibold border-l border-rule hover:bg-white">Share</button>
-                    </div>
+                <div class="flex items-stretch border-b border-rule bg-white">
+                    <span class="flex items-center px-4 border-r border-rule bg-paper text-[10px] font-bold uppercase tracking-[0.14em] text-ink-hint">EXPORT</span>
+                    <button id="pg-copy-smiles" type="button" class="px-4 py-2.5 text-[11px] font-semibold text-ink border-r border-rule hover:bg-mint-tint"><span class="text-mint-deep mr-1">⎘</span> Copy SMILES</button>
+                    <button id="pg-copy-svg" type="button" class="px-4 py-2.5 text-[11px] font-semibold text-ink border-r border-rule hover:bg-mint-tint"><span class="text-mint-deep mr-1">⎘</span> Copy SVG</button>
+                    <button id="pg-download-svg" type="button" class="px-4 py-2.5 text-[11px] font-semibold text-ink border-r border-rule hover:bg-mint-tint"><span class="text-mint-deep mr-1">↓</span> Download SVG</button>
+                    <button id="pg-download-png" type="button" class="px-4 py-2.5 text-[11px] font-semibold text-ink border-r border-rule hover:bg-mint-tint"><span class="text-mint-deep mr-1">↓</span> Download PNG</button>
+                    <button id="pg-share" type="button" class="px-4 py-2.5 text-[11px] font-semibold text-ink border-r border-rule hover:bg-mint-tint"><span class="text-mint-deep mr-1">↗</span> Share</button>
+                    <div class="flex-1"></div>
                 </div>
 
                 <div id="pg-preview-surface" class="grid-paper flex-1 flex items-center justify-center p-6 min-h-[480px]" data-theme-surface="true">
