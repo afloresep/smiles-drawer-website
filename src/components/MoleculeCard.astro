@@ -6,13 +6,14 @@ interface Props {
     showDownload?: boolean;
     clickable?: boolean;
     wide?: boolean;
+    aspectClass?: string;
     weights?: string;
     highlights?: Array<[number, string]>;
     reactionWeights?: {reactants?: number[][]; reagents?: number[][]; products?: number[][]};
     render?: Record<string, any>;
 }
 
-const {name, smiles, showPlaygroundLink = false, showDownload = false, clickable = false, wide = false, weights, highlights, reactionWeights, render} = Astro.props;
+const {name, smiles, showPlaygroundLink = false, showDownload = false, clickable = false, wide = false, aspectClass, weights, highlights, reactionWeights, render} = Astro.props;
 const cardId = `mol-${name.replace(/\s+/g, '-').toLowerCase()}`;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
@@ -26,7 +27,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <div
         class:list={[
             'grid-paper flex items-center justify-center p-4',
-            wide ? 'aspect-[2/1]' : 'aspect-square'
+            aspectClass || (wide ? 'aspect-[2/1]' : 'aspect-square')
         ]}
         data-theme-surface="true">
         <svg

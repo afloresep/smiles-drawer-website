@@ -39,7 +39,7 @@ const base = import.meta.env.BASE_URL;
         <button id="hero-download-svg" type="button" class="flex-1 py-3 text-[11px] font-semibold text-ink border-r border-rule hover:bg-paper">
             <span class="text-mint-deep mr-1">↓</span> Download SVG
         </button>
-        <a href={`${base}/playground`} class="flex-1 py-3 text-[11px] font-semibold text-ink text-center hover:bg-paper no-underline">
+        <a id="hero-open-playground" href={`${base}/playground`} class="flex-1 py-3 text-[11px] font-semibold text-ink text-center hover:bg-paper no-underline">
             <span class="text-mint-deep mr-1">→</span> Open in playground
         </a>
     </div>
@@ -53,11 +53,21 @@ document.addEventListener('DOMContentLoaded', function() {
     var errorEl = document.getElementById('hero-error');
     var downloadBtn = document.getElementById('hero-download-svg');
     var copyBtn = document.getElementById('hero-copy-smiles');
+    var openBtn = document.getElementById('hero-open-playground');
+    var openBaseHref = openBtn ? openBtn.getAttribute('href') : null;
     var previewPanel = document.getElementById('hero-preview-panel');
     var svgWrap = document.getElementById('hero-svg-wrap');
     var exampleButtons = document.querySelectorAll('.hero-example-btn');
 
     if (!site || !input || !svg) return;
+
+    function syncOpenPlaygroundHref() {
+        if (!openBtn || !openBaseHref) return;
+        var smiles = input.value.trim();
+        openBtn.href = smiles
+            ? openBaseHref + '?smiles=' + encodeURIComponent(smiles)
+            : openBaseHref;
+    }
 
     function syncActiveExamples() {
         var current = input.value.trim();
@@ -79,23 +89,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return 0;
     }
 
-    function getBaseOptions(isReaction) {
+    function getBaseOptions() {
         var defaults = site.getDefaultRenderOptions();
-        var previewWidth = getPreviewWidth() || defaults.width;
-        if (isReaction) {
-            return {
-                width: Math.max(Math.min(previewWidth - 24, 920), defaults.width),
-                height: 320,
-                padding: defaults.padding,
-                explicitHydrogens: false,
-                bondLength: defaults.bondLength,
-                bondThickness: defaults.bondThickness,
-                shortBondLength: defaults.shortBondLength,
-                bondSpacing: defaults.bondSpacing,
-                fontSizeLarge: defaults.fontSizeLarge,
-                scale: defaults.scale
-            };
-        }
         return {
             width: defaults.width,
             height: defaults.height,
@@ -115,10 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!smiles) return;
         var isReaction = site.isReaction(smiles);
         syncActiveExamples();
+        syncOpenPlaygroundHref();
         syncPreviewHeight(smiles);
         svg = site.renderSmiles({
             adaptive: true,
-            baseOptions: getBaseOptions(isReaction),
+            baseOptions: getBaseOptions(),
             layout: {
                 containerWidth: isReaction ? getPreviewWidth() : Math.min(getPreviewWidth(), site.getDefaultRenderOptions().width),
                 minHeight: isReaction ? 220 : 0
@@ -143,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var debounceTimer;
     input.addEventListener('input', function() {
         syncActiveExamples();
+        syncOpenPlaygroundHref();
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(drawHero, 200);
     });

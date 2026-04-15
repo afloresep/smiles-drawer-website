@@ -67,8 +67,9 @@ export const heroExamples = [
     {name: 'Penicillin G', kind: 'Beta-lactam', smiles: 'CC1([C@@H](N2[C@H](S1)[C@@H](C2=O)NC(=O)Cc3ccccc3)C(=O)O)C'},
     {name: 'Rivaroxaban', kind: 'Anticoagulant', smiles: 'C1COCC(=O)N1C2=CC=C(C=C2)N3C[C@@H](OC3=O)CNC(=O)C4=CC=C(S4)Cl'},
     {name: 'Cholesterol', kind: 'Steroid', smiles: 'C[C@H](CCCC(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O)C)C'},
-    {name: 'Morphine', kind: 'Alkaloid', smiles: 'CN1CC[C@]23c4c5ccc(O)c4O[C@H]2[C@@H](O)C=C[C@H]3[C@@H]1C5'},
-    {name: 'Finkelstein', kind: 'Reaction', smiles: "C=CCBr.[Na+].[I-]>CC(=O)C>C=CCI.[Na+].[Br-]  __{'textAboveArrow': 'acetone', 'textBelowArrow': '90%'}__"},
+    {name: 'Phochrodine D', kind: 'Alkaloid', smiles: 'COC1=CC(C(=O)O)=C2C3=NC(C)=CC=C3COC2=C1O'},
+    {name: 'Suzuki coupling', kind: 'Reaction', smiles: "OB(O)c1ccccc1.Brc1ccccc1>>c1ccc(-c2ccccc2)cc1.Br  __{'textAboveArrow': 'Pd(PPh3)4', 'textBelowArrow': 'K2CO3'}__"},
+    {name: 'Bromination', kind: 'Reaction', smiles: "c1ccccc1.BrBr>>Brc1ccccc1.Br  __{'textAboveArrow': 'FeBr3'}__"},
 ];
 
 // Playground presets organized by category
