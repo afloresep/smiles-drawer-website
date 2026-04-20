@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
     integrations: [tailwind()],
     output: 'static',
-    site: 'https://afloresep.github.io',
-    base: '/smiles-drawer-website',
+    site: 'https://reymond-group.github.io',
+    base: '/smilesDrawer',
     outDir: './docs',
 });
