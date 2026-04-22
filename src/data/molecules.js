@@ -3,22 +3,34 @@ export const molecules = {
         {name: 'Methanol', smiles: 'CO'},
         {name: 'Ethanol', smiles: 'CCO'},
         {name: 'Acetic acid', smiles: 'CC(=O)O'},
+        {name: 'Halothane', smiles: 'FC(F)(F)C(Cl)Br'},
     ],
     aromatic: [
         {name: 'Toluene', smiles: 'Cc1ccccc1'},
         {name: 'Phenol', smiles: 'Oc1ccccc1'},
         {name: 'Anthracene', smiles: 'c1ccc2cc3ccccc3cc2c1'},
+        {name: 'Benzene (Kekulé)', smiles: 'C1=CC=CC=C1'},
+        {name: 'Naphthalene (Kekulé)', smiles: 'C1=CC=C2C=CC=CC2=C1'},
     ],
     heterocycles: [
         {name: 'Pyridine', smiles: 'c1ccncc1'},
         {name: 'Indole', smiles: 'c1ccc2[nH]ccc2c1'},
         {name: 'Thiophene', smiles: 'c1ccsc1'},
+        {name: 'Pyridine (Kekulé)', smiles: 'C1=CC=NC=C1'},
+        {name: 'Indole (Kekulé)', smiles: 'C1=CC=C2NC=CC2=C1'},
+        {name: 'Dithiopyr', smiles: 'CSC(=O)c1c(C)c(C(F)F)nc(C(F)(F)F)c1C(=O)SC'},
     ],
     drugs: [
         {name: 'Aspirin', smiles: 'CC(=O)Oc1ccccc1C(=O)O'},
         {name: 'Caffeine', smiles: 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'},
-        {name: 'Morphine', smiles: 'CN1CC[C@]23c4c5ccc(O)c4O[C@H]2[C@@H](O)C=C[C@H]3[C@@H]1C5'},
         {name: 'Rivaroxaban', smiles: 'C1COCC(=O)N1C2=CC=C(C=C2)N3C[C@@H](OC3=O)CNC(=O)C4=CC=C(S4)Cl'},
+        {name: 'Sulfamethoxazole', smiles: 'Cc1cc(NS(=O)(=O)c2ccc(N)cc2)no1'},
+        {name: 'Chloramphenicol', smiles: 'O=C(NC(CO)C(O)c1ccc([N+](=O)[O-])cc1)C(Cl)Cl'},
+        {name: 'Auranofin', smiles: 'CC(=O)OC[C@H]1O[C@@H](S[Au]P(CC)(CC)CC)[C@H](OC(C)=O)[C@@H](OC(C)=O)[C@@H]1OC(=O)C'},
+        {name: 'Thyroxine', smiles: 'N[C@@H](Cc1cc(I)c(Oc2cc(I)c(O)c(I)c2)c(I)c1)C(=O)O'},
+        {name: 'Sarin', smiles: 'CC(C)OP(C)(F)=O'},
+        {name: 'VX', smiles: 'CCOP(=O)(C)SCCN(C(C)C)C(C)C'},
+        {name: 'Tabun', smiles: 'CCOP(=O)(C#N)N(C)C'},
     ],
     complex: [
         {name: 'Cholesterol', smiles: 'C[C@H](CCCC(C)C)[C@H]1CC[C@@H]2[C@@]1(CC[C@H]3[C@H]2CC=C4[C@@]3(CC[C@@H](C4)O)C)C'},
@@ -89,7 +101,6 @@ export const playgroundPresets = {
     Drugs: [
         {name: 'Aspirin', smiles: 'CC(=O)Oc1ccccc1C(=O)O'},
         {name: 'Caffeine', smiles: 'CN1C=NC2=C1C(=O)N(C(=O)N2C)C'},
-        {name: 'Morphine', smiles: 'CN1CC[C@]23c4c5ccc(O)c4O[C@H]2[C@@H](O)C=C[C@H]3[C@@H]1C5'},
         {name: 'Penicillin G', smiles: 'CC1([C@@H](N2[C@H](S1)[C@@H](C2=O)NC(=O)Cc3ccccc3)C(=O)O)C'},
         {name: 'Rivaroxaban', smiles: 'C1COCC(=O)N1C2=CC=C(C=C2)N3C[C@@H](OC3=O)CNC(=O)C4=CC=C(S4)Cl'},
     ],
@@ -132,12 +143,7 @@ export const renderOverrides = {
         fontSizeLarge: 5.6,
         padding: 8
     },
-    'CN1CC[C@]23c4c5ccc(O)c4O[C@H]2[C@@H](O)C=C[C@H]3[C@@H]1C5': {
-        bondLength: 15.6,
-        fontSizeLarge: 5.2,
-        padding: 8
-    },
-    'C[C@]12CC[C@H]3[C@@H](CCC4=CC(=O)CC[C@@]34C)[C@@H]1CC[C@@H]2O': {
+'C[C@]12CC[C@H]3[C@@H](CCC4=CC(=O)CC[C@@]34C)[C@@H]1CC[C@@H]2O': {
         bondLength: 16,
         fontSizeLarge: 5.3,
         padding: 8
