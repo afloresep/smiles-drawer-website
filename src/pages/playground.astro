@@ -475,6 +475,7 @@ c1ccc2[nH]ccc2c1</textarea>
                     <div class="flex items-center justify-between gap-3 px-4 py-2 border-t border-rule bg-paper">
                         <button id="batch-render-btn" type="button" class="btn-primary">Render All →</button>
                         <div class="flex items-center gap-2">
+                            <button id="pg-batch-share" type="button" class="text-[11px] font-bold uppercase tracking-[0.05em] px-3 py-2 bg-white border border-ink text-ink rounded-sm hover:bg-paper"><span class="text-mint-deep mr-1">↗</span> Share</button>
                             <button id="batch-export-svg" type="button" class="text-[11px] font-bold uppercase tracking-[0.05em] px-3 py-2 bg-white border border-ink text-ink rounded-sm hover:bg-paper disabled:opacity-40 disabled:cursor-not-allowed" disabled>Export All SVG</button>
                             <button id="batch-export-png" type="button" class="text-[11px] font-bold uppercase tracking-[0.05em] px-3 py-2 bg-mint border border-mint text-ink rounded-sm hover:bg-mint-deep hover:text-white hover:border-mint-deep disabled:opacity-40 disabled:cursor-not-allowed" disabled>Export All PNG</button>
                         </div>
@@ -695,14 +696,26 @@ c1ccc2[nH]ccc2c1</textarea>
                 errorEl.classList.remove('hidden');
             }
 
-            var url = new URL(window.location);
-            url.searchParams.set('smiles', smiles);
-            try {
-                url.searchParams.set('cfg', btoa(JSON.stringify(collectState())));
-            } catch (e) {
-                url.searchParams.delete('cfg');
+            // Don't clobber the URL if batch owns it. Two cases to detect:
+            //   (1) User has switched to batch — panel-batch is visible.
+            //   (2) Initial load with ?mode=batch but the tab-switch script
+            //       hasn't run yet (single's draw fires first because the
+            //       input has a hardcoded default value, so panel-batch still
+            //       has the `hidden` class at this point — the URL is the
+            //       authoritative signal here, not the DOM.
+            var batchPanel = document.getElementById('panel-batch');
+            var urlMode = new URLSearchParams(window.location.search).get('mode');
+            var batchActive = urlMode === 'batch' || (batchPanel && !batchPanel.classList.contains('hidden'));
+            if (!batchActive) {
+                var url = new URL(window.location);
+                url.searchParams.set('smiles', smiles);
+                try {
+                    url.searchParams.set('cfg', btoa(JSON.stringify(collectState())));
+                } catch (e) {
+                    url.searchParams.delete('cfg');
+                }
+                window.history.replaceState({}, '', url);
             }
-            window.history.replaceState({}, '', url);
         }
 
         // Debounced draw on input
@@ -890,15 +903,30 @@ c1ccc2[nH]ccc2c1</textarea>
             });
         }
 
-        // Share link: includes full option state so the recipient sees the same render
+        // Share link: includes full option state so the recipient sees the same render.
+        // In batch mode we serialize the batch sidebar state instead — but never the
+        // textarea contents (could be thousands of SMILES, blows past URL limits).
         document.getElementById('pg-share').addEventListener('click', function() {
             var url = new URL(window.location);
-            url.searchParams.set('smiles', input.value);
-            try {
-                var encoded = btoa(JSON.stringify(collectState()));
-                url.searchParams.set('cfg', encoded);
-            } catch (e) {
-                url.searchParams.delete('cfg');
+            var batchPanel = document.getElementById('panel-batch');
+            var inBatch = batchPanel && !batchPanel.classList.contains('hidden');
+
+            if (inBatch && typeof window.__pgCollectBatchState === 'function') {
+                url.searchParams.set('mode', 'batch');
+                url.searchParams.delete('smiles');
+                try {
+                    url.searchParams.set('cfg', btoa(JSON.stringify(window.__pgCollectBatchState())));
+                } catch (e) {
+                    url.searchParams.delete('cfg');
+                }
+            } else {
+                url.searchParams.delete('mode');
+                url.searchParams.set('smiles', input.value);
+                try {
+                    url.searchParams.set('cfg', btoa(JSON.stringify(collectState())));
+                } catch (e) {
+                    url.searchParams.delete('cfg');
+                }
             }
             navigator.clipboard.writeText(url.toString()).then(function() {
                 showToast('Link copied to clipboard');
@@ -919,20 +947,26 @@ c1ccc2[nH]ccc2c1</textarea>
                 setTimeout(function() { toast.remove(); }, 300);
             }, 2000);
         }
+        // Reused by the batch-mode Share handler in the next script.
+        window.__pgShowToast = showToast;
 
-        // Read SMILES + saved state from URL on load
+        // Read SMILES + saved state from URL on load.
+        // When mode=batch, smiles/cfg belong to the batch panel — don't apply them here.
         var params = new URLSearchParams(window.location.search);
-        if (params.has('smiles')) {
-            input.value = params.get('smiles');
-        }
-        if (params.has('cfg')) {
-            try {
-                applyState(JSON.parse(atob(params.get('cfg'))));
-                if (previewSurface) {
-                    var tEl = document.getElementById('opt-theme');
-                    if (tEl) applySurfaceTheme(previewSurface, tEl.value);
-                }
-            } catch (e) { /* ignore malformed cfg */ }
+        var loadMode = params.get('mode');
+        if (loadMode !== 'batch') {
+            if (params.has('smiles')) {
+                input.value = params.get('smiles');
+            }
+            if (params.has('cfg')) {
+                try {
+                    applyState(JSON.parse(atob(params.get('cfg'))));
+                    if (previewSurface) {
+                        var tEl = document.getElementById('opt-theme');
+                        if (tEl) applySurfaceTheme(previewSurface, tEl.value);
+                    }
+                } catch (e) { /* ignore malformed cfg */ }
+            }
         }
 
         draw();
@@ -949,7 +983,8 @@ c1ccc2[nH]ccc2c1</textarea>
         var panelSingle = document.getElementById('panel-single');
         var panelBatch = document.getElementById('panel-batch');
 
-        function switchTab(tab) {
+        function switchTab(tab, opts) {
+            opts = opts || {};
             if (tab === 'single') {
                 panelSingle.classList.remove('hidden');
                 panelBatch.classList.add('hidden');
@@ -969,10 +1004,32 @@ c1ccc2[nH]ccc2c1</textarea>
                     bt.value = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
                 }
             }
+            // On initial load (opts.skipUrl) we MUST NOT touch the URL — cfg in
+            // the URL belongs to the active mode and the batch script needs to
+            // read it after this point. Only user-initiated tab clicks rewrite
+            // the URL, where clearing the other mode's cfg/smiles is correct.
+            if (opts.skipUrl) return;
+            try {
+                var modeUrl = new URL(window.location);
+                if (tab === 'batch') {
+                    modeUrl.searchParams.set('mode', 'batch');
+                    modeUrl.searchParams.delete('smiles');
+                    modeUrl.searchParams.delete('cfg');
+                } else {
+                    modeUrl.searchParams.delete('mode');
+                    modeUrl.searchParams.delete('cfg');
+                }
+                window.history.replaceState({}, '', modeUrl);
+            } catch (e) { /* ignore */ }
         }
 
         tabSingle.addEventListener('click', function() { switchTab('single'); });
         tabBatch.addEventListener('click', function() { switchTab('batch'); });
+
+        // Restore the active tab from the URL — shared batch links open in batch.
+        if (new URLSearchParams(window.location.search).get('mode') === 'batch') {
+            switchTab('batch', { skipUrl: true });
+        }
 
         // ─── Batch DOM refs ───────────────────────────────────────────
         var batchInput = document.getElementById('batch-input');
@@ -1027,6 +1084,105 @@ c1ccc2[nH]ccc2c1</textarea>
         var batchSelects = ['atomVisualization'];
         // 'scale' lives with reaction sliders; it only behaves as expected when rendering reactions.
         var batchReactionSliders = ['scale', 'rxnSpacing', 'rxnFontSize', 'rxnPlusSize', 'rxnPlusThickness', 'rxnArrowLength', 'rxnArrowThickness', 'rxnArrowHeadSize', 'rxnArrowMargin'];
+
+        // ─── Share-state serialization ────────────────────────────────
+        // Captures every batch sidebar control. Skips the SMILES textarea on
+        // purpose — recipients paste their own list; large pastes would also
+        // overflow practical URL limits.
+        function collectBatchState() {
+            var s = {};
+            s.cols = colsSlider.value;
+            s.rows = rowsSlider.value;
+            s.cellSize = cellSizeSlider.value;
+            s.showLabels = showLabelsCheck.checked;
+            s.showFormula = showFormulaCheck.checked;
+            s.showMW = showMWCheck.checked;
+            if (batchTheme) s.theme = batchTheme.value;
+            s.pubStyle = pubStyleCheck.checked;
+            s.bg = getBackgroundMode();
+            s.title = titleInput.value;
+            s.exportScale = exportScale;
+            batchSliders.concat(batchReactionSliders).forEach(function(name) {
+                var el = document.getElementById('batch-opt-' + name);
+                if (el) s[name] = el.value;
+            });
+            batchCheckboxes.forEach(function(name) {
+                var el = document.getElementById('batch-opt-' + name);
+                if (el) s[name] = el.checked;
+            });
+            batchSelects.forEach(function(name) {
+                var el = document.getElementById('batch-opt-' + name);
+                if (el) s[name] = el.value;
+            });
+            return s;
+        }
+
+        function applyBatchState(s) {
+            if (!s) return;
+            function setSlider(id, val) {
+                var el = document.getElementById(id);
+                var valEl = document.getElementById(id + '-val');
+                if (el && val != null) {
+                    el.value = val;
+                    if (valEl) valEl.textContent = val;
+                }
+            }
+            setSlider('batch-opt-cols', s.cols);
+            setSlider('batch-opt-rows', s.rows);
+            setSlider('batch-opt-cellSize', s.cellSize);
+            if (s.showLabels != null) showLabelsCheck.checked = !!s.showLabels;
+            if (s.showFormula != null) showFormulaCheck.checked = !!s.showFormula;
+            if (s.showMW != null) showMWCheck.checked = !!s.showMW;
+            if (s.theme && batchTheme) {
+                batchTheme.value = s.theme;
+                batchTheme.setAttribute('data-follow-page', 'false');
+            }
+            if (s.pubStyle != null) pubStyleCheck.checked = !!s.pubStyle;
+            if (s.bg) {
+                var bgEl = document.getElementById('batch-opt-bg-' + s.bg);
+                if (bgEl) bgEl.checked = true;
+            }
+            if (s.title != null) titleInput.value = s.title;
+            if (s.exportScale != null) {
+                var sc = parseFloat(s.exportScale);
+                if (!isNaN(sc)) exportScale = sc;
+            }
+            batchSliders.concat(batchReactionSliders).forEach(function(name) {
+                if (s[name] != null) setSlider('batch-opt-' + name, s[name]);
+            });
+            batchCheckboxes.forEach(function(name) {
+                var el = document.getElementById('batch-opt-' + name);
+                if (el && s[name] != null) el.checked = !!s[name];
+            });
+            batchSelects.forEach(function(name) {
+                var el = document.getElementById('batch-opt-' + name);
+                if (el && s[name] != null) el.value = s[name];
+            });
+        }
+
+        // Expose to the single-mode script's Share handler so it can write
+        // batch-state into the URL when batch is the active tab.
+        window.__pgCollectBatchState = collectBatchState;
+
+        // Persist batch state into the URL — same shape as Share, minus the
+        // clipboard write. Called whenever any sidebar control changes so a
+        // refresh restores the layout the user had configured.
+        // Guarded on visibility: browser autofill / programmatic init can fire
+        // input/change against hidden batch fields on load, and we don't want
+        // those to flip a single-mode URL into mode=batch.
+        function persistBatchUrl() {
+            if (panelBatch.classList.contains('hidden')) return;
+            var url = new URL(window.location);
+            url.searchParams.set('mode', 'batch');
+            url.searchParams.delete('smiles');
+            try {
+                url.searchParams.set('cfg', btoa(JSON.stringify(collectBatchState())));
+            } catch (e) {
+                url.searchParams.delete('cfg');
+            }
+            window.history.replaceState({}, '', url);
+        }
+        window.__pgPersistBatchUrl = persistBatchUrl;
 
         // ─── Data model ───────────────────────────────────────────────
         var batchData = [];
@@ -1789,6 +1945,7 @@ c1ccc2[nH]ccc2c1</textarea>
                 rowsSlider.value = r;
                 rowsVal.textContent = r;
                 if (batchData.length > 0) renderBatch();
+                persistBatchUrl();
             });
         });
 
@@ -1800,8 +1957,31 @@ c1ccc2[nH]ccc2c1</textarea>
                     b.className = 'batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-accent hover:text-accent transition-colors';
                 });
                 this.className = 'batch-scale-preset text-xs px-2.5 py-1 rounded-full border border-accent text-accent ring-2 ring-accent/30';
+                persistBatchUrl();
             });
         });
+
+        // Catch-all: any input/change inside the batch panel persists state into
+        // the URL. Programmatic .value writes (grid/scale presets) don't fire these
+        // events, so those handlers above call persistBatchUrl() explicitly.
+        // Skip the SMILES textarea — its contents must never go into the URL.
+        function maybePersistFromEvent(e) {
+            if (e.target && e.target.id === 'batch-input') return;
+            persistBatchUrl();
+        }
+        panelBatch.addEventListener('input', maybePersistFromEvent);
+        panelBatch.addEventListener('change', maybePersistFromEvent);
+
+        // Share button (batch toolbar)
+        var batchShareBtn = document.getElementById('pg-batch-share');
+        if (batchShareBtn) {
+            batchShareBtn.addEventListener('click', function() {
+                persistBatchUrl();
+                navigator.clipboard.writeText(window.location.href).then(function() {
+                    if (window.__pgShowToast) window.__pgShowToast('Link copied to clipboard');
+                });
+            });
+        }
 
         // Publication style checkbox triggers re-render
         if (pubStyleCheck) {
@@ -2270,6 +2450,18 @@ c1ccc2[nH]ccc2c1</textarea>
                 if (batchData.length > 0) renderBatch();
             });
         }
+
+        // ─── Restore from URL on load ─────────────────────────────────
+        // If the share link was created in batch mode, mode=batch + cfg
+        // describe the sidebar state to apply. Tab switch is handled by the
+        // visual-state script below; we just hydrate options here.
+        var loadParams = new URLSearchParams(window.location.search);
+        if (loadParams.get('mode') === 'batch' && loadParams.has('cfg')) {
+            try {
+                applyBatchState(JSON.parse(atob(loadParams.get('cfg'))));
+                applySurfaceTheme(batchPreviewSurface, getBatchTheme());
+            } catch (e) { /* ignore malformed cfg */ }
+        }
     });
 })();
 </script>
@@ -2305,5 +2497,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (tabSingle) tabSingle.addEventListener('click', function() { markActive('single'); });
     if (tabBatch) tabBatch.addEventListener('click', function() { markActive('batch'); });
+
+    // Mirror the URL's mode param into the data-active attribute on first paint.
+    if (new URLSearchParams(window.location.search).get('mode') === 'batch') {
+        markActive('batch');
+    }
 });
 </script>
